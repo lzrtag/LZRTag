@@ -4,4 +4,8 @@ $CMP RCable_Con_Front
 D Front-Laser Ribbon Cable Connector
 $ENDCMP
 #
+$CMP RCable_Con_VEST
+D Chestpiece connector
+$ENDCMP
+#
 #End Doc Library
