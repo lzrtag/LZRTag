@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name Main-Cache)(type KiCad)(uri "$(KIPRJMOD)/Main-Cache.pretty")(options "")(descr ""))
+)
