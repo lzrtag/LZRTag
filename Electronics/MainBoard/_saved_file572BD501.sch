@@ -1,0 +1,156 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:MainBoard-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 2
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L LED D?
+U 1 1 572D3F88
+P 5275 2975
+F 0 "D?" H 5275 3075 50  0000 C CNN
+F 1 "LED" H 5275 2875 50  0000 C CNN
+F 2 "" H 5275 2975 50  0000 C CNN
+F 3 "" H 5275 2975 50  0000 C CNN
+	1    5275 2975
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R R?
+U 1 1 572D3F8F
+P 5425 2775
+F 0 "R?" V 5505 2775 50  0000 C CNN
+F 1 "14Ω" V 5425 2775 50  0000 C CNN
+F 2 "" V 5355 2775 50  0000 C CNN
+F 3 "" H 5425 2775 50  0000 C CNN
+	1    5425 2775
+	0    1    1    0   
+$EndComp
+$Comp
+L +3.3V #PWR?
+U 1 1 572D3F96
+P 5575 2775
+F 0 "#PWR?" H 5575 2625 50  0001 C CNN
+F 1 "+3.3V" H 5575 2915 50  0000 C CNN
+F 2 "" H 5575 2775 50  0000 C CNN
+F 3 "" H 5575 2775 50  0000 C CNN
+	1    5575 2775
+	1    0    0    -1  
+$EndComp
+$Comp
+L LED_RCBG D?
+U 1 1 572D3F9C
+P 5575 3875
+F 0 "D?" H 5575 4225 50  0000 C CNN
+F 1 "LED_RCBG" H 5575 3525 50  0000 C CNN
+F 2 "" H 5575 3825 50  0000 C CNN
+F 3 "" H 5575 3825 50  0000 C CNN
+	1    5575 3875
+	1    0    0    -1  
+$EndComp
+$Comp
+L Q_PNP_CBE Q?
+U 1 1 572D3FA3
+P 5375 3375
+F 0 "Q?" H 5675 3425 50  0000 R CNN
+F 1 "Q_PNP_CBE" H 5975 3325 50  0000 R CNN
+F 2 "" H 5575 3475 50  0000 C CNN
+F 3 "" H 5375 3375 50  0000 C CNN
+	1    5375 3375
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	5275 3575 5275 3875
+Wire Wire Line
+	5275 3875 5275 4175
+$Comp
+L GND #PWR?
+U 1 1 572D3FAC
+P 5275 4175
+F 0 "#PWR?" H 5275 3925 50  0001 C CNN
+F 1 "GND" H 5275 4025 50  0000 C CNN
+F 2 "" H 5275 4175 50  0000 C CNN
+F 3 "" H 5275 4175 50  0000 C CNN
+	1    5275 4175
+	1    0    0    -1  
+$EndComp
+Connection ~ 5275 3875
+$Comp
+L R_Small R?
+U 1 1 572D3FB3
+P 6075 3675
+F 0 "R?" V 6125 3500 50  0000 L CNN
+F 1 "470Ω" V 6000 3600 50  0000 L CNN
+F 2 "" H 6075 3675 50  0000 C CNN
+F 3 "" H 6075 3675 50  0000 C CNN
+	1    6075 3675
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 572D3FBA
+P 6075 3875
+F 0 "R?" V 6125 3700 50  0000 L CNN
+F 1 "470Ω" V 6000 3800 50  0000 L CNN
+F 2 "" H 6075 3875 50  0000 C CNN
+F 3 "" H 6075 3875 50  0000 C CNN
+	1    6075 3875
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R_Small R?
+U 1 1 572D3FC1
+P 6075 4075
+F 0 "R?" V 6125 3900 50  0000 L CNN
+F 1 "470Ω" V 6000 4000 50  0000 L CNN
+F 2 "" H 6075 4075 50  0000 C CNN
+F 3 "" H 6075 4075 50  0000 C CNN
+	1    6075 4075
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	5875 3675 5975 3675
+Wire Wire Line
+	5875 3875 5975 3875
+Wire Wire Line
+	5875 4075 5975 4075
+$EndSCHEMATC
