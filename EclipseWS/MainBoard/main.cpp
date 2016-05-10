@@ -16,9 +16,9 @@ int main() {
 	while(true) {
 		for(uint8_t i = 0; i < 50; i++) {
 			PORTD |= (1<< 6);
-			_delay_us(12);
-			PORTD &= ~(1<< 6);
 			_delay_us(13);
+			PORTD &= ~(1<< 6);
+			_delay_us(12);
 		}
 
 		_delay_ms(100);
