@@ -9,19 +9,25 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "Libcode/TIMER/Timer0.h"
+
+void IR_on() {
+	Timer0::set_OCA0_mode(TIMER0_OCA0_TOGGLE);
+}
+void IR_off() {
+	Timer0::set_OCA0_mode(TIMER0_OCA0_OFF);
+}
 
 int main() {
-	DDRD |= (1 << 6);
+	DDRD |= (1);
+
+	Timer0::set_prescaler(TIMER0_PRESC_1);
+	Timer0::set_mode(TIMER0_MODE_FREQ);
+	Timer0::set_OCR0A(49);
 
 	while(true) {
-		for(uint8_t i = 0; i < 50; i++) {
-			PORTD |= (1<< 6);
-			_delay_us(13);
-			PORTD &= ~(1<< 6);
-			_delay_us(12);
-		}
-
-		_delay_ms(100);
+		PORTD ^= (1);
+		_delay_ms(1000);
 	}
 
 	return 0;
