@@ -7,9 +7,12 @@
 
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "Libcode/TIMER/Timer0.h"
+
+#include "Localcode/Board/Board.h"
 
 void IR_on() {
 	Timer0::set_OCA0_mode(TIMER0_OCA0_TOGGLE);
@@ -18,16 +21,24 @@ void IR_off() {
 	Timer0::set_OCA0_mode(TIMER0_OCA0_OFF);
 }
 
-int main() {
-	DDRD |= (1);
+ISR(TIMER1_COMPA_vect) {
+	Board::ISR1a();
+}
 
-	Timer0::set_prescaler(TIMER0_PRESC_1);
-	Timer0::set_mode(TIMER0_MODE_FREQ);
-	Timer0::set_OCR0A(49);
+int main() {
+	Board::init();
+
+	uint8_t cs[2] = {COLOR_CYAN, COLOR_YELLOW};
 
 	while(true) {
-		PORTD ^= (1);
-		_delay_ms(1000);
+		for(uint8_t j=0; j < 2; j++) {
+			for(uint8_t i = 0; i < 3; i++) {				Board::flash_nozzle_LED(cs[j]);
+
+				_delay_ms(100);
+			}
+
+			_delay_ms(300);
+		}
 	}
 
 	return 0;
