@@ -14,6 +14,8 @@
 #include "../../Libcode/TIMER/Timer0.h"
 #include "../../Libcode/TIMER/Timer1.h"
 
+#include "IRLed.h"
+
 #define COLOR_RED 		0b100
 #define COLOR_GREEN		0b010
 #define COLOR_BLUE		0b001
