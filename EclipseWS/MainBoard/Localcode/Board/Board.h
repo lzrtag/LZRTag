@@ -27,14 +27,16 @@
 
 namespace Board {
 
-	extern uint16_t nozzleDuration;
-
 	void init();
 
-	void set_nozzle_LED(uint8_t color);
+	namespace Nozzle {
+		void set(uint8_t color);
 
-	void flash_nozzle_LED(uint8_t color);
-	void flash_nozzle_LED(uint8_t color, uint8_t duration);
+		void off();
+
+		void flash(uint8_t color);
+		void flash(uint8_t color, uint8_t duration);
+	}
 
 	void ISR1a();
 }

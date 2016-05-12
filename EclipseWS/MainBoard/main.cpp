@@ -14,13 +14,6 @@
 
 #include "Localcode/Board/Board.h"
 
-void IR_on() {
-	Timer0::set_OCA0_mode(TIMER0_OCA0_TOGGLE);
-}
-void IR_off() {
-	Timer0::set_OCA0_mode(TIMER0_OCA0_OFF);
-}
-
 ISR(TIMER1_COMPA_vect) {
 	Board::ISR1a();
 }
@@ -32,7 +25,8 @@ int main() {
 
 	while(true) {
 		for(uint8_t j=0; j < 2; j++) {
-			for(uint8_t i = 0; i < 3; i++) {				Board::flash_nozzle_LED(cs[j]);
+			for(uint8_t i = 0; i < 3; i++) {
+				Board::Nozzle::flash(cs[j]);
 
 				_delay_ms(100);
 			}
