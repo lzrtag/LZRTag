@@ -22,6 +22,8 @@ namespace Board {
 		Timer1::set_OCR1A(499);
 		Timer1::set_mode(TIMER1_MODE_CTC);
 
+		IR::init(&PORTD, 7, &outputLED, 0);
+
 		sei();
 	}
 
@@ -46,6 +48,8 @@ namespace Board {
 
 
 	void ISR1a() {
+		IR::update();
+
 		if(nozzleDuration == 0) {}
 		else if(--nozzleDuration == 0) {
 			Nozzle::off();

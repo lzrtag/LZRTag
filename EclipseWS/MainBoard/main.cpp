@@ -11,7 +11,6 @@
 #include <util/delay.h>
 
 #include "Libcode/TIMER/Timer0.h"
-
 #include "Localcode/Board/Board.h"
 
 ISR(TIMER1_COMPA_vect) {
@@ -24,15 +23,8 @@ int main() {
 	uint8_t cs[2] = {COLOR_CYAN, COLOR_YELLOW};
 
 	while(true) {
-		for(uint8_t j=0; j < 2; j++) {
-			for(uint8_t i = 0; i < 3; i++) {
-				Board::Nozzle::flash(cs[j]);
-
-				_delay_ms(100);
-			}
-
-			_delay_ms(300);
-		}
+		_delay_ms(1000);
+		IR::send_8(0b00010101);
 	}
 
 	return 0;
