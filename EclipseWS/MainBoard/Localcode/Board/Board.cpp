@@ -13,20 +13,6 @@ namespace Board {
 
 	IRLed outputLED = IRLed();
 
-	void init() {
-		DDRD 	|= (0b01101111);	// Initialise inputs
-		PORTD 	|= (0b10010000);	// Init pullups
-
-		// Initialize the TIMER1 for 4kHz ISR
-		Timer1::set_prescaler(TIMER1_PRESC_1);
-		Timer1::set_OCR1A(499);
-		Timer1::set_mode(TIMER1_MODE_CTC);
-
-		IR::init(&PORTD, 7, &outputLED, 0);
-
-		sei();
-	}
-
 	namespace Nozzle {
 		void set(uint8_t color) {
 			PORTD &= ~(0b111);
@@ -46,6 +32,12 @@ namespace Board {
 		}
 	}
 
+	namespace IRHandler {
+		void on_receive() {
+			if(IR::message == 0b11001100)
+				PORTD |= (2);
+		}
+	}
 
 	void ISR1a() {
 		IR::update();
@@ -54,5 +46,19 @@ namespace Board {
 		else if(--nozzleDuration == 0) {
 			Nozzle::off();
 		}
+	}
+
+	void init() {
+		DDRD 	|= (0b01101111);	// Initialise inputs
+		PORTD 	|= (0b10010000);	// Init pullups
+
+		// Initialize the TIMER1 for 4kHz ISR
+		Timer1::set_prescaler(TIMER1_PRESC_1);
+		Timer1::set_OCR1A(499);
+		Timer1::set_mode(TIMER1_MODE_CTC);
+
+		IR::init(&PORTD, 7, &outputLED, &IRHandler::on_receive);
+
+		sei();
 	}
 }

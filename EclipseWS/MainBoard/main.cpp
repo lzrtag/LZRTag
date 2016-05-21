@@ -20,11 +20,9 @@ ISR(TIMER1_COMPA_vect) {
 int main() {
 	Board::init();
 
-	uint8_t cs[2] = {COLOR_CYAN, COLOR_YELLOW};
-
 	while(true) {
 		_delay_ms(1000);
-		IR::send_8(0b00010101);
+		IR::send_8(0b11001100);
 	}
 
 	return 0;

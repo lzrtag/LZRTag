@@ -15,6 +15,8 @@
 
 class IRLed: public IR_LED {
 public:
+	uint8_t status = 0xff;
+
 	IRLed();
 
 	void on();

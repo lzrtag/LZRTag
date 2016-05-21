@@ -19,7 +19,9 @@ IRLed::IRLed() {
 
 void IRLed::on() {
 	Timer0::set_OCA0_mode(TIMER0_OCA0_TOGGLE);
+	this->status = 0x00;
 }
 void IRLed::off() {
 	Timer0::set_OCA0_mode(TIMER0_OCA0_OFF);
+	this->status = 0xff;
 }
