@@ -11,18 +11,12 @@
 #include <avr/io.h>
 
 namespace Game {
-
-	extern uint16_t gamemode;
-
-	namespace Weapon {
-	extern uint16_t ammo, reloadTimer, shotTimer;
-	}
-
-	namespace Player {
-	extern uint8_t ID;
-
-	extern uint16_t life, lifeRegenTimer;
-	extern uint16_t shield, shieldRegenTimer;
+	namespace Config {
+		uint8_t gun_cfg();
+		uint8_t game_duration();
+		uint8_t player_cfg();
+		bool friendlyfire();
+		bool uses_teams();
 	}
 }
 
