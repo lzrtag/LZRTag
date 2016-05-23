@@ -12,7 +12,7 @@
 
 namespace Game {
 
-	uint32_t gameTimesTable[1] = {600000};
+	const uint32_t gameTimesTable[1] = {600000};
 
 	uint16_t gamemode;
 	uint32_t gameTimer;
