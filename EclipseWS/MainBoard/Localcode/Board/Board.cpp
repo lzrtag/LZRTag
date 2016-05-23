@@ -6,10 +6,14 @@
  */
 
 #include "Board.h"
+#include "../Game/Game.h"
+
 
 namespace Board {
 
 	uint16_t nozzleDuration = 0;
+
+	uint8_t ISR1aPRESC = 0;
 
 	IRLed outputLED = IRLed();
 
@@ -45,6 +49,12 @@ namespace Board {
 		if(nozzleDuration == 0) {}
 		else if(--nozzleDuration == 0) {
 			Nozzle::off();
+		}
+
+		if(++ISR1aPRESC == 4) {
+			ISR1aPRESC = 0;
+
+			Game::update();
 		}
 	}
 

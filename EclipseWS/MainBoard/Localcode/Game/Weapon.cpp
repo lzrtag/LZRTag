@@ -15,7 +15,7 @@ namespace Game {
 namespace Weapon {
 
 	uint8_t gunDmgTable[1] = 			{1};
-	uint16_t gunShotDelayTable[1] = 		{100};
+	uint16_t gunShotDelayTable[1] = 	{100};
 	uint16_t gunReloadDelayTable[1] = 	{3000};
 	uint8_t gunMagSizeTable[1] = 		{100};
 
