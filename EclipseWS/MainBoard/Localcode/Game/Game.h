@@ -11,19 +11,15 @@
 #include <avr/io.h>
 
 namespace Game {
-
-	extern uint16_t gamemode;
-
-	namespace Weapon {
-	extern uint16_t ammo, reloadTimer, shotTimer;
+	namespace Config {
+		uint8_t gun_cfg();
+		uint8_t game_duration_cfg();
+		uint8_t player_cfg();
+		bool friendlyfire();
+		bool uses_teams();
 	}
 
-	namespace Player {
-	extern uint8_t ID;
-
-	extern uint16_t life, lifeRegenTimer;
-	extern uint16_t shield, shieldRegenTimer;
-	}
+	bool is_running();
 }
 
 #endif /* LOCALCODE_GAME_GAME_H_ */

@@ -6,36 +6,49 @@
  */
 
 #include "Game.h"
+#include "Player.h"
+#include "Weapon.h"
+
 
 namespace Game {
 
+	uint32_t gameTimesTable[1] = {600000};
+
 	uint16_t gamemode;
+	uint32_t gameTimer;
 
-	uint8_t get_gun_cfg() {
-		return (gamemode & 0b0111100000000000) >> 11;
-	}
-	uint8_t get_game_duration() {
-		return (gamemode & 0b0000011110000000) >> 7;
-	}
-	uint8_t get_player_cfg() {
-		return (gamemode & 0b0000000001111100) >> 2;
-	}
-	uint8_t get_friendlyfire() {
-		return (gamemode & 0b10) >> 1;
-	}
-	uint8_t get_uses_teams() {
-		return gamemode & 0b1;
-	}
-
-	namespace Weapon {
-	uint16_t ammo, reloadTimer, shotTimer;
+	namespace Config {
+		uint8_t gun_cfg() {
+			return (gamemode & 0b0111100000000000) >> 11;
+		}
+		uint8_t game_duration_cfg() {
+			return (gamemode & 0b0000011110000000) >> 7;
+		}
+		uint8_t player_cfg() {
+			return (gamemode & 0b0000000001111100) >> 2;
+		}
+		bool friendlyfire() {
+			return (gamemode & 0b10) >> 1;
+		}
+		bool uses_teams() {
+			return gamemode & 0b1;
+		}
 	}
 
-	namespace Player {
-	uint8_t ID;
+	bool is_running() {
+		if(gameTimer > gameTimesTable[Config::game_duration_cfg()])
+			return false;
+		if(gameTimer == 0)
+			return false;
 
-	uint16_t life, lifeRegenTimer;
-	uint16_t shield, shieldRegenTimer;
+		return true;
+	}
+
+	void update() {
+		if(gameTimer != 0) gameTimer++;
+
+		Weapon::update();
+		Player::update();
 	}
 }
 
