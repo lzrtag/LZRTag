@@ -5,6 +5,8 @@
  *      Author: xasin
  */
 
+#include "../Board/Board.h"
+
 #include "Game.h"
 #include "Player.h"
 #include "Weapon.h"
@@ -14,8 +16,8 @@ namespace Game {
 
 	const uint32_t gameTimesTable[1] = {600000};
 
-	uint16_t gamemode;
-	uint32_t gameTimer;
+	uint16_t gamemode = 0;
+	uint32_t gameTimer = 0;
 
 	namespace Config {
 		uint8_t gun_cfg() {
@@ -33,6 +35,10 @@ namespace Game {
 		bool uses_teams() {
 			return gamemode & 0b1;
 		}
+	}
+
+	void start() {
+		gameTimer = 1;
 	}
 
 	bool is_running() {

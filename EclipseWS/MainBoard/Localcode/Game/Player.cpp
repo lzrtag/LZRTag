@@ -39,24 +39,27 @@ namespace Player {
 		return (ID & 0b11);
 	}
 	uint8_t get_team_color() {
-		switch(get_team()) {
-		case 0:
+		if(!Game::Config::uses_teams())
 			return COLOR_WHITE;
-		break;
+		else
+			switch(get_team()) {
+			case 0:
+				return COLOR_WHITE;
+			break;
 
-		case 1:
-			return COLOR_RED;
-		break;
+			case 1:
+				return COLOR_RED;
+			break;
 
-		case 2:
-			return COLOR_GREEN;
-		break;
+			case 2:
+				return COLOR_GREEN;
+			break;
 
-		case 3:
-			return COLOR_BLUE;
-		break;
-		}
-		return COLOR_WHITE;
+			case 3:
+				return COLOR_BLUE;
+			break;
+			}
+			return COLOR_WHITE;
 	}
 
 	bool is_alive() {

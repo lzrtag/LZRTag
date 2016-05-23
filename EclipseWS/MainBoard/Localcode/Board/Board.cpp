@@ -13,8 +13,6 @@ namespace Board {
 
 	uint16_t nozzleDuration = 0;
 
-	uint8_t ISR1aPRESC = 0;
-
 	IRLed outputLED = IRLed();
 
 	namespace Nozzle {
@@ -36,23 +34,12 @@ namespace Board {
 		}
 	}
 
-	namespace IRHandler {
-		void on_receive() {
-		}
-	}
-
 	void ISR1a() {
 		IR::update();
 
 		if(nozzleDuration == 0) {}
 		else if(--nozzleDuration == 0) {
 			Nozzle::off();
-		}
-
-		if(++ISR1aPRESC == 4) {
-			ISR1aPRESC = 0;
-
-			Game::update();
 		}
 	}
 
@@ -61,15 +48,15 @@ namespace Board {
 		TRANSMIT_DDRx 	|= (1<< TRANSMIT_PIN);
 		NOZZLE_DDRx 	|= (COLOR_WHITE);
 
-		DDRD 	|= (0b01101111);	// Initialise inputs
-		PORTD 	|= (0b10010000);	// Init pullups
+		//DDRD 	|= (0b01101111);	// Initialise inputs
+		//PORTD 	|= (0b10010000);	// Init pullups
 
 		// Initialize the TIMER1 for 4kHz ISR
 		Timer1::set_prescaler(TIMER1_PRESC_1);
-		Timer1::set_OCR1A(499);
+		Timer1::set_OCR1A(999);
 		Timer1::set_mode(TIMER1_MODE_CTC);
 
-		IR::init(&RECEIVER_PORTx, RECEIVER_PIN, &outputLED, &IRHandler::on_receive);
+		IR::init(&RECEIVER_PORTx, RECEIVER_PIN, &outputLED, 0);
 
 		sei();
 	}

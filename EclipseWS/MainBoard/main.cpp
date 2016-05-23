@@ -13,12 +13,17 @@
 #include "Libcode/TIMER/Timer0.h"
 #include "Localcode/Board/Board.h"
 
+#include "Localcode/Connector.h"
+
 ISR(TIMER1_COMPA_vect) {
-	Board::ISR1a();
+	Connector::update();
 }
 
 int main() {
-	Board::init();
+
+	Connector::init();
+
+	Game::Player::set_team(1);
 
 	while(true) {
 	}
