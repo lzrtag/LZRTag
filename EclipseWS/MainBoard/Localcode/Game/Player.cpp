@@ -23,6 +23,8 @@ uint8_t ID = 0;
 uint16_t life, lifeRegenTimer;
 uint16_t shield, shieldRegenTimer;
 
+void (*on_death)() = 0;
+
 void set_team(uint8_t team) {
 	ID &= ~(0b11);
 	ID |= team;
@@ -79,6 +81,8 @@ void take_hit(uint8_t hitSignature) {
 			damage -= shield;
 			shield = 0;
 			life = (damage > life ? 0 : life - damage);
+			if(life == 0)
+				on_death();
 		}
 	}
 }
