@@ -13,7 +13,7 @@
 namespace Game {
 	namespace Config {
 		uint8_t gun_cfg();
-		uint8_t game_duration();
+		uint8_t game_duration_cfg();
 		uint8_t player_cfg();
 		bool friendlyfire();
 		bool uses_teams();

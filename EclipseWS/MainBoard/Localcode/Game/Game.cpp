@@ -19,7 +19,7 @@ namespace Game {
 		uint8_t gun_cfg() {
 			return (gamemode & 0b0111100000000000) >> 11;
 		}
-		uint8_t game_duration() {
+		uint8_t game_duration_cfg() {
 			return (gamemode & 0b0000011110000000) >> 7;
 		}
 		uint8_t player_cfg() {
