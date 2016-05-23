@@ -23,8 +23,6 @@ int main() {
 
 	Connector::init();
 
-	Game::Player::set_team(1);
-
 	while(true) {
 	}
 

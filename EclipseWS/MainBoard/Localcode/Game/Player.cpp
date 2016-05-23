@@ -20,8 +20,8 @@ namespace Player {
 
 	uint8_t ID = 0;
 
-	uint16_t life, lifeRegenTimer;
-	uint16_t shield, shieldRegenTimer;
+	uint16_t life = 0xfff0, lifeRegenTimer = 0;
+	uint16_t shield = 0x000f, shieldRegenTimer = 0;
 
 	void (*on_death)() = 0;
 	void (*on_hit)() = 0;
@@ -73,7 +73,7 @@ namespace Player {
 			return;
 		else {
 
-			on_hit();
+			if(on_hit != 0) on_hit();
 
 			lifeRegenTimer = playerLRegenTimerTable[Config::player_cfg()];
 			shieldRegenTimer = playerSRegenTimerTable[Config::player_cfg()];
@@ -88,7 +88,7 @@ namespace Player {
 				shield = 0;
 				life = (damage > life ? 0 : life - damage);
 				if(life == 0)
-					on_death();
+					if(on_death != 0) on_death();
 			}
 		}
 	}
