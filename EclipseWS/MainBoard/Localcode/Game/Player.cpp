@@ -24,6 +24,7 @@ uint16_t life, lifeRegenTimer;
 uint16_t shield, shieldRegenTimer;
 
 void (*on_death)() = 0;
+void (*on_hit)() = 0;
 
 void set_team(uint8_t team) {
 	ID &= ~(0b11);
@@ -68,6 +69,8 @@ void take_hit(uint8_t hitSignature) {
 	else if(!Config::friendlyfire() && (hitSignature & 0b11) == get_team())
 		return;
 	else {
+
+		on_hit();
 
 		lifeRegenTimer = playerLRegenTimerTable[Config::player_cfg()];
 		shieldRegenTimer = playerSRegenTimerTable[Config::player_cfg()];

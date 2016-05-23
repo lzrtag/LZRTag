@@ -18,6 +18,7 @@ namespace Player {
 	extern uint16_t shield, shieldRegenTimer;
 
 	extern void (*on_death)();
+	extern void (*on_hit)();
 
 	uint8_t get_team();
 	uint8_t get_team_color();
