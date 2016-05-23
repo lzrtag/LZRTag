@@ -12,6 +12,8 @@
 
 namespace Game {
 
+	uint32_t gameTimesTable[1] = {600000};
+
 	uint16_t gamemode;
 	uint32_t gameTimer;
 
@@ -33,8 +35,17 @@ namespace Game {
 		}
 	}
 
+	bool is_running() {
+		if(gameTimer > gameTimesTable[Config::game_duration_cfg()])
+			return false;
+		if(gameTimer == 0)
+			return false;
+
+		return true;
+	}
+
 	void update() {
-		gameTimer++;
+		if(gameTimer != 0) gameTimer++;
 
 		Weapon::update();
 		Player::update();
