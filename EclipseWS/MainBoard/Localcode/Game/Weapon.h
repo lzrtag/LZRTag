@@ -14,6 +14,9 @@ namespace Game {
 	namespace Weapon {
 	extern uint16_t ammo, reloadTimer, shotTimer;
 
+	extern void (*on_shot)();
+	extern void (*on_reload)();
+
 	uint8_t damage_from_signature(uint8_t hitSignature);
 
 	bool can_shoot();

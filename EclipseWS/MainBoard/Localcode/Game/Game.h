@@ -18,6 +18,8 @@ namespace Game {
 		bool friendlyfire();
 		bool uses_teams();
 	}
+
+	bool is_running();
 }
 
 #endif /* LOCALCODE_GAME_GAME_H_ */

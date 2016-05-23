@@ -21,6 +21,9 @@ namespace Weapon {
 
 	uint16_t ammo, reloadTimer, shotTimer;
 
+	void (*on_shot)() = 0;
+	void (*on_reload)() = 0;
+
 	uint8_t damage_from_signature(uint8_t hitSignature) {
 		return gunDmgTable[(hitSignature & 0b11110000) >> 4];
 	}
@@ -32,11 +35,17 @@ namespace Weapon {
 	bool shoot() {
 		if(!can_shoot()) return false;
 
+		on_shot();
+
 		ammo--;
 		if(ammo != 0)
 			shotTimer = gunShotDelayTable[Config::gun_cfg()];
-		else
+		else {
+
+			on_reload();
+
 			reloadTimer = gunReloadDelayTable[Config::gun_cfg()];
+		}
 
 		IR::send_8(Player::ID & (Config::gun_cfg() << 4));
 
