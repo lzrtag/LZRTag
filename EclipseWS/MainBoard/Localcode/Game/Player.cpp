@@ -94,8 +94,8 @@ namespace Player {
 	}
 
 	void update() {
-		if(lifeRegenTimer == 0 && life < 0xfff0) life += playerLRegenRateTable[Config::player_cfg()];
-		if(shieldRegenTimer == 0 && shield < 0xfff0) shield += playerSRegenRateTable[Config::player_cfg()];
+		if((lifeRegenTimer == 0) && (life < 0xffff - playerLRegenRateTable[Config::player_cfg()])) life += playerLRegenRateTable[Config::player_cfg()];
+		if((shieldRegenTimer == 0) && (shield < 0xffff - playerSRegenRateTable[Config::player_cfg()])) shield += playerSRegenRateTable[Config::player_cfg()];
 	}
 }
 }

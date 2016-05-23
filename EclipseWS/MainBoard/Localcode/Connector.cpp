@@ -9,8 +9,6 @@
 
 namespace Connector {
 
-
-
 	namespace Effects {
 	void on_shot() {
 		Board::Nozzle::flash(Game::Player::get_team_color());

@@ -37,19 +37,16 @@ namespace Board {
 	void ISR1a() {
 		IR::update();
 
-		if(nozzleDuration == 0) {}
-		else if(--nozzleDuration == 0) {
+		if(nozzleDuration == 1)
 			Nozzle::off();
-		}
+
+		if(nozzleDuration != 0) nozzleDuration--;
 	}
 
 	void init() {
 		TRIGGER_PORTx 	|= (1<< TRIGGER_PIN);
 		TRANSMIT_DDRx 	|= (1<< TRANSMIT_PIN);
 		NOZZLE_DDRx 	|= (COLOR_WHITE);
-
-		//DDRD 	|= (0b01101111);	// Initialise inputs
-		//PORTD 	|= (0b10010000);	// Init pullups
 
 		// Initialize the TIMER1 for 4kHz ISR
 		Timer1::set_prescaler(TIMER1_PRESC_1);
