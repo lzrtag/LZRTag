@@ -21,8 +21,6 @@ int main() {
 	Board::init();
 
 	while(true) {
-		_delay_ms(1000);
-		IR::send_8(0b11001100);
 	}
 
 	return 0;
