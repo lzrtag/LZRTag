@@ -26,7 +26,7 @@ namespace Weapon {
 	}
 
 	bool can_shoot() {
-		return Player::is_alive() && (ammo != 0) && (shotTimer == 0);
+		return Player::is_alive() && (ammo != 0) && (shotTimer == 0) && Game::is_running();
 	}
 
 	bool shoot() {
