@@ -18,9 +18,11 @@ namespace Player {
 	const uint8_t playerLRegenRateTable[1] = 	{10};
 	const uint8_t playerSRegenRateTable[1] = 	{30};
 
+	const uint16_t playerSMaxTable[1] =			{0xffff};
+
 	uint8_t ID = 0;
 
-	uint16_t life = 0xfff0, lifeRegenTimer = 0;
+	uint16_t life = 0xffff, lifeRegenTimer = 0;
 	uint16_t shield = 0x000f, shieldRegenTimer = 0;
 
 	void (*on_death)() = 0;
@@ -62,6 +64,21 @@ namespace Player {
 			return COLOR_WHITE;
 	}
 
+	uint8_t get_life_percent() {
+		return (life / 656);
+	}
+	uint8_t get_shield_percent() {
+		uint16_t divisor = playerSMaxTable[Config::player_cfg()] / 100 + 1;
+		return shield / divisor;
+	}
+
+	bool has_full_life() {
+		return life == 0xffff;
+	}
+	bool has_full_shield() {
+		return shield >= playerSMaxTable[Config::player_cfg()];
+	}
+
 	bool is_alive() {
 		return life != 0;
 	}
@@ -94,8 +111,18 @@ namespace Player {
 	}
 
 	void update() {
-		if((lifeRegenTimer == 0) && (life < 0xffff - playerLRegenRateTable[Config::player_cfg()])) life += playerLRegenRateTable[Config::player_cfg()];
-		if((shieldRegenTimer == 0) && (shield < 0xffff - playerSRegenRateTable[Config::player_cfg()])) shield += playerSRegenRateTable[Config::player_cfg()];
+		if((lifeRegenTimer == 0) && !has_full_life())
+			life = (life > (0xffff - playerLRegenRateTable[Config::player_cfg()])) ?
+					(life + playerLRegenRateTable[Config::player_cfg()]) :
+					(0xffff);
+
+		if((shieldRegenTimer == 0) && !has_full_shield())
+			shield = (shield > (playerSMaxTable[Config::player_cfg()] - playerSRegenRateTable[Config::player_cfg()])) ?
+					(shield + playerSRegenRateTable[Config::player_cfg()]) :
+					(playerSMaxTable[Config::player_cfg()]);
+
+		if(lifeRegenTimer != 0)	lifeRegenTimer--;
+		if(shieldRegenTimer != 0) shieldRegenTimer--;
 	}
 }
 }
