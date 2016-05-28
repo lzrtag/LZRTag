@@ -15,9 +15,9 @@ namespace Game {
 namespace Weapon {
 
 	const uint8_t gunDmgTable[1] = 			{1};
-	const uint16_t gunShotDelayTable[1] = 	{100};
-	const uint16_t gunReloadDelayTable[1] = {900};
-	const uint8_t gunMagSizeTable[1] = 		{2};
+	const uint16_t gunShotDelayTable[1] = 	{200};
+	const uint16_t gunReloadDelayTable[1] = {500};
+	const uint8_t gunMagSizeTable[1] = 		{10};
 
 	uint16_t ammo = 1, reloadTimer = 1, shotTimer = 0;
 

@@ -16,7 +16,7 @@ namespace Game {
 
 	const uint32_t gameTimesTable[1] = {0};
 
-	uint16_t gamemode = 0;
+	uint16_t gamemode = 1;
 	uint32_t gameTimer = 0;
 
 	namespace Config {
