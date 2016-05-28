@@ -50,7 +50,7 @@ namespace Weapon {
 			if(on_reload != 0) on_reload();
 		}
 
-		IR::send_8(Player::ID & (Config::gun_cfg() << 4));
+		IR::send_8(Player::ID | (Config::gun_cfg() << 4));
 
 		return true;
 	}
