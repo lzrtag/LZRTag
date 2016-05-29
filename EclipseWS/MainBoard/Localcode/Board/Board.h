@@ -15,16 +15,18 @@
 #include "../../Libcode/TIMER/Timer1.h"
 #include "../../Libcode/Communication/IR/IR_Handler.h"
 
+#include "Pins.h"
+
 #include "IRLed.h"
 
-#define COLOR_RED 		0b100
-#define COLOR_GREEN		0b010
-#define COLOR_BLUE		0b001
+#define COLOR_RED 		(1<< NOZZLE_R_PIN)
+#define COLOR_GREEN		(1<< NOZZLE_G_PIN)
+#define COLOR_BLUE		(1<< NOZZLE_B_PIN)
 
-#define COLOR_MAGENTA	0b101
-#define COLOR_CYAN		0b011
-#define COLOR_YELLOW	0b110
-#define COLOR_WHITE		0b111
+#define COLOR_MAGENTA	(COLOR_RED | COLOR_BLUE)
+#define COLOR_CYAN		(COLOR_GREEN | COLOR_BLUE)
+#define COLOR_YELLOW	(COLOR_RED | COLOR_GREEN)
+#define COLOR_WHITE		(COLOR_RED | COLOR_GREEN | COLOR_BLUE)
 
 #define DEFAULT_FLASH_LEN 20
 

@@ -19,7 +19,10 @@ namespace Game {
 		bool uses_teams();
 	}
 
+	void start();
+
 	bool is_running();
+	void update();
 }
 
 #endif /* LOCALCODE_GAME_GAME_H_ */
