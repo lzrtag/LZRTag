@@ -48,9 +48,9 @@ namespace Board {
 		TRANSMIT_DDRx 	|= (1<< TRANSMIT_PIN);
 		NOZZLE_DDRx 	|= (COLOR_WHITE);
 
-		// Initialize the TIMER1 for 4kHz ISR
+		// Initialize the TIMER1 for 2kHz ISR
 		Timer1::set_prescaler(TIMER1_PRESC_1);
-		Timer1::set_OCR1A(999);
+		Timer1::set_OCR1A(1999);
 		Timer1::set_mode(TIMER1_MODE_CTC);
 
 		IR::init(&RECEIVER_PORTx, RECEIVER_PIN, &outputLED, 0);

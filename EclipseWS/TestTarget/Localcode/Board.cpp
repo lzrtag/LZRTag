@@ -13,11 +13,11 @@ namespace Board {
 		PORTB 	|= (0b1000);
 
 		TCCR0A |= (1<< WGM01);
-		TCCR0B |= (1<< CS00);
+		TCCR0B |= (1<< CS01);
 
 		TIMSK0 |= (1<< OCIE0A);
 
-		OCR0A = 150 -1;
+		OCR0A = 139 -1;
 
 		sei();
 	}

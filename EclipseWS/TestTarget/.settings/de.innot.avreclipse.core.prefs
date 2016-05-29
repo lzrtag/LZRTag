@@ -1,4 +1,4 @@
-avrtarget/ClockFrequency=1200000
+avrtarget/ClockFrequency=9600000
 avrtarget/ExtRAMSize=0
 avrtarget/ExtendedRAM=false
 avrtarget/MCUType=attiny13

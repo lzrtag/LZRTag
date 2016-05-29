@@ -20,7 +20,7 @@ namespace Connector {
 	void update() {
 		Board::ISR1a();
 
-		if(++ISR1aPRESC == 4) {
+		if(++ISR1aPRESC == 2) {
 			ISR1aPRESC = 0;
 
 			Game::update();
