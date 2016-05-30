@@ -6,9 +6,11 @@
  */
 
 #include "IRLed.h"
+#include "Pins.h"
+
 
 IRLed::IRLed() {
-	DDRD |= (1<< 6);
+	TRANSMIT_DDRx |= (1<< TRANSMIT_PIN);
 
 	// Initialize the TIMER0 for IR-PWM mode
 	Timer0::set_prescaler(TIMER0_PRESC_1);

@@ -6,6 +6,8 @@
  */
 
 #include "Board.h"
+#include "../Game/Game.h"
+
 
 namespace Board {
 
@@ -15,12 +17,12 @@ namespace Board {
 
 	namespace Nozzle {
 		void set(uint8_t color) {
-			PORTD &= ~(0b111);
-			PORTD |= color & 0b111;
+			NOZZLE_PORTx &= ~(COLOR_WHITE);
+			NOZZLE_PORTx |= color;
 		}
 
 		void off() {
-			PORTD &= ~(0b111);
+			NOZZLE_PORTx &= ~(COLOR_WHITE);
 		}
 
 		void flash(uint8_t color) {
@@ -32,32 +34,26 @@ namespace Board {
 		}
 	}
 
-	namespace IRHandler {
-		void on_receive() {
-			if(IR::message == 0b11001100)
-				PORTD |= (2);
-		}
-	}
-
 	void ISR1a() {
 		IR::update();
 
-		if(nozzleDuration == 0) {}
-		else if(--nozzleDuration == 0) {
+		if(nozzleDuration == 1)
 			Nozzle::off();
-		}
+
+		if(nozzleDuration != 0) nozzleDuration--;
 	}
 
 	void init() {
-		DDRD 	|= (0b01101111);	// Initialise inputs
-		PORTD 	|= (0b10010000);	// Init pullups
+		TRIGGER_PORTx 	|= (1<< TRIGGER_PIN);
+		TRANSMIT_DDRx 	|= (1<< TRANSMIT_PIN);
+		NOZZLE_DDRx 	|= (COLOR_WHITE);
 
-		// Initialize the TIMER1 for 4kHz ISR
+		// Initialize the TIMER1 for 2kHz ISR
 		Timer1::set_prescaler(TIMER1_PRESC_1);
-		Timer1::set_OCR1A(499);
+		Timer1::set_OCR1A(1999);
 		Timer1::set_mode(TIMER1_MODE_CTC);
 
-		IR::init(&PORTD, 7, &outputLED, &IRHandler::on_receive);
+		IR::init(&RECEIVER_PORTx, RECEIVER_PIN, &outputLED, 0);
 
 		sei();
 	}
