@@ -17,7 +17,7 @@ namespace Board {
 
 		TIMSK0 |= (1<< OCIE0A);
 
-		OCR0A = 139 -1;
+		OCR0A = 224 -1;
 
 		sei();
 	}
