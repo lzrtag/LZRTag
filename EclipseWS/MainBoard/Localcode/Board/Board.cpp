@@ -12,6 +12,7 @@
 namespace Board {
 
 	uint16_t nozzleDuration = 0;
+	uint16_t vibratorDuration = 0;
 
 	IRLed outputLED = IRLed();
 
@@ -32,15 +33,42 @@ namespace Board {
 			set(color);
 			nozzleDuration = duration;
 		}
+
+		void update() {
+			if(nozzleDuration == 1)
+				Nozzle::off();
+			if(nozzleDuration != 0) nozzleDuration--;
+		}
+	}
+
+	namespace Vibrator {
+
+		void off() {
+			VIBRATOR_PORTx &= ~(1<< VIBRATOR_PIN);
+		}
+
+		void on() {
+			VIBRATOR_PORTx |= (1<< VIBRATOR_PIN);
+		}
+
+		void vibrate(uint16_t duration) {
+			on();
+			vibratorDuration += duration;
+		}
+
+		void update() {
+			if(vibratorDuration == 1)
+				off();
+			if(vibratorDuration != 0)
+				vibratorDuration--;
+		}
 	}
 
 	void ISR1a() {
 		IR::update();
 
-		if(nozzleDuration == 1)
-			Nozzle::off();
-
-		if(nozzleDuration != 0) nozzleDuration--;
+		Nozzle::update();
+		Vibrator::update();
 	}
 
 	void init() {
@@ -48,7 +76,9 @@ namespace Board {
 		TRANSMIT_DDRx 	|= (1<< TRANSMIT_PIN);
 		NOZZLE_DDRx 	|= (COLOR_WHITE);
 
-		// Initialize the TIMER1 for 2kHz ISR
+		VIBRATOR_DDRx 	|= (1<< VIBRATOR_PIN);
+
+		// Initialize the TIMER1 for 1kHz ISR
 		Timer1::set_prescaler(TIMER1_PRESC_1);
 		Timer1::set_OCR1A(3999);
 		Timer1::set_mode(TIMER1_MODE_CTC);

@@ -30,6 +30,11 @@
 #define NOZZLE_PORTx	PORTD
 #define NOZZLE_DDRx		DDRD
 
+#define VIBRATOR_PIN 	5
+#define VIBRATOR_DDRx	DDRD
+#define VIBRATOR_PORTx	PORTD
+
+
 #endif
 
 #endif /* LOCALCODE_BOARD_PINS_H_ */

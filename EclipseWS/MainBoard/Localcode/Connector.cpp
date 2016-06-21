@@ -10,9 +10,11 @@
 namespace Connector {
 
 	namespace Effects {
-	void on_shot() {
-		Board::Nozzle::flash(Game::Player::get_team_color());
-	}
+		void on_shot() {
+			Board::Nozzle::flash(Game::Player::get_team_color());
+
+			Board::Vibrator::vibrate(100);
+		}
 	}
 
 	void update() {

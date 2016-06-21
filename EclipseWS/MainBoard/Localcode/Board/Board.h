@@ -43,6 +43,10 @@ namespace Board {
 		void flash(uint8_t color, uint8_t duration);
 	}
 
+	namespace Vibrator {
+		void vibrate(uint16_t duration);
+	}
+
 	void ISR1a();
 }
 
