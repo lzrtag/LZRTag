@@ -1,21 +1,23 @@
 $fs = 0.8;
 
 module RGB_Led() {
+	
+	sHeight = 15;
 	difference() {
 		union() {
 			children();
 			
-			cylinder(d = 6, h = 10);
+			cylinder(d = 6, h = sHeight);
 		}
 		
-		translate([0, 0, -0.1]) cylinder(d = 5, h = 11);
+		translate([0, 0, -0.1]) cylinder(d = 5, h = sHeight + 1);
 	}
 }
 
 module IR_Shield() {
 	
-	sHeight = 5;
-	fDiam = 1;
+	sHeight = 10;
+	fDiam = 2;
 	
 	$fs = 0.1;
 	
@@ -40,7 +42,7 @@ module IR_Led() {
 			
 			translate([0, 0, 4.9]) IR_Shield();
 		}
-	translate([0, 0, -0.1]) cylinder(d = 3, h = 5.1001);
+	translate([0, 0, -0.1]) cylinder(d = 3.2, h = 5.1001);
 	}
 }
 

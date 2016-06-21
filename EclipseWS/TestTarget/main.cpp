@@ -40,7 +40,7 @@ void on_received() {
 uint8_t sPresc = 1;
 ISR(TIM0_COMPA_vect) {
 	if(--sPresc == 0) {
-		sPresc = 4;
+		sPresc = 5;
 		IR::receive();
 	}
 }

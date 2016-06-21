@@ -15,16 +15,10 @@ namespace Connector {
 	}
 	}
 
-	uint8_t ISR1aPRESC = 0;
-
 	void update() {
 		Board::ISR1a();
 
-		if(++ISR1aPRESC == 2) {
-			ISR1aPRESC = 0;
-
-			Game::update();
-		}
+		Game::update();
 
 		if((TRIGGER_PINx & (1<< TRIGGER_PIN)) != 0)
 			Game::Weapon::shoot();

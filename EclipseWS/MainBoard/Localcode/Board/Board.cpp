@@ -30,7 +30,7 @@ namespace Board {
 		}
 		void flash(uint8_t color, uint8_t duration) {
 			set(color);
-			nozzleDuration = duration * 4;
+			nozzleDuration = duration;
 		}
 	}
 
@@ -50,7 +50,7 @@ namespace Board {
 
 		// Initialize the TIMER1 for 2kHz ISR
 		Timer1::set_prescaler(TIMER1_PRESC_1);
-		Timer1::set_OCR1A(1999);
+		Timer1::set_OCR1A(3999);
 		Timer1::set_mode(TIMER1_MODE_CTC);
 
 		IR::init(&RECEIVER_PORTx, RECEIVER_PIN, &outputLED, 0);
