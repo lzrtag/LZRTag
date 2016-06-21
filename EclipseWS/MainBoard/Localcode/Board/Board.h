@@ -13,6 +13,7 @@
 
 #include "../../Libcode/TIMER/Timer0.h"
 #include "../../Libcode/TIMER/Timer1.h"
+#include "../../Libcode/TIMER/Timer2.h"
 #include "../../Libcode/Communication/IR/IR_Handler.h"
 
 #include "Pins.h"
@@ -45,6 +46,15 @@ namespace Board {
 
 	namespace Vibrator {
 		void vibrate(uint16_t duration);
+	}
+
+	namespace Buzzer {
+		void on();
+		void off();
+
+		void set_frequency(uint16_t);
+
+		void sweep(uint16_t start, uint16_t end, uint16_t duration);
 	}
 
 	void ISR1a();

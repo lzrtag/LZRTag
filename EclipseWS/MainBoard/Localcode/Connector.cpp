@@ -14,6 +14,12 @@ namespace Connector {
 			Board::Nozzle::flash(Game::Player::get_team_color());
 
 			Board::Vibrator::vibrate(100);
+
+			Board::Buzzer::sweep(3000, 500, Game::Weapon::shot_delay() / 2);
+		}
+
+		void on_reload() {
+			Board::Buzzer::sweep(500, 500, 100);
 		}
 	}
 
@@ -30,6 +36,7 @@ namespace Connector {
 		Board::init();
 
 		Game::Weapon::on_shot = &Effects::on_shot;
+		Game::Weapon::on_reload = &Effects::on_reload;
 
 		Game::start();
 	}

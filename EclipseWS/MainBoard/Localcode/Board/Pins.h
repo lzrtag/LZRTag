@@ -34,6 +34,9 @@
 #define VIBRATOR_DDRx	DDRD
 #define VIBRATOR_PORTx	PORTD
 
+#define BUZZER_PIN 		3
+#define BUZZER_DDRx		DDRD
+#define BUZZER_PORTx 	PORTD
 
 #endif
 
