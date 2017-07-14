@@ -19,6 +19,8 @@ namespace Game {
 
 	uint8_t damage_from_signature(uint8_t hitSignature);
 
+	uint16_t shot_delay();
+
 	bool can_shoot();
 
 	bool shoot();
