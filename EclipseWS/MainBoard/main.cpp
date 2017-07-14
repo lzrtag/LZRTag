@@ -25,9 +25,15 @@ int main() {
 
 	Connector::init();
 
-	Game::Player::set_team(3);
+	Game::Player::set_team(2);
 
+	uint8_t i=1;
 	while(true) {
+		if(++i == 4)
+			i = 1;
+		Game::Player::set_team(i);
+
+		_delay_ms(1000);
 	}
 
 	return 0;

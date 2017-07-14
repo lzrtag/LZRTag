@@ -13,13 +13,14 @@ namespace Connector {
 		void on_shot() {
 			Board::Nozzle::flash(Game::Player::get_team_color());
 
-			Board::Vibrator::vibrate(100);
+			if(Game::Weapon::shot_delay() > 100)
+				Board::Vibrator::vibrate(Game::Weapon::shot_delay()/2);
 
-			Board::Buzzer::sweep(3000, 500, Game::Weapon::shot_delay() / 2);
+			Board::Buzzer::sweep(500, 3000, Game::Weapon::shot_delay() / 2);
 		}
 
 		void on_reload() {
-			Board::Buzzer::sweep(500, 500, 100);
+			Board::Buzzer::sweep(500, 500, 10);
 		}
 	}
 
