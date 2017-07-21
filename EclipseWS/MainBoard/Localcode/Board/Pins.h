@@ -24,11 +24,11 @@
 #define RECEIVER_PIN 	7
 #define RECEIVER_PORTx 	PORTD
 
-#define NOZZLE_R_PIN	2
-#define NOZZLE_G_PIN	1
-#define NOZZLE_B_PIN	0
-#define NOZZLE_PORTx	PORTD
-#define NOZZLE_DDRx		DDRD
+#define NOZZLE_R_PIN	1
+#define NOZZLE_G_PIN	2
+#define NOZZLE_B_PIN	3
+#define NOZZLE_PORTx	PORTC
+#define NOZZLE_DDRx		DDRC
 
 #define VIBRATOR_PIN 	5
 #define VIBRATOR_DDRx	DDRD
