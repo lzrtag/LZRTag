@@ -1,4 +1,5 @@
 EESchema Schematic File Version 2
+LIBS:MainBoard-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -789,7 +790,7 @@ U 1 1 596FED2A
 P 1400 3400
 F 0 "C4" H 1425 3500 50  0000 L CNN
 F 1 "CP" H 1425 3300 50  0000 L CNN
-F 2 "" H 1438 3250 50  0001 C CNN
+F 2 "Capacitors_ThroughHole:CP_Radial_D4.0mm_P2.00mm" H 1438 3250 50  0001 C CNN
 F 3 "" H 1400 3400 50  0001 C CNN
 	1    1400 3400
 	1    0    0    -1  
@@ -823,7 +824,7 @@ U 1 1 59700C12
 P 2450 3400
 F 0 "R1" V 2530 3400 50  0000 C CNN
 F 1 "220Ω" V 2450 3400 50  0000 C CNN
-F 2 "" V 2380 3400 50  0001 C CNN
+F 2 "Resistors_ThroughHole:R_Axial_DIN0204_L3.6mm_D1.6mm_P2.54mm_Vertical" V 2380 3400 50  0001 C CNN
 F 3 "" H 2450 3400 50  0001 C CNN
 	1    2450 3400
 	0    1    1    0   
