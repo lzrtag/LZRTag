@@ -1,5 +1,4 @@
 EESchema Schematic File Version 2
-LIBS:MainBoard-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -89,13 +88,9 @@ F 3 "" H 8400 3200 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	7900 3200 8100 3200
+	7900 3200 8300 3200
 Wire Wire Line
-	8100 3200 8300 3200
-Wire Wire Line
-	7900 3000 8100 3000
-Wire Wire Line
-	8100 3000 8300 3000
+	7900 3000 8300 3000
 Wire Wire Line
 	8500 3000 8500 3200
 Wire Wire Line
@@ -131,9 +126,7 @@ F 3 "" H 5200 4800 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5200 4650 5200 4750
-Wire Wire Line
-	5200 4750 5200 4800
+	5200 4650 5200 4800
 Connection ~ 5200 4750
 Wire Wire Line
 	4900 3050 5200 3050
@@ -175,43 +168,7 @@ F 3 "" H 8150 350 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Bus Line
-	7500 1850 7500 2350
-Wire Bus Line
-	7500 2350 7500 2850
-Wire Bus Line
-	7500 2850 7500 2950
-Wire Bus Line
-	7500 2950 7500 3050
-Wire Bus Line
-	7500 3050 7500 3400
-Wire Bus Line
-	7500 3400 7500 3800
-Wire Bus Line
-	7500 3800 7500 3900
-Wire Bus Line
-	7500 3900 7500 4000
-Wire Bus Line
-	7500 4000 7500 4150
-Wire Bus Line
-	7500 4150 7500 4250
-Wire Bus Line
-	7500 4250 7500 4350
-Wire Bus Line
-	7500 4350 7500 4450
-Wire Bus Line
-	7500 4450 7500 4550
-Wire Bus Line
-	7500 4550 7500 4650
-Wire Bus Line
-	7500 4650 7500 4750
-Wire Bus Line
-	7500 4750 7500 5200
-Wire Bus Line
-	7500 5200 7500 5700
-Wire Bus Line
-	7500 5700 7500 5800
-Wire Bus Line
-	7500 5800 7500 5900
+	7500 1850 7500 5900
 Wire Wire Line
 	7900 1450 7700 1450
 Wire Wire Line
@@ -233,11 +190,7 @@ Entry Wire Line
 Entry Wire Line
 	8500 1550 8600 1650
 Wire Bus Line
-	7600 1550 7600 1650
-Wire Bus Line
-	7600 1650 7600 1750
-Wire Bus Line
-	7600 1750 7600 1850
+	7600 1550 7600 1850
 Wire Bus Line
 	8600 1850 7500 1850
 Wire Bus Line
@@ -366,11 +319,7 @@ F 3 "" H 2100 3400 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	2000 3600 2000 3650
-Wire Wire Line
-	2000 3650 2000 3900
-Wire Wire Line
-	2000 3900 2000 4200
+	2000 3600 2000 4200
 Connection ~ 2000 3900
 $Comp
 L R_Small R3
@@ -411,34 +360,6 @@ Wire Wire Line
 	2600 3900 2700 3900
 Wire Wire Line
 	2600 4100 2700 4100
-$Comp
-L GND #PWR07
-U 1 1 572D7F60
-P 8300 3600
-F 0 "#PWR07" H 8300 3350 50  0001 C CNN
-F 1 "GND" H 8300 3450 50  0000 C CNN
-F 2 "" H 8300 3600 50  0000 C CNN
-F 3 "" H 8300 3600 50  0000 C CNN
-	1    8300 3600
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	8400 3700 8400 3600
-Wire Wire Line
-	8400 3600 8300 3600
-$Comp
-L +3.3V #PWR08
-U 1 1 572D9157
-P 8100 3800
-F 0 "#PWR08" H 8100 3650 50  0001 C CNN
-F 1 "+3.3V" H 8100 3940 50  0000 C CNN
-F 2 "" H 8100 3800 50  0000 C CNN
-F 3 "" H 8100 3800 50  0000 C CNN
-	1    8100 3800
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	8100 3800 8400 3800
 $Comp
 L R_Small R6
 U 1 1 572DCB6A
@@ -487,8 +408,6 @@ Entry Wire Line
 	7400 4050 7500 4150
 Entry Wire Line
 	7400 4150 7500 4250
-Entry Wire Line
-	7400 4250 7500 4350
 Entry Wire Line
 	7400 3300 7500 3400
 Text Label 7150 3300 0    60   ~ 0
@@ -671,11 +590,7 @@ $EndComp
 Wire Wire Line
 	5700 5600 5450 5600
 Wire Wire Line
-	5450 5600 5450 5900
-Wire Wire Line
-	5450 5900 5450 6350
-Wire Wire Line
-	5450 6350 5450 6400
+	5450 5600 5450 6400
 Wire Wire Line
 	5450 5900 5500 5900
 Wire Wire Line
@@ -789,9 +704,7 @@ F 3 "" H 9500 1100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9400 1000 9500 1000
-Wire Wire Line
-	9500 1000 9600 1000
+	9400 1000 9600 1000
 $Comp
 L GND #PWR017
 U 1 1 595B47CF
@@ -815,28 +728,6 @@ F 3 "" H 9600 1100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Connection ~ 9500 1000
-$Comp
-L R_Small R10
-U 1 1 595B61BF
-P 9500 1950
-F 0 "R10" H 9530 1970 50  0001 L CNN
-F 1 "RST" H 9530 1910 50  0001 L CNN
-F 2 "Resistors_ThroughHole:R_Axial_DIN0204_L3.6mm_D1.6mm_P2.54mm_Vertical" H 9500 1950 50  0001 C CNN
-F 3 "" H 9500 1950 50  0001 C CNN
-	1    9500 1950
-	1    0    0    -1  
-$EndComp
-$Comp
-L +3.3V #PWR018
-U 1 1 595BB768
-P 9500 2050
-F 0 "#PWR018" H 9500 1900 50  0001 C CNN
-F 1 "+3.3V" H 9500 2190 50  0000 C CNN
-F 2 "" H 9500 2050 50  0001 C CNN
-F 3 "" H 9500 2050 50  0001 C CNN
-	1    9500 2050
-	-1   0    0    1   
-$EndComp
 $Comp
 L C C3
 U 1 1 595C0FD8
@@ -880,9 +771,7 @@ A>E
 Text Label 7400 4050 2    60   ~ 0
 E>A
 Wire Wire Line
-	2000 2800 2000 2750
-Wire Wire Line
-	2000 2750 2000 2550
+	2000 2550 2000 2800
 $Comp
 L +3.3V #PWR?
 U 1 1 596FE8E8
@@ -955,4 +844,16 @@ Text Label 9400 2000 1    60   ~ 0
 A>E
 Text Label 9700 1150 0    60   ~ 0
 E>A
+Wire Wire Line
+	8400 5200 7650 5200
+Text Label 7650 5200 0    60   ~ 0
+MOSI
+Text Label 7650 5300 0    60   ~ 0
+MISO
+Text Label 7650 5400 0    60   ~ 0
+SCK
+Wire Wire Line
+	8400 5300 7650 5300
+Wire Wire Line
+	8400 5400 7650 5400
 $EndSCHEMATC
