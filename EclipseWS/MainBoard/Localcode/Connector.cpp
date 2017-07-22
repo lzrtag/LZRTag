@@ -16,11 +16,11 @@ namespace Connector {
 			if(Game::Weapon::shot_delay() > 100)
 				Board::Vibrator::vibrate(Game::Weapon::shot_delay()/2);
 
-			Board::Buzzer::sweep(500, 3000, Game::Weapon::shot_delay() / 2);
+			//Board::Buzzer::sweep(500, 3000, Game::Weapon::shot_delay() / 2);
 		}
 
 		void on_reload() {
-			Board::Buzzer::sweep(500, 500, 10);
+			Board::Buzzer::sweep(100, 3000, 100);
 		}
 	}
 
@@ -38,7 +38,5 @@ namespace Connector {
 
 		Game::Weapon::on_shot = &Effects::on_shot;
 		Game::Weapon::on_reload = &Effects::on_reload;
-
-		Game::start();
 	}
 }
