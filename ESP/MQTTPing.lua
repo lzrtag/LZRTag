@@ -1,16 +1,25 @@
 
-subscribeTo("SYS/PING/"..clientID, 0,
+pingTopic = playerTopic .. "/Connection"
+sysInfoTopic = playerTopic .. "/System"
+
+currentPing = 1000000;
+
+subscribeTo(pingTopic .. "/PingOut", 0,
 	function(tList, data)
-		print("Received ping!");
-		homeQTT:publish("SYS/PING/"..clientID.. "/REPORT", tmr.now() - data, 1, 0);
+		currentPing = tmr.now() - tonumber(data);
+
+		homeQTT:publish(sysInfoTopic, sjson.encode(
+			{	heap = node.heap(),
+				battery = adc.readvdd33(0),
+				ping = currentPing,
+				sigStrength = wifi.sta.getrssi()}), 0, 0);
 	end
 );
 
-tmr.create():alarm(3000, tmr.ALARM_AUTO,
+tmr.create():alarm(10000, tmr.ALARM_AUTO,
 	function()
 		if(homeQTT_connected) then
-			homeQTT:publish("SYS/PING/"..clientID, tmr.now(), 0, 0);
-			homeQTT:publish("SYS/PING/"..clientID.."/SIGNAL", wifi.sta.getrssi(), 0, 0);
+			homeQTT:publish(pingTopic .. "/PingOut", tmr.now(), 0, 0);
 		end
 	end
 );

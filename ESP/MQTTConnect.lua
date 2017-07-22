@@ -1,9 +1,14 @@
-playerID = "Xasin";
 clientID = "Lasertag_"..playerID
 
-homeQTT = mqtt.Client(clientID, 10, "Internal", "internal", 0);
+serverURL = "iot.eclipse.org" --"xasin.hopto.org"
+
+
+--homeQTT = mqtt.Client(clientID, 10, "Internal", "internal", 0);
+homeQTT = mqtt.Client(clientID, 120);
 
 homeQTT_connected = false;
+
+homeQTT_FirstConnect = nil;
 
 homeQTT:on("offline",
 function(client)
@@ -19,9 +24,13 @@ function mqtt_Connect()
 	if(homeQTT_connected) then
 		return;
 	end
-	homeQTT:connect("xasin.hopto.org",
+	homeQTT:connect(serverURL,
 		function(client)
-			homeQTT_connected = true
+			homeQTT_connected = true;
+			if(homeQTT_FirstConnect) then
+				homeQTT_FirstConnect();
+				homeQTT_FirstConnect = nil;
+			end
 		end,
 		function(client, reason)
 			homeQTT_connected = false;
@@ -38,6 +47,16 @@ wifi.eventmon.register(wifi.eventmon.STA_GOT_IP,
 	end
 );
 
-mqtt_Connect();
+if(wifi.sta.getip()) then
+	mqtt_Connect();
+end
+
+function onMQTTConnect(cbFunc)
+	if(homeQTT_connected) then
+		cbFunc();
+	else
+		homeQTT_FirstConnect = cbFunc;
+	end
+end
 
 dofile("MQTTTools.lua");
