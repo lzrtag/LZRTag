@@ -25,8 +25,6 @@ ISR(USART_RX_vect) {
 		if(rData == START_CHAR) {
 			RXStatus = RX_COMMAND;
 			UDR0 = START_CHAR;
-
-			PORTC |= (2);
 		}
 	break;
 

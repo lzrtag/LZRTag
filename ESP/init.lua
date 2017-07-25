@@ -1,4 +1,6 @@
-playerID = "Xasin";
+
+dofile("PlayerData.lua");
+
 playerTopic = "Lasertag/Players/"..playerID..""
 
 dofile("MQTTConnect.lua");

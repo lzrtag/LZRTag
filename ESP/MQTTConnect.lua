@@ -1,9 +1,7 @@
 clientID = "Lasertag_"..playerID
 
-serverURL = "iot.eclipse.org" --"xasin.hopto.org"
+serverURL = "iot.eclipse.org"
 
-
---homeQTT = mqtt.Client(clientID, 10, "Internal", "internal", 0);
 homeQTT = mqtt.Client(clientID, 120);
 
 homeQTT_connected = false;

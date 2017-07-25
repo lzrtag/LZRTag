@@ -25,14 +25,14 @@ ISR(TIMER1_COMPA_vect) {
 
 uint8_t dbgColor = 0;
 void setColor() {
-	PORTC &= ~(0b111 << 1);
-	PORTC |= (dbgColor & 0b111) << 1;
+	PORTB &= ~(0b111 << PB3);
+	PORTB |= (dbgColor & 0b111) << PB3;
 }
 ESPComs::Endpoint DebugEndpoint(100, &dbgColor, 1, setColor);
 
 uint8_t pingFreq = 0;
 void playPing() {
-	Board::Buzzer::sweep(pingFreq*50, pingFreq*50, 10);
+	Board::Buzzer::sweep(pingFreq*50, pingFreq*50, 20);
 }
 ESPComs::Endpoint PingEndpoint(99, &pingFreq, 1, playPing);
 
@@ -41,6 +41,8 @@ int main() {
 	ESPComs::init();
 
 	Connector::init();
+
+	DDRB |= (0b111 << PB3);
 
 	while(true) {
 	}
