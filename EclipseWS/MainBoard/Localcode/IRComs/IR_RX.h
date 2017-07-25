@@ -11,8 +11,19 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include "IR.h"
+
 namespace IR {
 namespace RX {
+
+extern void (*RXCallback)();
+
+enum RXStates {
+	RX_IDLE,
+	RX_START,
+	RX_DATA,
+	RX_CHECKSUM
+};
 
 void adjustTiming();
 void update();
