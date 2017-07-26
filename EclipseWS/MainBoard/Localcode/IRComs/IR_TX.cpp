@@ -77,14 +77,5 @@ void update() {
 	}
 }
 
-void init() {
-	OCR0A = IR_TICKS - 1;
-
-	// Fast-PWM with OCR0A as TOP, OC0A toggle at match.
-	TCCR0A |= (1<< COM0A0 | 1<< WGM01 | 1<< WGM00);
-	// Clock-Prescaler to 1
-	TCCR0B |= (1<< WGM02 | 1<< CS00);
-}
-
 }
 }

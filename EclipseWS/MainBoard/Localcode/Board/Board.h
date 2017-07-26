@@ -14,7 +14,6 @@
 #include "../../Libcode/TIMER/Timer0.h"
 #include "../../Libcode/TIMER/Timer1.h"
 #include "../../Libcode/TIMER/Timer2.h"
-#include "../../Libcode/Communication/IR/IR_Handler.h"
 
 #include "Pins.h"
 

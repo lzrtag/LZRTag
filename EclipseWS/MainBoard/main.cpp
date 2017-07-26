@@ -17,15 +17,15 @@
 
 #include "Localcode/Game/Player.h"
 
-ISR(TIMER1_COMPA_vect) {
-	Connector::update();
-}
+#include "Localcode/IRComs/IR.h"
 
 int main() {
 
 	Connector::init();
 
 	Game::Player::set_team(2);
+
+	IR::init(Connector::update);
 
 	uint8_t i=1;
 	while(true) {

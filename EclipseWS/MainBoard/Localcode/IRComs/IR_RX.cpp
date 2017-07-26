@@ -94,16 +94,5 @@ void update() {
 	}
 }
 
-void init() {
-	// Pull-Up on ICP1
-	PORTB |= (1);
-
-	OCR1A = FRAME_TICKS -1;
-
-	// Initialize the Input Capture event - Noise Canceler on, Falling Edge. CTC with OCR1A as TOP, no prescaler.
-	TCCR1B 	|= (1<< ICNC1 | 1<< WGM12 | 1<<CS10);
-	TIMSK1 	|= (1<< ICIE1);
-}
-
 }
 }

@@ -36,6 +36,8 @@ struct ShotPacket {
 	uint8_t shotID;
 };
 
+void init(void (*msCallback)());
+
 }
 
 #endif /* LOCALCODE_IRCOMS_IR_H_ */
