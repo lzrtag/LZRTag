@@ -16,14 +16,7 @@
 namespace IR {
 namespace RX {
 
-extern void (*RXCallback)();
-
-enum RXStates {
-	RX_IDLE,
-	RX_START,
-	RX_DATA,
-	RX_CHECKSUM
-};
+extern void (*RXCallback)(ShotPacket data);
 
 void adjustTiming();
 void update();

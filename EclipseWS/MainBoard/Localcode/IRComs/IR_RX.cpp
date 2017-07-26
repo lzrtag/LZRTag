@@ -10,9 +10,9 @@
 namespace IR {
 namespace RX {
 
-void (* RXCallback)() = 0;
+void (* RXCallback)(ShotPacket rxData) = 0;
 
-RXStates 	RXState 		= RX_IDLE;
+IRStates 	RXState 		= IDLE;
 uint8_t 	segmentPosition = 0;
 uint16_t 	data			= 0;
 uint8_t 	checksum		= 0;
@@ -30,31 +30,31 @@ ISR(TIMER1_COMPB_vect) {
 }
 
 void startRX() {
-	RXState = RX_START;
+	RXState = START;
 	TIMSK1 |= (1<< OCIE2B);
 }
 void stopRX() {
 	TIMSK1 &= ~(1<< OCIE2B);
 
-	RXState = RX_IDLE;
+	RXState = IDLE;
 	segmentPosition = 0;
 	data			= 0;
 	checksum		= CHECKSUM_START_VAL;
 }
 
 void adjustTiming() {
-	if(RXState == RX_IDLE) {
+	if(RXState == IDLE) {
 		startRX();
 	}
-	// Adjust the frame timing a little forwards to re-synch with the signal - compensating for the Capture Noise Canceling, of course.
+	// Adjust the frame timing a little forwards to re-synch with the signal
 	OCR1B = ICR1 + (ICR1 < FRAME_TICKS/2 ? FRAME_TICKS/2 : -FRAME_TICKS/2);
 }
 
 void update() {
 	switch(RXState) {
-	case RX_IDLE: stopRX(); break;
+	case IDLE: stopRX(); break;
 
-	case RX_START:
+	case START:
 		if(getPinRX() != ((START_BITS >> (segmentPosition++)) & 1) ) {
 			stopRX();
 			return;
@@ -62,11 +62,11 @@ void update() {
 
 		if(segmentPosition == START_FRAMES) {
 			segmentPosition = 0;
-			RXState = RX_DATA;
+			RXState = DATA;
 		}
 	break;
 
-	case RX_DATA:
+	case DATA:
 		if(getPinRX()) {
 			data |= (1<< segmentPosition);
 			checksum++;
@@ -75,11 +75,11 @@ void update() {
 
 		if(segmentPosition == DATA_BITS) {
 			segmentPosition = 0;
-			RXState = RX_CHECKSUM;
+			RXState = CHECKSUM;
 		}
 	break;
 
-	case RX_CHECKSUM:
+	case CHECKSUM:
 		if(getPinRX() != ((checksum >> (segmentPosition++)) & 1) ) {
 			stopRX();
 			return;
@@ -87,7 +87,7 @@ void update() {
 
 		if(segmentPosition == CHECKSUM_FRAMES) {
 			if(RXCallback != 0)
-				RXCallback();
+				RXCallback(*(ShotPacket *)&data);
 			stopRX();
 		}
 	break;
