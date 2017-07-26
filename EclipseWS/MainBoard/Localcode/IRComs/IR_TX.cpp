@@ -10,7 +10,7 @@
 namespace IR {
 namespace TX {
 
-IRStates TXState = IDLE;
+IRStates 	TXState = IDLE;
 uint8_t 	segmentPosition = 0;
 uint16_t 	data			= 0;
 uint8_t 	checksum		= CHECKSUM_START_VAL;
@@ -23,14 +23,13 @@ void setIRLED(bool state) {
 }
 
 void startTX(ShotPacket TXData) {
+	if(TXState != IDLE)
+		return;
+
 	data = *(uint16_t *)&TXData;
 	TXState = START;
-
-	TIMSK1 |= (1<< OCIE1A);
 }
 void stopTX() {
-	TIMSK1 &= ~(1<< OCIE1A);
-
 	setIRLED(false);
 
 	TXState = IDLE;
@@ -43,7 +42,7 @@ void stopTX() {
 
 void update() {
 	switch(TXState) {
-	case IDLE: stopTX(); break;
+	case IDLE: break;
 
 	case START:
 		setIRLED((START_BITS >> (segmentPosition++)) & 1);
@@ -78,6 +77,14 @@ void update() {
 	}
 }
 
+void init() {
+	OCR0A = IR_TICKS - 1;
+
+	// Fast-PWM with OCR0A as TOP, OC0A toggle at match.
+	TCCR0A |= (1<< COM0A0 | 1<< WGM01 | 1<< WGM00);
+	// Clock-Prescaler to 1
+	TCCR0B |= (1<< WGM02 | 1<< CS00);
+}
 
 }
 }

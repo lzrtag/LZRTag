@@ -9,7 +9,7 @@
 #define LOCALCODE_IRCOMS_IR_H_
 
 #define F_IR 40000
-#define F_FRAME F_IR/20
+#define F_FRAME 2000
 
 #define IR_TICKS F_CPU/F_IR
 #define FRAME_TICKS F_CPU/F_FRAME

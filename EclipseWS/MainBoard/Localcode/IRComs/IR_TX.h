@@ -15,7 +15,7 @@
 namespace IR {
 namespace TX {
 
-
+void startTX(ShotPacket TXData);
 void update();
 
 }
