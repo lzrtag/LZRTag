@@ -20,10 +20,6 @@
 #include "Localcode/IRComs/IR.h"
 #include "Localcode/ESPComs/ESPUART.h"
 
-ISR(TIMER1_COMPA_vect) {
-	Connector::update();
-}
-
 uint8_t dbgColor = 0;
 void setColor() {
 	PORTB &= ~(0b111 << PB3);
