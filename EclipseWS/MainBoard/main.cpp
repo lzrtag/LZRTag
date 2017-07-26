@@ -18,23 +18,36 @@
 #include "Localcode/Game/Player.h"
 
 #include "Localcode/IRComs/IR.h"
+#include "Localcode/ESPComs/ESPUART.h"
+
+ISR(TIMER1_COMPA_vect) {
+	Connector::update();
+}
+
+uint8_t dbgColor = 0;
+void setColor() {
+	PORTB &= ~(0b111 << PB3);
+	PORTB |= (dbgColor & 0b111) << PB3;
+}
+ESPComs::Endpoint DebugEndpoint(100, &dbgColor, 1, setColor);
+
+uint8_t pingFreq = 0;
+void playPing() {
+	Board::Buzzer::sweep(pingFreq*50, pingFreq*50, 20);
+}
+ESPComs::Endpoint PingEndpoint(99, &pingFreq, 1, playPing);
 
 int main() {
+	_delay_ms(2000);
+	ESPComs::init();
 
 	Connector::init();
 
-	Game::Player::set_team(2);
+	DDRB |= (0b111 << PB3);
 
 	IR::init(Connector::update);
-
-	uint8_t i=1;
-	while(true) {
-		if(++i == 4)
-			i = 1;
-		Game::Player::set_team(i);
-
-		_delay_ms(1000);
+	
+  while(true) {
 	}
-
 	return 0;
 }
