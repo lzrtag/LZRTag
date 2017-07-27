@@ -56,8 +56,6 @@ void adjustTiming() {
 }
 
 void update() {
-	DDRC ^= 1;
-
 	bool RXInput = getPinRX();
 
 	switch(RXState) {
