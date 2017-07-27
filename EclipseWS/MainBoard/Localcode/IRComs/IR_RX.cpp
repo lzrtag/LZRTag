@@ -7,8 +7,6 @@
 
 #include "IR_RX.h"
 
-#define DBG_CLR(clr) PORTC &= ~(0b111 << 1); PORTC |= (clr << 1);
-
 namespace IR {
 namespace RX {
 
@@ -68,7 +66,6 @@ void update() {
 	case START:
 		if(RXInput != ((START_BITS >> (segmentPosition)) & 1) ) {
 			stopRX();
-			DBG_CLR(1);
 			return;
 		}
 		segmentPosition++;
@@ -98,13 +95,11 @@ void update() {
 	case CHECKSUM:
 		if(RXInput != ((checksum >> (segmentPosition)) & 1) ) {
 			stopRX();
-			DBG_CLR(4);
 			return;
 		}
 		segmentPosition++;
 
 		if(segmentPosition == CHECKSUM_FRAMES) {
-			DBG_CLR(2);
 			stopRX();
 		}
 	break;
