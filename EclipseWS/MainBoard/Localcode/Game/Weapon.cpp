@@ -51,8 +51,6 @@ namespace Weapon {
 		if(ammo != 0)
 			shotTimer = gunShotDelayTable[Config::gun_cfg()];
 
-		IR::send_8(Player::ID | (Config::gun_cfg() << 4));
-
 		return true;
 	}
 
