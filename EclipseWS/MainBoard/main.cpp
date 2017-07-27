@@ -17,7 +17,11 @@
 
 #include "Localcode/Game/Player.h"
 
-#include "Localcode/IRComs/IR.h"
+
+#include "Localcode/IRComs/IR_RX.h"
+#include "Localcode/IRComs/IR_TX.h"
+
+
 #include "Localcode/ESPComs/ESPUART.h"
 
 uint8_t dbgColor = 0;
@@ -33,17 +37,27 @@ void playPing() {
 }
 ESPComs::Endpoint PingEndpoint(99, &pingFreq, 1, playPing);
 
+void IRRXCB(IR::ShotPacket data) {
+	dbgColor = data.playerID;
+	setColor();
+}
+
 int main() {
 	_delay_ms(2000);
 	ESPComs::init();
 
-	Connector::init();
-
 	DDRB |= (0b111 << PB3);
+
+	Connector::init();
 
 	IR::init(Connector::update);
 	
-  while(true) {
+	IR::RX::setCallback(IRRXCB);
+
+	uint8_t i = 0;
+	while(true) {
+		_delay_ms(100);
+		IR::TX::startTX({i++, 0});
 	}
 	return 0;
 }

@@ -17,8 +17,6 @@
 
 #include "Pins.h"
 
-#include "IRLed.h"
-
 #define COLOR_RED 		(1<< NOZZLE_R_PIN)
 #define COLOR_GREEN		(1<< NOZZLE_G_PIN)
 #define COLOR_BLUE		(1<< NOZZLE_B_PIN)

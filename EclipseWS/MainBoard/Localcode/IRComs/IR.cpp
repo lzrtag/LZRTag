@@ -36,11 +36,12 @@ void init(void (*msCallback)()) {
 
 	// Pull-Up on ICP1
 	PORTB |= (1);
+	DDRB &=  ~(1);
 
 	OCR1A = FRAME_TICKS -1;
 
 	// Initialize the Input Capture event - Noise Canceler on, Falling Edge. CTC with OCR1A as TOP, no prescaler.
-	TCCR1B 	|= (1<< ICNC1 | 1<< WGM12 | 1<<CS10);
+	TCCR1B 	|= (1<< ICNC1 | 1<< WGM12 | 1<< CS10);
 	TIMSK1 	|= (1<< ICIE1 | 1<< OCIE1A);
 
 	millisecCallback = msCallback;

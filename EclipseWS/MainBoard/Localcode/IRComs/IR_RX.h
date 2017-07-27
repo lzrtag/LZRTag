@@ -23,6 +23,8 @@ void update();
 
 void init();
 
+void setCallback(void (*callback)(ShotPacket data));
+
 }
 }
 

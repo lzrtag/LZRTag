@@ -7,6 +7,8 @@
 
 #include "IR_TX.h"
 
+#include <util/delay.h>
+
 namespace IR {
 namespace TX {
 
@@ -47,7 +49,7 @@ void update() {
 	case START:
 		setIRLED((START_BITS >> (segmentPosition++)) & 1);
 
-		if(segmentPosition == START_FRAMES) {
+		if(segmentPosition >= START_FRAMES) {
 			segmentPosition = 0;
 			TXState = DATA;
 		}
@@ -61,7 +63,7 @@ void update() {
 		else
 			setIRLED(false);
 
-		if(segmentPosition == DATA_BITS) {
+		if(segmentPosition >= DATA_BITS) {
 			segmentPosition = 0;
 
 			TXState = CHECKSUM;
@@ -69,10 +71,13 @@ void update() {
 	break;
 
 	case CHECKSUM:
-		if(segmentPosition == CHECKSUM_FRAMES)
+		if(segmentPosition >= CHECKSUM_FRAMES) {
 			stopTX();
+			return;
+		}
 
-		setIRLED((checksum >> (segmentPosition++)) & 1);
+		setIRLED((checksum >> (segmentPosition)) & 1);
+		segmentPosition++;
 	break;
 	}
 }

@@ -10,8 +10,6 @@
 
 
 namespace Board {
-	IRLed outputLED = IRLed();
-
 	namespace Nozzle {
 		uint16_t nozzleDuration = 0;
 
@@ -111,7 +109,6 @@ namespace Board {
 
 	void init() {
 		TRIGGER_PORTx 	|= (1<< TRIGGER_PIN);
-		TRANSMIT_DDRx 	|= (1<< TRANSMIT_PIN);
 		NOZZLE_DDRx 	|= (COLOR_WHITE);
 		VIBRATOR_DDRx 	|= (1<< VIBRATOR_PIN);
 		BUZZER_DDRx 	|= (1<< BUZZER_PIN);

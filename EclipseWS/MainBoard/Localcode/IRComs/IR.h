@@ -14,8 +14,8 @@
 #define IR_TICKS F_CPU/F_IR
 #define FRAME_TICKS F_CPU/F_FRAME
 
-#define START_FRAMES 	5
-#define START_BITS 		0b10111
+#define START_FRAMES 	7
+#define START_BITS 		0b1110111
 
 #define DATA_BITS 		12
 
