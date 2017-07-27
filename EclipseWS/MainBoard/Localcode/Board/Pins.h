@@ -10,25 +10,27 @@
 
 #define PROTOTYPE_1_BOARD
 
-
 #ifdef PROTOTYPE_1_BOARD
 
-#define TRIGGER_PIN 	4
+#define TRIGGER_PIN 		4
 #define TRIGGER_PINx 	PIND
 #define TRIGGER_PORTx	PORTD
 
-#define TRANSMIT_PIN	6
-#define TRANSMIT_PORTx	PORTD
+#define TRANSMIT_PIN		6
 #define TRANSMIT_DDRx	DDRD
 
-#define RECEIVER_PIN 	7
-#define RECEIVER_PORTx 	PORTD
+#define RECEIVER_PIN 	PB0
+#define RECEIVER_PORTx 	PORTB
 
-#define NOZZLE_R_PIN	1
-#define NOZZLE_G_PIN	2
-#define NOZZLE_B_PIN	3
-#define NOZZLE_PORTx	PORTC
+#define NOZZLE_R_PIN		1
+#define NOZZLE_G_PIN		2
+#define NOZZLE_B_PIN		3
+#define NOZZLE_PORTx		PORTC
 #define NOZZLE_DDRx		DDRC
+
+#define VEST_PORTX		PORTB
+#define VEST_DDRx			DDRB
+#define VEST_R_PIN		PB3
 
 #define VIBRATOR_PIN 	5
 #define VIBRATOR_DDRx	DDRD

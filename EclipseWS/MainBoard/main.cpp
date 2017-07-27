@@ -46,12 +46,8 @@ int main() {
 	_delay_ms(2000);
 	ESPComs::init();
 
-	DDRB |= (0b111 << PB3);
-
 	Connector::init();
 
-	IR::init(Connector::update);
-	
 	IR::RX::setCallback(IRRXCB);
 
 	uint8_t i = 0;

@@ -99,8 +99,6 @@ namespace Board {
 		}
 	}
 
-
-
 	void ISR1a() {
 		Nozzle::update();
 		Vibrator::update();
@@ -112,6 +110,10 @@ namespace Board {
 		NOZZLE_DDRx 	|= (COLOR_WHITE);
 		VIBRATOR_DDRx 	|= (1<< VIBRATOR_PIN);
 		BUZZER_DDRx 	|= (1<< BUZZER_PIN);
+
+		VEST_DDRx		|= (0b111 << VEST_R_PIN);
+
+		IR::init(Connector::update);
 
 		// Initialize the TIMER2 for Buzzer PWM
 		Timer2::set_prescaler(TIMER2_PRESC_32);
