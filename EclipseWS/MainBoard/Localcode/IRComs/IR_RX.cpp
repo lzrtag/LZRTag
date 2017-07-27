@@ -45,14 +45,14 @@ void stopRX() {
 
 void adjustTiming() {
 	if(RXState == IDLE) {
-		// Adjust the frame timing a little forwards to re-synch with the signal
-		uint16_t tempOCR1B = ICR1 + 2*FRAME_TICKS/4;
-		if(tempOCR1B >= FRAME_TICKS)
-			tempOCR1B -= FRAME_TICKS;
-		OCR1B = tempOCR1B;
-
 		startRX();
 	}
+
+	// Adjust the frame timing a little forwards to re-synch with the signal
+	uint16_t tempOCR1B = ICR1 + FRAME_TICKS/4;
+	if(tempOCR1B >= FRAME_TICKS)
+		tempOCR1B -= FRAME_TICKS;
+	OCR1B = tempOCR1B;
 }
 
 void update() {
