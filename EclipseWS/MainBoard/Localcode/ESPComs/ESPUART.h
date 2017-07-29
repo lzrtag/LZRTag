@@ -12,6 +12,7 @@
 #include <avr/interrupt.h>
 
 #include "Endpoint.h"
+#include "Source.h"
 
 namespace ESPComs {
 
@@ -26,10 +27,11 @@ enum RXStates {
 
 enum TXStates {
 	WAIT_FOR_START_TX,
-	TX_COMMAND,
-	TX_DATA
+	TX_IDLE,
+	TX_SENDING,
 };
 
+bool tryToStart(Source * txSource);
 void init();
 
 } /* namespace ESPComs */
