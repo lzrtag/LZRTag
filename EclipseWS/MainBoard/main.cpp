@@ -39,7 +39,6 @@ ESPComs::Endpoint PingEndpoint(99, &pingFreq, 1, playPing);
 
 void IRRXCB(IR::ShotPacket data) {
 	dbgColor = data.playerID;
-	setColor();
 }
 
 int main() {
@@ -52,8 +51,6 @@ int main() {
 
 	uint8_t i = 0;
 	while(true) {
-		_delay_ms(100);
-		IR::TX::startTX({i++, 0});
 	}
 	return 0;
 }
