@@ -49,7 +49,6 @@ int main() {
 
 	IR::RX::setCallback(IRRXCB);
 
-	uint8_t i = 0;
 	while(true) {
 	}
 	return 0;
