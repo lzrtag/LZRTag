@@ -44,15 +44,15 @@ void stopRX() {
 }
 
 void adjustTiming() {
-	if(RXState == IDLE) {
-		startRX();
-	}
-
 	// Adjust the frame timing a little forwards to re-synch with the signal
 	uint16_t tempOCR1B = ICR1 + FRAME_TICKS/4;
 	if(tempOCR1B >= FRAME_TICKS)
 		tempOCR1B -= FRAME_TICKS;
 	OCR1B = tempOCR1B;
+
+	if(RXState == IDLE) {
+		startRX();
+	}
 }
 
 void update() {
@@ -84,9 +84,6 @@ void update() {
 		if(segmentPosition == DATA_BITS) {
 			segmentPosition = 0;
 			RXState = CHECKSUM;
-
-			if(RXCallback != 0)
-				RXCallback(*(ShotPacket *)&data);
 		}
 	break;
 
@@ -99,6 +96,8 @@ void update() {
 
 		if(segmentPosition == CHECKSUM_FRAMES) {
 			stopRX();
+			if(RXCallback != 0)
+				RXCallback(*(ShotPacket *)&data);
 		}
 	break;
 	}

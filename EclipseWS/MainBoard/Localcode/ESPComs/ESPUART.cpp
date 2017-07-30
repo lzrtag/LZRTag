@@ -40,14 +40,14 @@ ISR(USART_RX_vect) {
 	case RX_COMMAND:
 		RXEndpoint = Endpoint::getHeadEndpoint();
 		while(1) {
+			if(RXEndpoint == 0)
+				return;
 			if(RXEndpoint->targetCommand == rData) {
 				RXData = RXEndpoint->targetData;
 				RXToReceive = RXEndpoint->dataLength;
 				break;
 			}
 			RXEndpoint = RXEndpoint->nextEndpoint;
-			if(RXEndpoint == 0)
-				return;
 		}
 
 		if(RXToReceive != 0)
