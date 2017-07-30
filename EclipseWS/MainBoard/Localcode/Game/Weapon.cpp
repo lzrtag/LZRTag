@@ -15,8 +15,8 @@ namespace Game {
 namespace Weapon {
 
 	const uint8_t gunDmgTable[1] = 			{1};
-	const uint16_t gunShotDelayTable[1] = 	{100};
-	const uint16_t gunReloadDelayTable[1] = {10};
+	const uint16_t gunShotDelayTable[1] = 	{500};
+	const uint16_t gunReloadDelayTable[1] = {1000};
 	const uint8_t gunMagSizeTable[1] = 		{10};
 
 	uint16_t ammo = 1, reloadTimer = 1, shotTimer = 0;
@@ -50,8 +50,6 @@ namespace Weapon {
 
 		if(ammo != 0)
 			shotTimer = gunShotDelayTable[Config::gun_cfg()];
-
-		IR::send_8(Player::ID | (Config::gun_cfg() << 4));
 
 		return true;
 	}

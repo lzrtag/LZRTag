@@ -14,11 +14,12 @@
 #include "../../Libcode/TIMER/Timer0.h"
 #include "../../Libcode/TIMER/Timer1.h"
 #include "../../Libcode/TIMER/Timer2.h"
-#include "../../Libcode/Communication/IR/IR_Handler.h"
+
+#include "../IRComs/IR.h"
+
+#include "../Connector.h"
 
 #include "Pins.h"
-
-#include "IRLed.h"
 
 #define COLOR_RED 		(1<< NOZZLE_R_PIN)
 #define COLOR_GREEN		(1<< NOZZLE_G_PIN)

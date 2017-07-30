@@ -10,8 +10,6 @@
 
 
 namespace Board {
-	IRLed outputLED = IRLed();
-
 	namespace Nozzle {
 		uint16_t nozzleDuration = 0;
 
@@ -101,11 +99,7 @@ namespace Board {
 		}
 	}
 
-
-
 	void ISR1a() {
-		IR::update();
-
 		Nozzle::update();
 		Vibrator::update();
 		Buzzer::update();
@@ -113,22 +107,18 @@ namespace Board {
 
 	void init() {
 		TRIGGER_PORTx 	|= (1<< TRIGGER_PIN);
-		TRANSMIT_DDRx 	|= (1<< TRANSMIT_PIN);
 		NOZZLE_DDRx 	|= (COLOR_WHITE);
 		VIBRATOR_DDRx 	|= (1<< VIBRATOR_PIN);
 		BUZZER_DDRx 	|= (1<< BUZZER_PIN);
 
-		// Initialize the TIMER1 for 1kHz ISR
-		Timer1::set_prescaler(TIMER1_PRESC_1);
-		Timer1::set_OCR1A(3999);
-		Timer1::set_mode(TIMER1_MODE_CTC);
+		VEST_DDRx		|= (0b111 << VEST_R_PIN);
+
+		IR::init(Connector::update);
 
 		// Initialize the TIMER2 for Buzzer PWM
 		Timer2::set_prescaler(TIMER2_PRESC_32);
 		Timer2::set_mode(TIMER2_MODE_TOP_OCR2A);
 		Timer2::set_OCR2A(50);
-
-		IR::init(&RECEIVER_PORTx, RECEIVER_PIN, &outputLED, 0);
 
 		sei();
 	}
