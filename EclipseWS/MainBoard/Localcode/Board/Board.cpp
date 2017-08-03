@@ -103,6 +103,7 @@ namespace Board {
 		Nozzle::update();
 		Vibrator::update();
 		Buzzer::update();
+		Vest::update();
 	}
 
 	void init() {
