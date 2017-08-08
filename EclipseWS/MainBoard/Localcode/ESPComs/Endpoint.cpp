@@ -11,7 +11,7 @@ namespace ESPComs {
 
 Endpoint * Endpoint::headEndpoint = 0;
 
-Endpoint::Endpoint(const uint8_t cmd, uint8_t * const dataDir, const uint8_t dataLen, void (* const callback)())
+Endpoint::Endpoint(const uint8_t cmd, void * const dataDir, const uint8_t dataLen, void (* const callback)())
 	: targetCommand(cmd), targetData(dataDir), dataLength(dataLen), endCallback(callback), nextEndpoint(headEndpoint) {
 
 	headEndpoint = this;

@@ -43,7 +43,7 @@ ISR(USART_RX_vect) {
 			if(RXEndpoint == 0)
 				return;
 			if(RXEndpoint->targetCommand == rData) {
-				RXData = RXEndpoint->targetData;
+				RXData = (uint8_t*)RXEndpoint->targetData;
 				RXToReceive = RXEndpoint->dataLength;
 				break;
 			}

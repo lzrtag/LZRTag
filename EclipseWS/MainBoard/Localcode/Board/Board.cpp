@@ -39,6 +39,7 @@ namespace Board {
 
 	namespace Vibrator {
 		uint16_t vibratorDuration = 0;
+		uint8_t vibratorMode = 1;
 
 		void off() {
 			VIBRATOR_PORTx &= ~(1<< VIBRATOR_PIN);
@@ -54,17 +55,26 @@ namespace Board {
 		}
 
 		void update() {
-			if(vibratorDuration == 1)
-				off();
-			if(vibratorDuration != 0)
+			if(vibratorDuration != 0) {
 				vibratorDuration--;
+				switch(vibratorMode) {
+				default: break;
+				case 1:
+					if(vibratorDuration & 0b100000)
+						on();
+					else
+						off();
+				}
+			}
+			else
+				off();
 		}
 	}
 
 	namespace Buzzer {
-		uint16_t 	endFreq = 0;
-		uint16_t 	durationDiv = 0;
-		int16_t		percentShift = 0;
+		uint16_t 	endFreq 	 = 0;
+		uint16_t 	fullDuration = 0;
+		int16_t		freqShift = 0;
 		uint16_t 	buzzerDuration = 0;
 
 		void off() {
@@ -80,8 +90,8 @@ namespace Board {
 
 		void sweep(uint16_t start, uint16_t end, uint16_t duration) {
 			endFreq = end;
-			durationDiv = duration / 100;
-			percentShift = (start - end) / 100;
+			fullDuration = duration;
+			freqShift = (start - end);
 
 			buzzerDuration = duration;
 			set_frequency(start);
@@ -92,7 +102,7 @@ namespace Board {
 			if(buzzerDuration == 1)
 				off();
 			if(buzzerDuration > 1)
-				set_frequency(endFreq + percentShift * (buzzerDuration/durationDiv));
+				set_frequency(endFreq + ((freqShift * (((uint32_t)buzzerDuration<<12)/fullDuration))>>12));
 
 			if(buzzerDuration != 0)
 				buzzerDuration--;
