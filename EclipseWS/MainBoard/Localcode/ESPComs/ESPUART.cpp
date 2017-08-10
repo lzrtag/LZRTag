@@ -68,7 +68,7 @@ ISR(USART_RX_vect) {
 
 void startTX() {
 	TXStatus 	 = TX_SENDING;
-	TXData 		 = TXSource->targetData;
+	TXData 		 = (uint8_t*)TXSource->targetData;
 	TXToTransmit = TXSource->dataLength;
 
 	UDR0 = TXSource->targetCommand;
