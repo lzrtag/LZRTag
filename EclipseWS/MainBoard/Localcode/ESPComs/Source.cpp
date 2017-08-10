@@ -12,7 +12,7 @@ namespace ESPComs {
 
 Source * Source::headSource = 0;
 
-Source::Source(const uint8_t cmd, uint8_t * const dataDir, const uint8_t dataLen)
+Source::Source(const uint8_t cmd, void * const dataDir, const uint8_t dataLen)
 	: targetCommand(cmd), targetData(dataDir), dataLength(dataLen), nextSource(headSource) {
 
 	headSource = this;
