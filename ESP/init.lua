@@ -32,10 +32,12 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 									11, 10, 7, 7,
 									101, 2);
 
+					uart.on("data", 0, function(data) end, 0);
+
 					onMQTTConnect(
 						function()
-							dofile("Lasertag.lua");
 							dofile("ConsoleRedir.lua");
+							dofile("Lasertag.lua");
 							dofile("MQTTPing.lua");
 						end
 					);
