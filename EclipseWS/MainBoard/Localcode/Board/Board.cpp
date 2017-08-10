@@ -109,11 +109,35 @@ namespace Board {
 		}
 	}
 
+	namespace Trigger {
+		uint8_t triggerDebounce = 0;
+		bool triggerStatus = 0;
+
+		ESPComs::Source TriggerPressS(0, &triggerStatus, 1);
+
+		bool getTrigger() {
+			return (TRIGGER_PINx & (1<< TRIGGER_PIN)) != 0;
+		}
+
+		void update() {
+			if(triggerDebounce != 0)
+				triggerDebounce--;
+			else {
+				if(triggerStatus != getTrigger()) {
+					triggerDebounce = 30;
+					triggerStatus = getTrigger();
+					TriggerPressS.fire();
+				}
+			}
+		}
+	}
+
 	void ISR1a() {
 		Nozzle::update();
 		Vibrator::update();
 		Buzzer::update();
 		Vest::update();
+		Trigger::update();
 	}
 
 	void init() {
