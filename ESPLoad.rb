@@ -58,7 +58,7 @@ MQTT::Client.connect($mHost) do |c|
 			$dataBlob[:eof] = true;
 		end
 
-		nBlock = 1;
+		$dataBlob[:block] = 1;
 		while true do
 			$dataBlob[:data] = Base64.strict_encode64(dataBlobBlock);
 
@@ -68,9 +68,9 @@ MQTT::Client.connect($mHost) do |c|
 				$dataBlob[:eof] = true;
 			end
 
-			print "Sending block #{nBlock}/#{numBlocks}\n"
+			print "Sending block #{$dataBlob[:block]}/#{numBlocks}\n"
 			esp $dataBlob.to_json
-			nBlock += 1;
+			$dataBlob[:block] += 1;
 
 			$dataBlob.delete(:targetFile);
 			break if($dataBlob[:eof]);
