@@ -17,6 +17,8 @@ private:
 	static Endpoint * 	headEndpoint;
 
 public:
+	static uint8_t pubBuffer[16];
+
 	Endpoint * const 	nextEndpoint;
 
 	uint8_t const 	targetCommand;
