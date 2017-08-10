@@ -1,24 +1,10 @@
 
-currentUARTCMD = nil;
-
-function callUARTCallback(data)
-	if(currentUARTCMD.cb ~= nil) then
-		currentUARTCMD.cb(data);
-	end
-
-	uart.on("data", 0, processUARTCommand, 1);
-end
-
-function processUARTCommand(c)
-	currentUARTCMD = UART_COMMANDS[c];
-	uart.on("data", 0, callUARTCallback, currentUARTCMD.len);
-end
-
-uart.on("data", 0, processUARTCommand ,1);
+dofile("UARTReceive.lua");
 
 function setVestBrightness(c)
 	uart.write(0, 200, c);
 end
+
 function setVestColor(c)
 	uart.write(0, 101, c);
 end
@@ -36,6 +22,8 @@ subscribeTo(playerTopic .. "/Brightness", 1,
 		setVestBrightness(tonumber(data));
 	end
 );
+
+uart.write(0, 100, playerIDNum);
 
 setVestColor(1);
 function fancyPling()
