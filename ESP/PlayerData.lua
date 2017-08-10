@@ -1,2 +1,3 @@
 
-playerID = "Xasin1"
+playerID = "Xasin2";
+playerIDNum = 2;
