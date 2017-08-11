@@ -8,7 +8,7 @@ subscribeTo(playerTopic .. "/Console/In", 0,
 
 targetFilename = nil;
 inStreamFile = nil;
-currentBlock = 0;
+currentBlock = -1;
 subscribeTo(playerTopic .. "/Console/FileWrite", 2,
 	function(tList, data)
 		cmd = sjson.decode(data);
@@ -28,7 +28,11 @@ subscribeTo(playerTopic .. "/Console/FileWrite", 2,
 				inStreamFile:close();
 				file.remove(targetFilename);
 				file.rename(targetFilename .. ".BKUP", targetFilename);
+				print("File-Write successful!");
 			end
+		else
+			currentBlock = -1;
+			print("File-Write failed :c");
 		end
 	end
 );
