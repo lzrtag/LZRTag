@@ -1,7 +1,8 @@
 
 dofile("PlayerData.lua");
-
-playerTopic = "Lasertag/Players/"..playerID..""
+lasertagTopic = "Lasertag";
+playersTopic = lasertagTopic .. "/Players";
+playerTopic = playersTopic .. "/"..playerID;
 
 dofile("MQTTConnect.lua");
 
