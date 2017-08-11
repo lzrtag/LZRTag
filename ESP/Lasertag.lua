@@ -26,6 +26,11 @@ subscribeTo(playerTopic .. "/Brightness", 1,
 		setVestBrightness(tonumber(data));
 	end
 );
+subscribeTo(playerTopic .. "/Team", 1,
+	function(tList, data)
+		setVestColor(tonumber(data));
+	end
+);
 
 uart.write(0, 100, playerIDNum);
 
@@ -36,3 +41,5 @@ function fancyPling()
 end
 fancyPling();
 tmr.create():alarm(200, tmr.ALARM_SINGLE, fancyPling);
+
+dofile("NoAmmoShoot.lua");
