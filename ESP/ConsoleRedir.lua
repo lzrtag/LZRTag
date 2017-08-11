@@ -15,6 +15,7 @@ subscribeTo(playerTopic .. "/Console/FileWrite", 2,
 
 		if(cmd.targetFile) then
 			targetFilename = cmd.targetFile;
+			file.remove(targetFilename .. ".BKUP");
 			inStreamFile = file.open(targetFilename .. ".BKUP", "w+");
 			currentBlock = 1;
 		end
