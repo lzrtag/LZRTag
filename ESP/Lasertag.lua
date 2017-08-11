@@ -10,6 +10,10 @@ end
 function setVestColor(c)
 	uart.write(0, 101, c);
 end
+function overrideVest(duration, brightness)
+	duration = duration/90;
+	uart.write(0, 12, duration%255, duration/255, brightness);
+end
 
 function ping(sFreq, eFreq, duration)
 	uart.write(0, 11, duration/10 or 2, sFreq/60 or 67, eFreq/60 or sFreq/60 or 67);

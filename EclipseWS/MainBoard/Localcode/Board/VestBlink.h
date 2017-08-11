@@ -20,6 +20,13 @@ extern uint8_t LEDPWM[3];
 extern uint8_t mode;
 extern uint8_t team;
 
+struct BlinkOverrides {
+	uint16_t duration;
+	uint16_t mode;
+};
+
+extern BlinkOverrides overrides;
+
 void update();
 void slowUpdate();
 

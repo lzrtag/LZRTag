@@ -30,6 +30,7 @@ ESPComs::Endpoint PlayerIDEP(100, &playerID, 1, 0);
 
 ESPComs::Endpoint ColorEP(101, &Board::Vest::team, 1, 0);
 ESPComs::Endpoint VestBrightnessEP(200, &Board::Vest::mode, 1, 0);
+ESPComs::Endpoint BrightnessOverrideEp(12, &Board::Vest::overrides, 3, 0);
 
 struct BuzzCommand {
 	uint8_t length;
@@ -58,10 +59,13 @@ void handleShots() {
 }
 ESPComs::Endpoint ShootCommandEP(0, &ESPComs::Endpoint::pubBuffer, 1, handleShots);
 
+IR::ShotPacket recShotData = {15, 15};
+ESPComs::Source HitDetectSRC(1, &recShotData, 2);
 void IRRXCB(IR::ShotPacket data) {
 	if(data.playerID == playerID)
 		return;
-	hasBeenShot = true;
+	recShotData = data;
+	HitDetectSRC.fire();
 }
 
 int main() {

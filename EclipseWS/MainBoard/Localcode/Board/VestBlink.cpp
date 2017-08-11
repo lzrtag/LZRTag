@@ -28,7 +28,7 @@ void update() {
 	}
 
 	if(--slowPresc == 0) {
-		slowPresc = 100;
+		slowPresc = 90;
 		slowUpdate();
 	}
 }
@@ -45,6 +45,9 @@ void lightsOn() {
 uint8_t team = 0;
 uint8_t mode = 1;
 uint8_t phase = 0;
+
+BlinkOverrides overrides = {0, 0};
+
 void slowUpdate() {
 	phase--;
 	if(phase == 255)
@@ -52,7 +55,14 @@ void slowUpdate() {
 
 	lightsOff();
 
-	switch(mode) {
+	uint8_t lMode = mode;
+	if(overrides.duration != 0) {
+		overrides.duration--;
+		lMode = overrides.mode;
+	}
+
+	switch(lMode) {
+	default:
 	case 0:
 		if(phase == 0)
 			LEDPWM[team] = 1;
@@ -80,6 +90,13 @@ void slowUpdate() {
 		if((phase%2 == 0) && (phase < 6)) {
 			lightsOn();
 		}
+		else
+			LEDPWM[team] = 10;
+	break;
+
+	case 10:
+		if((phase & 0b1))
+			lightsOn();
 		else
 			LEDPWM[team] = 10;
 	break;
