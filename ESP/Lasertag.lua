@@ -17,13 +17,15 @@ function vibrate(duration)
 	uart.write(0, 10, duration/10);
 end
 
+function fireWeapon()
+	uart.write(0, 0, 99);
+end
+
 subscribeTo(playerTopic .. "/Brightness", 1,
 	function(tList, data)
 		setVestBrightness(tonumber(data));
 	end
 );
-
-
 
 uart.write(0, 100, playerIDNum);
 
