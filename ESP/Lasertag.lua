@@ -1,6 +1,8 @@
 
 dofile("UARTReceive.lua");
 
+playerIDList = {}
+
 function setVestBrightness(c)
 	uart.write(0, 200, c);
 end
@@ -32,6 +34,12 @@ subscribeTo(playerTopic .. "/Team", 1,
 	end
 );
 
+subscribeTo(playersTopic .. "/+/ID", 1,
+	function(tList, data)
+		playerIDList[tonumber(data)] = tList[3];
+	end
+);
+homeQTT:publish(playerTopic .. "/ID", playerIDNum, 1, 1);
 uart.write(0, 100, playerIDNum);
 
 setVestColor(1);

@@ -45,6 +45,12 @@ registerUARTCommand(1, 2,
 	function(data)
 		lastHitTimestamp = tmr.now();
 
-		print("Hit by:" .. data:byte(1) .. "," .. data:byte(2) .. " DLen: " .. data:len());
+		eventData = {
+			type		= "hit",
+			shooter 	= playerIDList[data:byte(1)],
+			target  	= playerID,
+			arbCode 	= data:byte(2)
+		};
+		homeQTT:publish(lasertagTopic .. "/Game/Events", sjson.encode(eventData), 0, 0);
 	end
 );
