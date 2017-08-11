@@ -1,12 +1,9 @@
 
-UART_COMMANDS = {}
+UART_COMMANDS = {};
 currentUARTCMD = nil;
 
 function callUARTCallback(data)
-	if(currentUARTCMD[2] ~= nil) then
-		currentUARTCMD[2](data);
-	end
-
+	currentUARTCMD[2](data);
 	uart.on("data", 1, processUARTCommand, 0);
 end
 
@@ -21,11 +18,11 @@ function processUARTCommand(data)
 	end
 end
 
-uart.on("data", 1, processUARTCommand, 0);
-
 function registerUARTCommand(c, len, cb)
 	UART_COMMANDS[c] = {
 		len,
 		cb
 	};
 end
+
+uart.on("data", 1, processUARTCommand, 0);
