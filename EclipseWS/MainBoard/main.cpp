@@ -74,15 +74,7 @@ int main() {
 
 	IR::RX::setCallback(IRRXCB);
 
-	Board::Nozzle::flash(1);
-
 	while(true) {
-		while(!hasBeenShot) {}
-		Board::Vibrator::vibrate(1000);
-		Board::Vest::mode = 5;
-		_delay_ms(1000);
-		Board::Vest::mode = 0;
-		hasBeenShot = false;
 	}
 	return 0;
 }
