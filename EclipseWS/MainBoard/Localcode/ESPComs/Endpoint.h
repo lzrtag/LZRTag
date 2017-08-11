@@ -17,16 +17,18 @@ private:
 	static Endpoint * 	headEndpoint;
 
 public:
+	static uint8_t pubBuffer[16];
+
 	Endpoint * const 	nextEndpoint;
 
 	uint8_t const 	targetCommand;
 	uint8_t	const	dataLength;
-	uint8_t * const targetData;
+	void  * const targetData;
 	void (* const 	endCallback)();
 
 	static Endpoint * getHeadEndpoint();
 
-	Endpoint(const uint8_t cmd, uint8_t * const dataDir, const uint8_t dataLen, void (* const callback)());
+	Endpoint(const uint8_t cmd, void * const dataDir, const uint8_t dataLen, void (* const callback)());
 
 	void callCallback();
 };

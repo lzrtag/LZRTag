@@ -43,7 +43,7 @@ ISR(USART_RX_vect) {
 			if(RXEndpoint == 0)
 				return;
 			if(RXEndpoint->targetCommand == rData) {
-				RXData = RXEndpoint->targetData;
+				RXData = (uint8_t*)RXEndpoint->targetData;
 				RXToReceive = RXEndpoint->dataLength;
 				break;
 			}
@@ -68,7 +68,7 @@ ISR(USART_RX_vect) {
 
 void startTX() {
 	TXStatus 	 = TX_SENDING;
-	TXData 		 = TXSource->targetData;
+	TXData 		 = (uint8_t*)TXSource->targetData;
 	TXToTransmit = TXSource->dataLength;
 
 	UDR0 = TXSource->targetCommand;

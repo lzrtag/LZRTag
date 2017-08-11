@@ -20,13 +20,13 @@ public:
 
 	uint8_t const 	targetCommand;
 	uint8_t	const	dataLength;
-	uint8_t * const targetData;
+	void * const targetData;
 
 	bool ignited = false;
 
 	static Source * getHeadSource();
 
-	Source(const uint8_t cmd, uint8_t * const dataDir, const uint8_t dataLen);
+	Source(const uint8_t cmd, void * const dataDir, const uint8_t dataLen);
 
 	void fire();
 };

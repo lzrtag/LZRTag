@@ -28,11 +28,17 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 				if(data == StartSymbol) then
 					noTagTimer:unregister();
 
+					uart.write( 0, 10, 10,
+									11, 10, 7, 7,
+									101, 2);
+
+					uart.on("data", 0, function(data) end, 0);
+
 					onMQTTConnect(
 						function()
+							dofile("ConsoleRedir.lua");
 							dofile("Lasertag.lua");
 							dofile("MQTTPing.lua");
-							dofile("GPSPing.lua");
 						end
 					);
 				end

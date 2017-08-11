@@ -28,8 +28,8 @@
 #define NOZZLE_PORTx		PORTC
 #define NOZZLE_DDRx		DDRC
 
-#define VEST_PORTX		PORTB
-#define VEST_DDRx			DDRB
+#define VEST_PORTx		PORTB
+#define VEST_DDRx		DDRB
 #define VEST_R_PIN		PB3
 
 #define VIBRATOR_PIN 	5
