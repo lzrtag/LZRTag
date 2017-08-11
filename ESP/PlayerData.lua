@@ -1,3 +1,5 @@
 
-playerID = "Xasin2";
-playerIDNum = 2;
+playerID = "Xasin";
+playerIDNum = 1;
+
+invertButton = false;
