@@ -21,9 +21,6 @@ function playNextNote()
 	currentNotePosition = currentNotePosition + 1;
 end
 
-setVestBrightness(5);
-playNextNote();
-
 registerUARTCommand(0, 1,
 	function(data)
 		if(data:byte() == 1) then
@@ -31,3 +28,6 @@ registerUARTCommand(0, 1,
 		end
 	end
 );
+
+setVestBrightness(5);
+playNextNote();

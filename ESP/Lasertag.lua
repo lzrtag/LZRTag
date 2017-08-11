@@ -23,6 +23,8 @@ subscribeTo(playerTopic .. "/Brightness", 1,
 	end
 );
 
+
+
 uart.write(0, 100, playerIDNum);
 
 setVestColor(1);
