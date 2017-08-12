@@ -16,7 +16,7 @@ subscribeTo(pingTopic .. "/PingOut", 0,
 	end
 );
 
-tmr.create():alarm(10000, tmr.ALARM_AUTO,
+tmr.create():alarm(5000, tmr.ALARM_AUTO,
 	function()
 		if(homeQTT_connected) then
 			homeQTT:publish(pingTopic .. "/PingOut", tmr.now(), 0, 0);
