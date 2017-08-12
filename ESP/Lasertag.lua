@@ -46,6 +46,25 @@ subscribeTo(playersTopic .. "/+/ID", 1,
 homeQTT:publish(playerTopic .. "/ID", playerIDNum, 1, 1);
 uart.write(0, 100, playerIDNum);
 
+subscribeTo(lasertagTopic .. "/Game/Status", 1,
+	function(tList, data)
+		if(data == "stop") then
+			if(gameRunning) then
+				overrideVest(5000, 10);
+				ping(5000, 1000, 2000);
+			end
+			gameRunning = false;
+		elseif(data == "start") then
+			if(not gameRunning) then
+				ping(2000, 2000, 2000);
+			end
+			gameRunning = true;
+		elseif(data == "startwarn") then
+			ping(1500, 1500, 300);
+		end
+	end
+);
+
 setVestColor(1);
 function fancyPling()
 	ping(1000, 5000, 150);

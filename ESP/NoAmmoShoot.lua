@@ -19,6 +19,10 @@ function timeSinceLastHit()
 end
 
 function canShoot()
+	if(not gameRunning) then
+		return false;
+	end
+
 	if(timeSinceLastHit() < disableTime*1000) then
 		return false;
 	end
