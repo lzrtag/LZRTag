@@ -8,6 +8,7 @@ $mHost = "iot.eclipse.org"
 $ltTopic = "Lasertag/Game";
 $eventT  = $ltTopic + "/Events";
 $statusT = $ltTopic + "/Status";
+$statusC = $statusT + "Control";
 
 $playerTopic = "Lasertag/Players/+"
 $idTopic	 = $playerTopic + "/ID"
@@ -57,7 +58,7 @@ MQTT::Client.connect($mHost) do |c|
 
 	c.publish($statusT, "stop", true);
 
-	c.subscribe($statusT);
+	c.subscribe($statusC);
 	c.subscribe($eventT);
 	c.subscribe($idTopic);
 	c.subscribe($ltTopic + "/SetTime");
@@ -68,7 +69,9 @@ MQTT::Client.connect($mHost) do |c|
 		end
 	end
 
-	def printEndMessage()
+	def endGame()
+		$mqtt.publish($statusT, "stop", true);
+
 		puts "\nThe game has ended! Scores are as follows:\n"
 		$scoreboard.each do |key, value|
 			printf "%8s | %3i kills | %3i deaths\n", key, value[:kills], value[:deaths];
@@ -80,15 +83,34 @@ MQTT::Client.connect($mHost) do |c|
 		setAllBrightnesses(1);
 	end
 
+	def startGame()
+		puts "\n\n"
+		nString = "### A NEW GAME BEGINS ###"
+		nString.length.times { print "#"; }; print "\n";
+		puts nString;
+		nString.length.times { print "#"; }; print "\n\n";
+
+		3.times do
+			$mqtt.publish($statusT, "startwarn");
+			sleep 1;
+		end
+		$mqtt.publish($statusT, "start");
+		freshScoreboard();
+
+		$gameTimer = $recGameTime;
+		setAllBrightnesses(3);
+		$scoreboard.each_key do |player|
+			$mqtt.publish("Lasertag/Players/#{player}/Kills", 0, false);
+		end
+	end
+
 	Thread.new do
 		while true
-			sleep 6;
-			if($gameTimer > 0.1)
-				$gameTimer -= 0.1;
+			sleep 3;
+			if($gameTimer > 0.05)
+				$gameTimer -= 0.05;
 			elsif($gameTimer > 0)
-				$gameTimer = 0;
-				$mqtt.publish($statusT, "stop", true);
-				printEndMessage
+				endGame();
 			end
 
 			if($gameTimer > 0)
@@ -107,28 +129,15 @@ MQTT::Client.connect($mHost) do |c|
 				print "#{data["shooter"]} hit #{data["target"]}!\n";
 				$scoreboard[data["shooter"]][:kills]+=1;
 				$scoreboard[data["target"]][:deaths]+=1;
+				$mqtt.publish("Lasertag/Players/#{data["shooter"]}/Kills", $scoreboard[data["shooter"]][:kills], false);
 			end
 		end
 
-		if(topic == $statusT)
+		if(topic == $statusC)
 			if(message == "stop" and $gameTimer > 0)
-				printEndMessage
-			elsif($gameTimer == 0 and message == "startwarn")
-				nString = "### A NEW GAME BEGINS ###"
-				nString.length.times { print "#"; }; print "\n";
-				puts nString;
-				nString.length.times { print "#"; }; print "\n\n";
-
-				sleep 0.75
-				2.times do
-					c.publish($statusT, "startwarn");
-					sleep 1;
-				end
-				c.publish($statusT, "start");
-				freshScoreboard();
-
-				$gameTimer = $recGameTime;
-				setAllBrightnesses(3);
+				endGame();
+			elsif($gameTimer == 0 and message == "start")
+				startGame();
 			end
 		end
 
