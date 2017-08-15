@@ -9,6 +9,8 @@ lastHitTimestamp = 0;
 
 disableTime = 4000;
 
+munition = 8;
+
 function timeSinceLastHit()
 	tSinceHit = tmr.now() - lastHitTimestamp;
 	if(tSinceHit < 0) then
@@ -27,6 +29,10 @@ function canShoot()
 		return false;
 	end
 
+	if(munition == 0) then
+		return false;
+	end
+
 	return true;
 end
 
@@ -35,9 +41,35 @@ function shootIfValid()
 		shotTimer:stop();
 		shotsRunning = false;
 	else
+		munition = munition -1;
 		fireWeapon();
 	end
 end
+function startShottimerIfVald()
+	if(triggerPressed and not shotsRunning and canShoot()) then
+		shootIfValid();
+		shotTimer:start();
+		shotsRunning = true;
+	end
+end
+
+function blibIfCanShoot()
+	if(canShoot()) then
+		ping(500, 4000, 200);
+	end
+end
+
+tmr.create():alarm(1500, tmr.ALARM_AUTO,
+	function()
+		if(munition < 8) then
+			munition = munition + 1;
+			startShottimerIfVald();
+			if(munition == 8) then
+				blibIfCanShoot();
+			end
+		end
+	end
+)
 
 registerUARTCommand(0, 1,
 	function(data)
@@ -47,20 +79,9 @@ registerUARTCommand(0, 1,
 			triggerPressed = (data:byte() ~= 0);
 		end
 
-
-		if(triggerPressed and not shotsRunning and canShoot()) then
-			shootIfValid();
-			shotTimer:start();
-			shotsRunning = true;
-		end
+		startShottimerIfVald();
 	end
 );
-
-function blibIfCanShoot()
-	if(canShoot()) then
-		ping(500, 4000, 200);
-	end
-end
 
 shotTimer:register(250, tmr.ALARM_AUTO, shootIfValid);
 registerUARTCommand(1, 2,
