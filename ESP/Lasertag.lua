@@ -24,7 +24,9 @@ function vibrate(duration)
 end
 
 function fireWeapon()
-	uart.write(0, 0, 99);
+	if(playerIDNum) then
+		uart.write(0, 0, 99);
+	end
 end
 
 subscribeTo(playerTopic .. "/Brightness", 1,
@@ -40,11 +42,20 @@ subscribeTo(playerTopic .. "/Team", 1,
 
 subscribeTo(playersTopic .. "/+/ID", 1,
 	function(tList, data)
-		playerIDList[tonumber(data)] = tList[3];
+		if(data ~= nil) then
+			num = tonumber(data);
+			if(num ~= nil) then
+				playerIDList[tonumber(data)] = tList[3];
+			end
+
+			if(tList[3] == playerID) then
+				playerIDNum = num;
+				uart.write(0, 100, playerIDNum);
+			end
+		end
 	end
 );
-homeQTT:publish(playerTopic .. "/ID", playerIDNum, 1, 1);
-uart.write(0, 100, playerIDNum);
+homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 
 subscribeTo(lasertagTopic .. "/Game/Status", 1,
 	function(tList, data)
