@@ -96,7 +96,7 @@ Thread.new do
 	end
 end
 
-$mqtt.subscribeTo "eventT" do |tList, message|
+$mqtt.subscribeTo $eventT do |tList, message|
 	if($gameTimer > 0)
 		data = JSON.parse(message);
 
