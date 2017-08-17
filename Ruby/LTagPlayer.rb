@@ -13,82 +13,18 @@ class Client
 	attr_reader :ping
 	attr_reader :heap
 
-	@@idTable = Hash.new(false);
-	@@playerTable = Hash.new();
-
-	def self.mqtt=(mqttConnection)
-		@@mqtt = mqttConnection;
-	end
-
-	def self.connected()
-		activeSets = Hash.new();
-
-		@@playerTable.each do |k, v|
-			if(v.connected?) then
-				activeSets[k] = v;
-			end
-		end
-
-		return activeSets;
-	end
-
-	def self.each_connected()
-		@@playerTable.each do |k, v|
-			if(v.connected?) then
-				yield(v);
-			end
-		end
-	end
-
-	def initialize(name)
-		raise "No MQTT Connection given!" unless @@mqtt != nil;
-		raise "Player is already registered!" if @@playerTable[name];
-
-		@@playerTable[name] = self;
-
+	def initialize(name, mqtt)
+		@mqtt = mqtt;
 		@name = name;
 
 		@mqttTopic = "Lasertag/Players/#{@name}"
 
-		@team = 3;
+		@team = 0;
 		@brightness = 0;
 
-		@@mqtt.subscribeTo "#{@mqttTopic}/Team" do |tList, data|
-			tNum = data.to_i;
-			@team = tNum if tNum;
-		end
-
-		@@mqtt.subscribeTo "#{@mqttTopic}/Brightness" do |tList, data|
-			tBright = data.to_i;
-			@brightness = tBright if tBright;
-		end
-
-		@@mqtt.subscribeTo "#{@mqttTopic}/System" do |tList, data|
-			sysInfo = JSON.parse(data);
-			@heap 	= sysInfo["heap"].to_i;
-			@battery = sysInfo["battery"].to_f/1000.0;
-			@ping 	= sysInfo["ping"].to_i;
-		end
-
-		@@mqtt.subscribeTo "#{@mqttTopic}/Connection" do |tList, data|
-			if (data == "OK") then
-				newID() if @id == nil;
-			else
-				@@idTable.delete @id unless @id == nil;
-				@@mqtt.publishTo "#{@mqttTopic}/ID", "";
-				@id = nil;
-			end
-		end
-	end
-
-	def newID()
-		@id = 1;
-		while true do
-			break unless(@@idTable[@id])
-			@id += 1;
-		end
-		@@idTable[@id] = @name;
-		@@mqtt.publishTo "#{@mqttTopic}/ID", @id;
+		@battery = 3.3;
+		@ping = 10000;
+		@heap = 40000;
 	end
 
 	def connected?()
@@ -99,7 +35,7 @@ class Client
 		n = n.to_i;
 		return false unless n != nil and n < 3 and n >= 0;
 		@team = n;
-		@@mqtt.publishTo "#{@mqttTopic}/Team", @team, retain: true;
+		@mqtt.publishTo "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
 	end
 
@@ -107,19 +43,40 @@ class Client
 		n = n.to_i;
 		return false unless n != nil and n <= 5 and n >= 0;
 		@brightness = n;
-		@@mqtt.publishTo "#{@mqttTopic}/Brightness", @brightness, retain: true;
+		@mqtt.publishTo "#{@mqttTopic}/Brightness", @brightness, retain: true;
 		return true;
 	end
 
-	def console(str)
-		@@mqtt.publishTo "#{@mqttTopic}/Console/In", str;
+	def id=(n)
+		if(n != nil) then
+			raise ArgumentError, "ID MUST be a integer!" unless n.is_a? Integer;
+			raise ArgumentError, "ID out of range (0<ID<256)" unless n < 256 and n > 0;
+
+			@id = n;
+			@mqtt.publishTo "#{@mqttTopic}/ID", @id, retain: true;
+		else
+			@id = nil;
+			@mqtt.publishTo "#{@mqttTopic}/ID", "", retain: true;
+		end
 	end
 
-	def overrideBrightness(level, duration)
+	def clean_all_topics()
+		raise "Client still connected!" if connected?
+
+		@mqtt.publishTo "#{@mqttTopic}/ID", "", retain: true;
+		@mqtt.publishTo "#{@mqttTopic}/Team", "", retain: true;
+		@mqtt.publishTo "#{@mqttTopic}/Brightness", "", retain: true;
+	end
+
+	def console(str)
+		@mqtt.publishTo "#{@mqttTopic}/Console/In", str;
+	end
+
+	def override_brightness(level, duration)
 		return false unless level.is_a? Integer and duration.is_a? Numeric
 		console("overrideVest(#{(duration*1000).to_i},#{level});");
 	end
-	def stopBrightnessOverride()
+	def stop_brightness_override()
 		console("overrideVest(0, 0);");
 	end
 
@@ -137,6 +94,6 @@ class Client
 		console("ping(#{startF},#{endF},#{(duration*1000).to_i});");
 	end
 
-	private :console, :newID
+	private :console
 end
 end
