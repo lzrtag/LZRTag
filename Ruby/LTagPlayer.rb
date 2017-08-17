@@ -1,6 +1,5 @@
 
 require_relative 'MQTTSubscriber.rb'
-require 'json'
 
 module Lasertag
 class Client

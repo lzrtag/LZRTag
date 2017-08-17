@@ -1,5 +1,7 @@
 
+require_relative 'MQTTSubscriber.rb'
 require_relative 'LTagPlayer.rb'
+require 'json'
 
 module Lasertag
 class Game
