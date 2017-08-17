@@ -13,11 +13,15 @@ class Client
 	attr_reader :ping
 	attr_reader :heap
 
+	attr_accessor :data
+
 	def initialize(name, mqtt)
 		@mqtt = mqtt;
 		@name = name;
 
 		@mqttTopic = "Lasertag/Players/#{@name}"
+
+		@data = Hash.new();
 
 		@team = 0;
 		@brightness = 0;
