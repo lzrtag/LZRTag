@@ -1,8 +1,8 @@
 clientID = "Lasertag_"..playerID
 
-serverURL = "iot.eclipse.org"
+serverURL = "xasin.hopto.org"
 
-homeQTT = mqtt.Client(clientID, 20);
+homeQTT = mqtt.Client(clientID, 5);
 homeQTT:lwt(playerTopic .. "/Connection", "", 1, 1);
 
 homeQTT_connected = false;
@@ -17,14 +17,18 @@ function(client)
 end
 );
 
-
 function mqtt_Connect()
 	if(homeQTT_connected) then
 		return;
 	end
 	homeQTT:connect(serverURL,
 		function(client)
+			for k,v in pairs(sublist) do
+				homeQTT:subscribe(k, v.qos);
+			end
+
 			homeQTT_connected = true;
+			
 			if(homeQTT_FirstConnect) then
 				homeQTT_FirstConnect();
 				homeQTT_FirstConnect = nil;
@@ -39,16 +43,6 @@ function mqtt_Connect()
 	);
 end
 
-wifi.eventmon.register(wifi.eventmon.STA_GOT_IP,
-	function(t)
-		mqtt_Connect();
-	end
-);
-
-if(wifi.sta.getip()) then
-	mqtt_Connect();
-end
-
 function onMQTTConnect(cbFunc)
 	if(homeQTT_connected) then
 		cbFunc();
@@ -58,3 +52,13 @@ function onMQTTConnect(cbFunc)
 end
 
 dofile("MQTTTools.lua");
+
+wifi.eventmon.register(wifi.eventmon.STA_GOT_IP,
+	function(t)
+		mqtt_Connect();
+	end
+);
+
+if(wifi.sta.getip()) then
+	mqtt_Connect();
+end

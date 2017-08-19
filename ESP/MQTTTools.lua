@@ -1,5 +1,7 @@
 
 sublist = {};
+subQueue = {};
+subTimer = tmr.create();
 
 function compareTopics(receivedTopic, topicPattern)
 	if(#topicPattern > #receivedTopic) then
@@ -34,6 +36,14 @@ function genTopiclist(topicString)
 	return outputList;
 end
 
+function mqtt_slowSub()
+	if(#subQueue > 0) then
+		t = table.remove(subQueue);
+		homeQTT:subscribe(t, sublist[t].qos);
+		subTimer:start();
+	end
+end
+
 function subscribeTo(topic, qos, callFunction)
 	sublist[topic] = {
 		callback = callFunction,
@@ -41,8 +51,10 @@ function subscribeTo(topic, qos, callFunction)
 		matchPattern = genTopiclist(topic),
 	}
 
-	if(homeQTT_connected) then
-		homeQTT:subscribe(topic, qos);
+	table.insert(subQueue, topic);
+	running, state = subTimer:state();
+	if(not running) then
+		subTimer:start();
 	end
 end
 
@@ -55,4 +67,5 @@ function callSubCallback(mqttClient, topic, data)
 	end
 end
 
+subTimer:register(500, tmr.ALARM_SEMI, mqtt_slowSub);
 homeQTT:on("message", callSubCallback);
