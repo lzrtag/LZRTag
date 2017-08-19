@@ -56,17 +56,14 @@ class Client
 			raise ArgumentError, "ID out of range (0<ID<256)" unless n < 256 and n > 0;
 
 			@id = n;
-			@mqtt.publishTo "#{@mqttTopic}/ID", @id, retain: true;
 		else
 			@id = nil;
-			@mqtt.publishTo "#{@mqttTopic}/ID", "", retain: true;
 		end
 	end
 
 	def clean_all_topics()
 		raise "Client still connected!" if connected?
 
-		@mqtt.publishTo "#{@mqttTopic}/ID", "", retain: true;
 		@mqtt.publishTo "#{@mqttTopic}/Team", "", retain: true;
 		@mqtt.publishTo "#{@mqttTopic}/Brightness", "", retain: true;
 	end

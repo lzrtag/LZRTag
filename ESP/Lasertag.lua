@@ -40,22 +40,20 @@ subscribeTo(playerTopic .. "/Team", 1,
 	end
 );
 
-subscribeTo(playersTopic .. "/+/ID", 1,
+subscribeTo(lasertagTopic .. "/Game/ID", 1,
 	function(tList, data)
-		if(data ~= nil) then
-			num = tonumber(data);
-			if(num ~= nil) then
-				playerIDList[tonumber(data)] = tList[3];
-			end
+		dataList = sjson.decode(data);
+		for id, player in pairs(dataList) do
+			nID = tonumber(id);
+			playerIDList[nID] = player;
 
-			if(tList[3] == playerID) then
-				playerIDNum = num;
+			if(player == playerID) then
+				playerIDNum = nID;
 				uart.write(0, 100, playerIDNum);
 			end
 		end
 	end
 );
-homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 
 subscribeTo(lasertagTopic .. "/Game/Status", 1,
 	function(tList, data)
@@ -75,6 +73,10 @@ subscribeTo(lasertagTopic .. "/Game/Status", 1,
 		end
 	end
 );
+
+tmr.create():alarm(500, tmr.ALARM_SINGLE, function()
+	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
+end);
 
 setVestColor(1);
 function fancyPling()

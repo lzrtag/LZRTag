@@ -50,7 +50,8 @@ class Game
 					while @idTable[i] do
 						i += 1;
 					end
-					@idTable[i] = true;
+					@idTable[i] = pName;
+					@mqtt.publishTo "Lasertag/Game/ID", @idTable.to_json, retain: true;
 					@clients[pName].id = i;
 
 					if newclient then
@@ -62,6 +63,7 @@ class Game
 			else
 				@clientDisconnectCB.call(pName, @clients[pName]) if @clientDisconnectCB
 				@idTable.delete @clients[pName].id
+				@mqtt.publishTo "Lasertag/Game/ID", "", retain: true if @idTable.empty?
 				@clients[pName].id = nil;
 				if(delete_disconnected) then
 					remove_player(pName);
