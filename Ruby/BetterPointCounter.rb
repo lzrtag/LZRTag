@@ -38,7 +38,7 @@ def end_game()
 
 	puts "\nThe game has ended! Scores are as follows:\n"
 	$game.each do |name, player|
-		printf "%8s | %3i kills | %3i deaths\n", name, player.data[:kills], player.data[:deaths];
+		printf "%8s | %3i kills | %3i deaths\n", name, player.data[:kills] || 0, player.data[:deaths] || 0;
 	end
 	puts "\n\n";
 
@@ -76,7 +76,7 @@ def start_game()
 
 	$game.each do |name, player|
 		player.brightness = 3;
-		$mqtt.publishTo "Lasertag/Players/#{player}/Kills", 0
+		$mqtt.publishTo "Lasertag/Players/#{name}/Kills", 0
 	end
 end
 
@@ -103,14 +103,20 @@ end
 
 $mqtt.subscribeTo "Lasertag/Game/SetTime" do |tList, message|
 	if($gameTimer > 0)
-		$gameTimer = message.to_f;
+		$gameTimer = (message.to_f * 60).to_i;
 		puts "Game timer was set to #{message} minutes!";
 	else
-		$gameDuration = message.to_f;
+		$gameDuration = (message.to_f * 60).to_i;
 		puts "New game length: #{message} minutes.";
 	end
 end
 
+$game.on_register do |name, player|
+	player.data = {
+		deaths: 	0,
+		kills:	0
+	}
+end
 $game.on_connect do |name, player|
 	puts "Player #{name} connected!\n";
 end
@@ -121,11 +127,11 @@ end
 set_game_status "stop";
 
 while true do
-	sleep 3
+	sleep 1
 	next unless $timerRunning;
 
-	if $gameTimer > 0.05 then
-		$gameTimer -= 0.05;
+	if $gameTimer > 1 then
+		$gameTimer -= 1;
 	else
 		end_game
 	end
