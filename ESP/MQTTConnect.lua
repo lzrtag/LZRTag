@@ -1,6 +1,6 @@
 clientID = "Lasertag_"..playerID
 
-serverURL = "xasin.hopto.org"
+serverURL = "iot.eclipse.org"
 
 homeQTT = mqtt.Client(clientID, 5);
 homeQTT:lwt(playerTopic .. "/Connection", "", 1, 1);
@@ -28,7 +28,7 @@ function mqtt_Connect()
 			end
 
 			homeQTT_connected = true;
-			
+
 			if(homeQTT_FirstConnect) then
 				homeQTT_FirstConnect();
 				homeQTT_FirstConnect = nil;
