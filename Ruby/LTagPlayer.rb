@@ -52,13 +52,15 @@ class Client
 
 	def id=(n)
 		if(n != nil) then
-			raise ArgumentError, "ID MUST be a integer!" unless n.is_a? Integer;
+			raise ArgumentError, "ID must be a integer!" unless n.is_a? Integer;
 			raise ArgumentError, "ID out of range (0<ID<256)" unless n < 256 and n > 0;
 
 			@id = n;
 		else
 			@id = nil;
 		end
+
+		@mqtt.publish_to "#{@mqttTopic}/ID", @id, retain: true;
 	end
 
 	def clean_all_topics()

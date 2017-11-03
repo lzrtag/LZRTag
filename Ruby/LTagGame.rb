@@ -5,12 +5,17 @@ require 'json'
 
 module Lasertag
 class Game
-	def initialize(mqtt, autodetect: true, delete_disconnected: false)
+	def initialize(mqtt, delete_disconnected: false, id_assign: true)
 		@mqtt = mqtt;
 		@mqttTopic = "Lasertag/Players/+"
 
 		@clients = Hash.new();
 		@idTable = Hash.new();
+
+		@clientConnectCBs 		= Array.new();
+		@clientDisconnectCBs		= Array.new();
+		@clientRegisteredCBs		= Array.new();
+		@clientUnregisteredCB	= Array.new();
 
 		@mqtt.subscribeTo "#{@mqttTopic}/Team" do |tList, data|
 			if @clients.key? tList[0] then
@@ -38,36 +43,58 @@ class Game
 
 		@mqtt.subscribeTo "#{@mqttTopic}/Connection" do |tList, data|
 			pName = tList[0];
-			if (data == "OK") then
-				newclient = false;
-				if (autodetect and not @clients.key? pName) then
+
+			if(data == "OK") then
+				# Check if the player is on record.
+				# If not, generate one and call the callbacks
+				if(not @clients.key? pName) then
 					@clients[pName] = Client.new(pName, @mqtt);
-					newclient = true;
+					@clientRegisteredCBs.each do |cb|
+						cb.call(pName, @clients[pName]);
+					end
 				end
 
-				unless (@clients[pName].connected?) then
-					i = 1;
-					while @idTable[i] do
-						i += 1;
+				# Check if the player is not registered as connected right now
+				# If he isn't, that means he reconnected. Call the callbacks
+				if(not @clients[pName].connected?) then
+					@clientConnectCBs.each do |cb|
+						cb.call(pName, @clients[pName]);
 					end
-					@idTable[i] = pName;
-					@mqtt.publishTo "Lasertag/Game/ID", @idTable.to_json, retain: true;
-					@clients[pName].id = i;
-
-					if newclient then
-						@clientRegisteredCB.call(pName, @clients[pName]) if @clientRegisteredCB
-					end
-
-					@clientConnectCB.call(pName, @clients[pName]) if @clientConnectCB
 				end
+
 			else
-				@clientDisconnectCB.call(pName, @clients[pName]) if @clientDisconnectCB
-				@idTable.delete @clients[pName].id
-				@mqtt.publishTo "Lasertag/Game/ID", "", retain: true if @idTable.empty?
-				@clients[pName].id = nil;
-				if(delete_disconnected) then
-					remove_player(pName);
+				# Check whether or not the player is connected, and this is the LWT disconnect
+				if(@clients.key?(pName) and @clients[pName].connected?) then
+					@clientDisconnectCBs.each do |cb|
+						cb.call(pName, @clients[pName]);
+					end
 				end
+			end
+		end
+
+		if(delete_disconnected) then
+			on_disconnect do |pName, player|
+				remove_player(pName);
+			end
+		end
+
+		if(id_assign) then
+			on_connect do |pName, player|
+				i = 1;
+				while @idTable[i] do
+					i += 1;
+				end
+				@idTable[i] = pName;
+				player.id 	= i;
+
+				@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
+			end
+
+			on_disconnect do |pName, player|
+				@idTable.delete player.id;
+				player.id = nil;
+
+				@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
 			end
 		end
 	end
@@ -77,20 +104,35 @@ class Game
 	end
 
 	def on_connect(&connectProc)
-		@clientConnectCB = connectProc;
+		@clientConnectCBs << connectProc;
+		return connectProc;
 	end
 	def on_disconnect(&disconnectProc)
-		@clientDisconnectCB = disconnectProc;
+		# Using "unshift" here so that the higher level functions get called first
+		@clientDisconnectCBs.unshift(disconnectProc);
+		return disconnectProc;
 	end
 	def on_register(&registerProc);
-		@clientRegisteredCB = registerProc;
+		@clientRegisteredCBs << registerProc;
+		return registerProc;
 	end
 	def on_unregister(&unregisterProc);
-		@clientUnregisteredCB = unregisterProc;
+		# Using "unshift" here so that the higher level functions get called first
+		@clientUnregisteredCBs.unshift(unregisterProc);
+		return unregisterProc;
+	end
+
+	def remove_callback(callback)
+		@clientConnectCBs.delete callback
+		@clientDisconnectCBs.delete callback
+		@clientRegisteredCBs.delete callback
+		@clientUnregisteredCBs.delete callback
 	end
 
 	def remove_player(pName)
-		@clientUnregisteredCB.call(pName, @clients[pName]) if @clientUnregisteredCB
+		@clientUnregisteredCBs.each do |cb|
+			cb.call(pName, @clients[pName]);
+		end
 		@clients[pName].clean_all_topics unless @clients[pName].connected?
 		@clients.delete pName;
 	end

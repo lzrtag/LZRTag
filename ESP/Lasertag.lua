@@ -40,18 +40,10 @@ subscribeTo(playerTopic .. "/Team", 1,
 	end
 );
 
-subscribeTo(lasertagTopic .. "/Game/ID", 1,
+subscribeTo(playerTopic .. "/ID", 1,
 	function(tList, data)
-		dataList = sjson.decode(data);
-		for id, player in pairs(dataList) do
-			nID = tonumber(id);
-			playerIDList[nID] = player;
-
-			if(player == playerID) then
-				playerIDNum = nID;
-				uart.write(0, 100, playerIDNum);
-			end
-		end
+		playerIDNum = tonumber(data);
+		uart.write(0, 100, playerIDNum);
 	end
 );
 

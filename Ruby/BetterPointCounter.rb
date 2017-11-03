@@ -1,7 +1,7 @@
 
 require_relative 'LTagGame.rb'
 
-$mqtt = MQTTSubs.new(MQTT::Client.new('iot.eclipse.org'));
+$mqtt = MQTT::SubHandler.new('iot.eclipse.org');
 $game = Lasertag::Game.new($mqtt);
 
 $timerRunning 	= false;
@@ -141,3 +141,7 @@ while true do
 
 	$mqtt.publishTo "Lasertag/Game/Time", pubTime;
 end
+
+at_exit {
+	$game.remove_disconnected();
+}

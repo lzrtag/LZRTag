@@ -84,6 +84,7 @@ registerUARTCommand(0, 1,
 );
 
 shotTimer:register(250, tmr.ALARM_AUTO, shootIfValid);
+
 registerUARTCommand(1, 2,
 	function(data)
 		if(timeSinceLastHit() < disableTime*1000) then
@@ -92,11 +93,13 @@ registerUARTCommand(1, 2,
 
 		lastHitTimestamp = tmr.now();
 
+		sec, usec, rate = rtctime.get();
 		eventData = {
-			type		= "hit",
-			shooter 	= playerIDList[data:byte(1)],
-			target  	= playerID,
-			arbCode 	= data:byte(2)
+			type		 = "hit",
+			shooterID = data:byte(1),
+			target  	 = playerID,
+			arbCode 	 = data:byte(2),
+			time 		 =	sec + usec/1000000.0;
 		};
 		homeQTT:publish(lasertagTopic .. "/Game/Events", sjson.encode(eventData), 0, 0);
 		vibrate(1000);
