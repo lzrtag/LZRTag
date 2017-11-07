@@ -94,14 +94,11 @@ registerUARTCommand(1, 2,
 		lastHitTimestamp = tmr.now();
 
 		sec, usec, rate = rtctime.get();
-		eventData = {
-			type		 = "hit",
-			shooterID = data:byte(1),
-			target  	 = playerID,
-			arbCode 	 = data:byte(2),
-			time 		 =	sec + usec/1000000.0;
-		};
-		homeQTT:publish(lasertagTopic .. "/Game/Events", sjson.encode(eventData), 0, 0);
+
+		eventPackage = '{"type":"hit","shooterID":' .. data:byte(1) .. ',"target":"' .. playerID .. '","arbCode":' .. data:byte(2) .. ","
+		eventPackage = eventPackage .. '"time":{"sec":' .. sec .. ',"msec":' .. usec/1000 .. '}}'
+
+		homeQTT:publish(lasertagTopic .. "/Game/Events", eventPackage, 0, 0);
 		vibrate(1000);
 		overrideVest(500, 10);
 		tmr.create():alarm(500, tmr.ALARM_SINGLE,

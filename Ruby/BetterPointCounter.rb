@@ -84,12 +84,12 @@ $mqtt.subscribeTo "Lasertag/Game/Events" do |tList, message|
 	data = JSON.parse(message);
 
 	if(data["type"] == "hit") then
-		shooter 	= data["shooter"];
-		target 	= data["target"];
-		print "#{shooter} hit #{target}!\n"
-		$game[shooter].data[:kills] += 1;
-		$game[target].data[:deaths] += 1;
-		$mqtt.publishTo "Lasertag/Players/#{shooter}/Kills", $game[shooter].data[:kills];
+		shooter = $game[data["shooterID"].to_i];
+		target 	= $game[data["target"]];
+		print "#{shooter.name} hit #{target.name}!\n"
+		shooter.data[:kills] += 1;
+		target.data[:deaths] += 1;
+		$mqtt.publishTo "Lasertag/Players/#{shooter.name}/Kills", shooter.data[:kills];
 	end
 end
 
@@ -126,7 +126,22 @@ end
 
 set_game_status "stop";
 
-while true do
+at_exit {
+	print "Disconnecting Lasertag Clients ... "
+	$game.remove_disconnected();
+	puts "Done!"
+}
+
+$gameShouldRun = true;
+Signal.trap("SIGINT") do
+	$gameShouldRun = false;
+	$stdout.seek(-2, :CUR);
+	Thread.new do
+		Thread::main.run();
+	end
+end
+
+while $gameShouldRun do
 	sleep 1
 	next unless $timerRunning;
 
@@ -142,6 +157,4 @@ while true do
 	$mqtt.publishTo "Lasertag/Game/Time", pubTime;
 end
 
-at_exit {
-	$game.remove_disconnected();
-}
+end_game
