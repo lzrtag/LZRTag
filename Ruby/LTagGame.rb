@@ -15,7 +15,7 @@ class Game
 		@clientConnectCBs 		= Array.new();
 		@clientDisconnectCBs		= Array.new();
 		@clientRegisteredCBs		= Array.new();
-		@clientUnregisteredCB	= Array.new();
+		@clientUnregisteredCBs	= Array.new();
 
 		@mqtt.subscribeTo "#{@mqttTopic}/Team" do |tList, data|
 			if @clients.key? tList[0] then
@@ -100,7 +100,10 @@ class Game
 	end
 
 	def [](c)
-		return @clients[c];
+		return @clients[c] if c.is_a? String
+		return @clients[@idTable[c]] if c.is_a? Integer
+
+		raise ArgumentError, "Unknown identifier for the player id!"
 	end
 
 	def on_connect(&connectProc)
