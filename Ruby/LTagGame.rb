@@ -97,6 +97,12 @@ class Game
 				@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
 			end
 		end
+
+		at_exit {
+			print "Disconnecting Lasertag Clients ... "
+			remove_disconnected();
+			puts "Done!"
+		}
 	end
 
 	def [](c)
