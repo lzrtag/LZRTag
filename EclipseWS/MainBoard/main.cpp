@@ -49,12 +49,15 @@ void playVibration() {
 }
 ESPComs::Endpoint VibrationEP(10, &ESPComs::Endpoint::pubBuffer, 1, playVibration);
 
+uint8_t currentShotID = 1;
 void handleShots() {
 	if(ESPComs::Endpoint::pubBuffer[0] == 99) {
 		Board::Vibrator::vibrate(200);
 		Board::Nozzle::flash(0b10 << Board::Vest::team);
 		Board::Buzzer::sweep(3000, 1000, 150);
-		IR::TX::startTX({playerID, 0});
+		IR::TX::startTX({playerID, currentShotID++});
+		if(currentShotID & 16)
+			currentShotID = 0;
 	}
 }
 ESPComs::Endpoint ShootCommandEP(0, &ESPComs::Endpoint::pubBuffer, 1, handleShots);
