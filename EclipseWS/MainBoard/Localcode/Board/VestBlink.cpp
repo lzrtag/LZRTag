@@ -87,7 +87,7 @@ void slowUpdate() {
 	break;
 
 	case 5:
-		if((phase%2 == 0) && (phase < 6)) {
+		if(((phase & 1) == 0) && (phase < 6)) {
 			lightsOn();
 		}
 		else
@@ -105,4 +105,3 @@ void slowUpdate() {
 
 }
 }
-
