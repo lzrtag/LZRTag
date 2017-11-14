@@ -1,8 +1,6 @@
 
 dofile("UARTReceive.lua");
 
-playerIDList = {}
-
 function setVestBrightness(c)
 	uart.write(0, 200, c);
 end
@@ -66,7 +64,7 @@ subscribeTo(lasertagTopic .. "/Game/Status", 1,
 	end
 );
 
-tmr.create():alarm(500, tmr.ALARM_SINGLE, function()
+tmr.create():alarm(100, tmr.ALARM_SINGLE, function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 end);
 
