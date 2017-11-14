@@ -57,7 +57,7 @@ void handleShots() {
 		Board::Buzzer::sweep(3000, 1000, 150);
 		IR::TX::startTX({playerID, currentShotID++});
 		if(currentShotID & 16)
-			currentShotID = 0;
+			currentShotID = 1;
 	}
 }
 ESPComs::Endpoint ShootCommandEP(0, &ESPComs::Endpoint::pubBuffer, 1, handleShots);
