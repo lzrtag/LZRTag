@@ -2,14 +2,14 @@ clientID = "Lasertag_"..playerID
 
 serverURL = "iot.eclipse.org"
 
-homeQTT = mqtt.Client(clientID, 5);
+homeQTT = mqtt.Client(clientID, 10);
 homeQTT:lwt(playerTopic .. "/Connection", "", 1, 1);
 
 --------------
 --- SUB HANDLER FUNCTIONS
 --------------
 
-mqttSubTimer = tmr.new();
+mqttSubTimer = tmr.create();
 mqttSubQueue = {};
 mqttSubList  = {};
 
@@ -22,16 +22,21 @@ function mqttSoftSubscribe(topic)
 end
 
 function mqtt_raw_slow_subscribe()
-	t = table.remove(mqttSubQueue);
-	homeQTT:subscribe(t, mqttSubList[t].q);
 	if(#mqttSubQueue > 0) then
-		mqttSubTimer:start(); end;
+		t = table.remove(mqttSubQueue);
+		if(not t == "") then
+			homeQTT:subscribe(t, mqttSubList[t].q);
+		end
+	end
+	if(#mqttSubQueue > 0) then
+		mqttSubTimer:start();
+	end
 end
 
 function subscribeTo(topic, qos, callback)
-	mqttSubQueue[topic] = {
+	mqttSubList[topic] = {
 		q=qos,
-		c=callback
+		c=callback,
 	};
 	mqttSoftSubscribe(topic);
 end
@@ -46,6 +51,8 @@ function resubToAll()
 		mqttSubTimer:start();
 	end
 end
+
+mqttSubTimer:register(2000, tmr.ALARM_SEMI, mqtt_raw_slow_subscribe);
 
 ---------------
 --- RECONNECTING FUNCTIONS
@@ -108,7 +115,7 @@ if(wifi.sta.getip()) then
 	mqtt_Connect();
 end
 
-homeQTT::on("message",
+homeQTT:on("message",
 	function(client, topic, data)
 		mqttSubList[topic].c(data);
 	end);
