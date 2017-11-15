@@ -5,6 +5,52 @@ serverURL = "iot.eclipse.org"
 homeQTT = mqtt.Client(clientID, 5);
 homeQTT:lwt(playerTopic .. "/Connection", "", 1, 1);
 
+--------------
+--- SUB HANDLER FUNCTIONS
+--------------
+
+mqttSubTimer = tmr.new();
+mqttSubQueue = {};
+mqttSubList  = {};
+
+function mqttSoftSubscribe(topic)
+	table.insert(mqttSubQueue, topic);
+	running, state = mqttSubTimer:state();
+	if(not running) then
+		mqttSubTimer:start();
+	end
+end
+
+function mqtt_raw_slow_subscribe()
+	t = table.remove(mqttSubQueue);
+	homeQTT:subscribe(t, mqttSubList[t].q);
+	if(#mqttSubQueue > 0) then
+		mqttSubTimer:start(); end;
+end
+
+function subscribeTo(topic, qos, callback)
+	mqttSubQueue[topic] = {
+		q=qos,
+		c=callback
+	};
+	mqttSoftSubscribe(topic);
+end
+
+function resubToAll()
+	for k,v in pairs(mqttSubList) do
+		table.insert(mqttSubQueue, k);
+	end
+
+	running, state = mqttSubTimer:state();
+	if(not running) then
+		mqttSubTimer:start();
+	end
+end
+
+---------------
+--- RECONNECTING FUNCTIONS
+---------------
+
 homeQTT_connected = false;
 homeQTT_FirstConnect = nil;
 
@@ -23,9 +69,7 @@ function mqtt_Connect()
 	end
 	homeQTT:connect(serverURL,
 		function(client)
-			for k,v in pairs(sublist) do
-				homeQTT:subscribe(k, v.qos);
-			end
+			resubToAll();
 
 			homeQTT_connected = true;
 
@@ -51,14 +95,20 @@ function onMQTTConnect(cbFunc)
 	end
 end
 
-dofile("MQTTTools.lua");
+-------------
+--- EVENT REGISTRATION
+-------------
 
 wifi.eventmon.register(wifi.eventmon.STA_GOT_IP,
 	function(t)
 		mqtt_Connect();
 	end
 );
-
 if(wifi.sta.getip()) then
 	mqtt_Connect();
 end
+
+homeQTT::on("message",
+	function(client, topic, data)
+		mqttSubList[topic].c(data);
+	end);

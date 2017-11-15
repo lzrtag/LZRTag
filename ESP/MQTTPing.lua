@@ -5,7 +5,7 @@ sysInfoTopic = playerTopic .. "/System"
 currentPing = 1000000;
 
 subscribeTo(pingTopic .. "/PingOut", 0,
-	function(tList, data)
+	function(data)
 		currentPing = tmr.now() - tonumber(data);
 
 		homeQTT:publish(sysInfoTopic, sjson.encode(

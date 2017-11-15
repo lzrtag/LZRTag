@@ -28,25 +28,25 @@ function fireWeapon()
 end
 
 subscribeTo(playerTopic .. "/Brightness", 1,
-	function(tList, data)
+	function(data)
 		setVestBrightness(tonumber(data));
 	end
 );
 subscribeTo(playerTopic .. "/Team", 1,
-	function(tList, data)
+	function(data)
 		setVestColor(tonumber(data));
 	end
 );
 
 subscribeTo(playerTopic .. "/ID", 1,
-	function(tList, data)
+	function(data)
 		playerIDNum = tonumber(data);
 		uart.write(0, 100, playerIDNum);
 	end
 );
 
 subscribeTo(lasertagTopic .. "/Game/Status", 1,
-	function(tList, data)
+	function(data)
 		if(data == "stop") then
 			if(gameRunning) then
 				overrideVest(5000, 10);
