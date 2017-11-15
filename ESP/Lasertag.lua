@@ -38,13 +38,6 @@ subscribeTo(playerTopic .. "/Team", 1,
 	end
 );
 
-subscribeTo(playerTopic .. "/ID", 1,
-	function(data)
-		playerIDNum = tonumber(data);
-		uart.write(0, 100, playerIDNum);
-	end
-);
-
 subscribeTo(lasertagTopic .. "/Game/Status", 1,
 	function(data)
 		if(data == "stop") then
@@ -64,7 +57,15 @@ subscribeTo(lasertagTopic .. "/Game/Status", 1,
 	end
 );
 
-tmr.create():alarm(100, tmr.ALARM_SINGLE, function()
+subscribeTo(playerTopic .. "/ID", 1,
+	function(data)
+		playerIDNum = tonumber(data);
+		print("ID Assigned: " .. data)
+		uart.write(0, 100, playerIDNum);
+	end
+);
+
+tmr.create():alarm(3000, tmr.ALARM_SINGLE, function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 end);
 
