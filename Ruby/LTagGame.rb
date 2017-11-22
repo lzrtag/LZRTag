@@ -104,7 +104,7 @@ class Game
 		at_exit {
 			print "Disconnecting Lasertag Clients ...\r"
 			remove_disconnected();
-			puts "Done disconnecting clients."
+			puts "Done disconnecting clients!          "
 		}
 	end
 

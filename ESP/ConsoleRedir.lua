@@ -1,7 +1,7 @@
 
 
 subscribeTo(playerTopic .. "/Console/In", 0,
-	function(tList, data)
+	function(data)
 		node.input(data);
 	end
 );
@@ -10,7 +10,7 @@ targetFilename = nil;
 inStreamFile = nil;
 currentBlock = -1;
 subscribeTo(playerTopic .. "/Console/FileWrite", 2,
-	function(tList, data)
+	function(data)
 		cmd = sjson.decode(data);
 
 		if(cmd.targetFile) then

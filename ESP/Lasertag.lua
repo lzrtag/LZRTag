@@ -28,25 +28,18 @@ function fireWeapon()
 end
 
 subscribeTo(playerTopic .. "/Brightness", 1,
-	function(tList, data)
+	function(data)
 		setVestBrightness(tonumber(data));
 	end
 );
 subscribeTo(playerTopic .. "/Team", 1,
-	function(tList, data)
+	function(data)
 		setVestColor(tonumber(data));
 	end
 );
 
-subscribeTo(playerTopic .. "/ID", 1,
-	function(tList, data)
-		playerIDNum = tonumber(data);
-		uart.write(0, 100, playerIDNum);
-	end
-);
-
 subscribeTo(lasertagTopic .. "/Game/Status", 1,
-	function(tList, data)
+	function(data)
 		if(data == "stop") then
 			if(gameRunning) then
 				overrideVest(5000, 10);
@@ -64,7 +57,14 @@ subscribeTo(lasertagTopic .. "/Game/Status", 1,
 	end
 );
 
-tmr.create():alarm(100, tmr.ALARM_SINGLE, function()
+subscribeTo(playerTopic .. "/ID", 1,
+	function(data)
+		playerIDNum = tonumber(data);
+		uart.write(0, 100, playerIDNum);
+	end
+);
+
+tmr.create():alarm(3000, tmr.ALARM_SINGLE, function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 end);
 
