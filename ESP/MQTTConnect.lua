@@ -1,7 +1,5 @@
 clientID = "Lasertag_"..playerID
 
-serverURL = "iot.eclipse.org"
-
 homeQTT = mqtt.Client(clientID, 10);
 homeQTT:lwt(playerTopic .. "/Connection", "", 1, 1);
 
