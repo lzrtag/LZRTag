@@ -17,21 +17,21 @@ class Game
 		@clientRegisteredCBs		= Array.new();
 		@clientUnregisteredCBs	= Array.new();
 
-		@mqtt.subscribeTo "#{@mqttTopic}/Team" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Team" do |tList, data|
 			if @clients.key? tList[0] then
 				teamNumber = data.to_i;
 				@clients[tList[0]].instance_variable_set(:@team, teamNumber) if teamNumber;
 			end
 		end
 
-		@mqtt.subscribeTo "#{@mqttTopic}/Brightness" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Brightness" do |tList, data|
 			if @clients.key? tList[0] then
 				brightness = data.to_i;
 				@clients[tList[0]].instance_variable_set(:@brightness, brightness) if brightness;
 			end
 		end
 
-		@mqtt.subscribeTo "#{@mqttTopic}/System" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/System" do |tList, data|
 			if @clients.key? tList[0] then
 				sysInfo = JSON.parse(data);
 				c = @clients[tList[0]];
@@ -41,7 +41,7 @@ class Game
 			end
 		end
 
-		@mqtt.subscribeTo "#{@mqttTopic}/Connection" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Connection" do |tList, data|
 			pName = tList[0];
 
 			if(data == "OK") then

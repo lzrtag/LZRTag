@@ -38,15 +38,15 @@ class Client
 		n = n.to_i;
 		return false unless n != nil and n < 3 and n >= 0;
 		@team = n;
-		@mqtt.publishTo "#{@mqttTopic}/Team", @team, retain: true;
+		@mqtt.publish_to "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
 	end
 
 	def brightness=(n)
 		n = n.to_i;
-		return false unless n != nil and n <= 5 and n >= 0;
+		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 5 and n >= 0;
 		@brightness = n;
-		@mqtt.publishTo "#{@mqttTopic}/Brightness", @brightness, retain: true;
+		@mqtt.publish_to "#{@mqttTopic}/Brightness", @brightness, retain: true;
 		return true;
 	end
 
@@ -66,12 +66,12 @@ class Client
 	def clean_all_topics()
 		raise "Client still connected!" if connected?
 
-		@mqtt.publishTo "#{@mqttTopic}/Team", "", retain: true;
-		@mqtt.publishTo "#{@mqttTopic}/Brightness", "", retain: true;
+		@mqtt.publish_to "#{@mqttTopic}/Team", "", retain: true;
+		@mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
 	end
 
 	def console(str)
-		@mqtt.publishTo "#{@mqttTopic}/Console/In", str;
+		@mqtt.publish_to "#{@mqttTopic}/Console/In", str;
 	end
 
 	def override_brightness(level, duration)
