@@ -1,5 +1,5 @@
 
-require_relative 'Libs/MQTTSubscriber.rb'
+require_relative '../Libs/MQTTSubscriber.rb'
 require_relative 'LTagPlayer.rb'
 require 'json'
 
