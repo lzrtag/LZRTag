@@ -1,6 +1,4 @@
 
-sublist = {};
-subQueue = {};
 subTimer = tmr.create();
 
 function compareTopics(receivedTopic, topicPattern)
@@ -51,11 +49,7 @@ function subscribeTo(topic, qos, callFunction)
 		matchPattern = genTopiclist(topic),
 	}
 
-	table.insert(subQueue, topic);
-	running, state = subTimer:state();
-	if(not running) then
-		subTimer:start();
-	end
+	mqttSoftSubscribe(topic);
 end
 
 function callSubCallback(mqttClient, topic, data)
