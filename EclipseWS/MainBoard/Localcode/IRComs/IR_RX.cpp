@@ -95,9 +95,9 @@ void update() {
 		segmentPosition++;
 
 		if(segmentPosition == CHECKSUM_FRAMES) {
-			stopRX();
 			if(RXCallback != 0)
 				RXCallback(*(ShotPacket *)&data);
+			stopRX();
 		}
 	break;
 	}

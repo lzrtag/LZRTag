@@ -21,13 +21,5 @@ function playNextNote()
 	currentNotePosition = currentNotePosition + 1;
 end
 
-registerUARTCommand(0, 1,
-	function(data)
-		if(data:byte() == 1) then
-			uart.write(0, 0, 99);
-		end
-	end
-);
-
 setVestBrightness(5);
 playNextNote();

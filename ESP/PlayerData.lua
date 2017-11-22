@@ -1,3 +1,6 @@
 
-playerID = "Xasin2";
-playerIDNum = 2;
+playerID 		= "Red";
+invertButton 	= false;
+
+serverURL 		= 'iot.eclipse.org'
+lasertagTopic	= 'Lasertag'

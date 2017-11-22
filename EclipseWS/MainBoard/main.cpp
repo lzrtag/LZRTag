@@ -30,6 +30,7 @@ ESPComs::Endpoint PlayerIDEP(100, &playerID, 1, 0);
 
 ESPComs::Endpoint ColorEP(101, &Board::Vest::team, 1, 0);
 ESPComs::Endpoint VestBrightnessEP(200, &Board::Vest::mode, 1, 0);
+ESPComs::Endpoint BrightnessOverrideEp(12, &Board::Vest::overrides, 3, 0);
 
 struct BuzzCommand {
 	uint8_t length;
@@ -48,20 +49,26 @@ void playVibration() {
 }
 ESPComs::Endpoint VibrationEP(10, &ESPComs::Endpoint::pubBuffer, 1, playVibration);
 
+uint8_t currentShotID = 1;
 void handleShots() {
 	if(ESPComs::Endpoint::pubBuffer[0] == 99) {
 		Board::Vibrator::vibrate(200);
 		Board::Nozzle::flash(0b10 << Board::Vest::team);
 		Board::Buzzer::sweep(3000, 1000, 150);
-		IR::TX::startTX({playerID, 0});
+		IR::TX::startTX({playerID, currentShotID++});
+		if(currentShotID & 16)
+			currentShotID = 1;
 	}
 }
 ESPComs::Endpoint ShootCommandEP(0, &ESPComs::Endpoint::pubBuffer, 1, handleShots);
 
+IR::ShotPacket recShotData = {15, 15};
+ESPComs::Source HitDetectSRC(1, &recShotData, 2);
 void IRRXCB(IR::ShotPacket data) {
 	if(data.playerID == playerID)
 		return;
-	hasBeenShot = true;
+	recShotData = data;
+	HitDetectSRC.fire();
 }
 
 int main() {

@@ -1,7 +1,6 @@
 
 dofile("PlayerData.lua");
-
-playerTopic = "Lasertag/Players/"..playerID..""
+playerTopic = lasertagTopic .. "/Players/"..playerID;
 
 dofile("MQTTConnect.lua");
 
@@ -39,6 +38,8 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 							dofile("ConsoleRedir.lua");
 							dofile("Lasertag.lua");
 							dofile("MQTTPing.lua");
+
+							sntp.sync(nil, nil, nil, 1);
 						end
 					);
 				end

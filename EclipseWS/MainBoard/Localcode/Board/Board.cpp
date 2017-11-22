@@ -51,7 +51,9 @@ namespace Board {
 
 		void vibrate(uint16_t duration) {
 			on();
-			vibratorDuration += duration;
+			if(duration > vibratorDuration) {
+				vibratorDuration = duration;
+			}
 		}
 
 		void update() {

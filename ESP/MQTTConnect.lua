@@ -1,11 +1,62 @@
 clientID = "Lasertag_"..playerID
 
-serverURL = "iot.eclipse.org"
+homeQTT = mqtt.Client(clientID, 10);
+homeQTT:lwt(playerTopic .. "/Connection", "", 1, 1);
 
-homeQTT = mqtt.Client(clientID, 120);
+--------------
+--- SUB HANDLER FUNCTIONS
+--------------
+
+mqttSubTimer = tmr.create();
+mqttSubQueue = {};
+mqttSubList  = {};
+
+function mqttSoftSubscribe(topic)
+	table.insert(mqttSubQueue, topic);
+	running, state = mqttSubTimer:state();
+	if(not running) then
+		mqttSubTimer:start();
+	end
+end
+
+function mqtt_raw_slow_subscribe()
+	if(#mqttSubQueue > 0) then
+		t = table.remove(mqttSubQueue);
+		if(not (t == "")) then
+			homeQTT:subscribe(t, mqttSubList[t].q);
+		end
+	end
+	if(#mqttSubQueue > 0) then
+		mqttSubTimer:start();
+	end
+end
+
+function subscribeTo(topic, qos, callback)
+	mqttSubList[topic] = {
+		q=qos,
+		c=callback,
+	};
+	mqttSoftSubscribe(topic);
+end
+
+function resubToAll()
+	for k,v in pairs(mqttSubList) do
+		table.insert(mqttSubQueue, k);
+	end
+
+	running, state = mqttSubTimer:state();
+	if(not running) then
+		mqttSubTimer:start();
+	end
+end
+
+mqttSubTimer:register(2000, tmr.ALARM_SEMI, mqtt_raw_slow_subscribe);
+
+---------------
+--- RECONNECTING FUNCTIONS
+---------------
 
 homeQTT_connected = false;
-
 homeQTT_FirstConnect = nil;
 
 homeQTT:on("offline",
@@ -17,14 +68,16 @@ function(client)
 end
 );
 
-
 function mqtt_Connect()
 	if(homeQTT_connected) then
 		return;
 	end
 	homeQTT:connect(serverURL,
 		function(client)
+			resubToAll();
+
 			homeQTT_connected = true;
+
 			if(homeQTT_FirstConnect) then
 				homeQTT_FirstConnect();
 				homeQTT_FirstConnect = nil;
@@ -39,16 +92,6 @@ function mqtt_Connect()
 	);
 end
 
-wifi.eventmon.register(wifi.eventmon.STA_GOT_IP,
-	function(t)
-		mqtt_Connect();
-	end
-);
-
-if(wifi.sta.getip()) then
-	mqtt_Connect();
-end
-
 function onMQTTConnect(cbFunc)
 	if(homeQTT_connected) then
 		cbFunc();
@@ -57,4 +100,20 @@ function onMQTTConnect(cbFunc)
 	end
 end
 
-dofile("MQTTTools.lua");
+-------------
+--- EVENT REGISTRATION
+-------------
+
+wifi.eventmon.register(wifi.eventmon.STA_GOT_IP,
+	function(t)
+		mqtt_Connect();
+	end
+);
+if(wifi.sta.getip()) then
+	mqtt_Connect();
+end
+
+homeQTT:on("message",
+	function(client, topic, data)
+		mqttSubList[topic].c(data);
+	end);
