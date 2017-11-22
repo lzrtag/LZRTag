@@ -24,7 +24,7 @@ end
 function mqtt_raw_slow_subscribe()
 	if(#mqttSubQueue > 0) then
 		t = table.remove(mqttSubQueue);
-		if(not t == "") then
+		if(not (t == "")) then
 			homeQTT:subscribe(t, mqttSubList[t].q);
 		end
 	end

@@ -60,7 +60,6 @@ subscribeTo(lasertagTopic .. "/Game/Status", 1,
 subscribeTo(playerTopic .. "/ID", 1,
 	function(data)
 		playerIDNum = tonumber(data);
-		print("ID Assigned: " .. data)
 		uart.write(0, 100, playerIDNum);
 	end
 );
