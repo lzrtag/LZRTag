@@ -13,8 +13,8 @@ class Game
 		@idTable = Hash.new();
 
 		@clientConnectCBs 		= Array.new();
-		@clientDisconnectCBs		= Array.new();
-		@clientRegisteredCBs		= Array.new();
+		@clientDisconnectCBs	= Array.new();
+		@clientRegisteredCBs	= Array.new();
 		@clientUnregisteredCBs	= Array.new();
 
 		@mqtt.subscribe_to "#{@mqttTopic}/Team" do |tList, data|
