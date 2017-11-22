@@ -1,5 +1,5 @@
 
-require_relative 'MQTTSubscriber.rb'
+require_relative 'Libs/MQTTSubscriber.rb'
 require_relative 'LTagPlayer.rb'
 require 'json'
 
@@ -80,6 +80,9 @@ class Game
 
 		if(id_assign) then
 			on_connect do |pName, player|
+				# Search for a free ID number.
+				# Since the table of free ID numbers does not need to be continuous,
+				# each ID has to be looked at.
 				i = 1;
 				while @idTable[i] do
 					i += 1;

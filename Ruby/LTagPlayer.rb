@@ -1,5 +1,5 @@
 
-require_relative 'MQTTSubscriber.rb'
+require_relative 'Libs/MQTTSubscriber.rb'
 
 module Lasertag
 class Client

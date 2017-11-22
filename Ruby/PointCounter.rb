@@ -3,7 +3,7 @@
 require 'mqtt'
 require 'json'
 
-require_relative 'MQTTSubscriber.rb'
+require_relative 'Libs/MQTTSubscriber.rb'
 
 $mHost = "iot.eclipse.org"
 
