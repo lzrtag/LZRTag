@@ -46,9 +46,24 @@ module Lasertag
 				dataTopic 	= "Lasertag/Players/#{target}/Console/FileWrite"
 				answerTopic = "Lasertag/Players/#{target}/Console/FileAnswer"
 
-				for i=(0..@numBlocks) do
+				### PROTO-CODE
 
+				# Send a "prep" message to the Lasertag
+				# On success, continue on to the next stage, else fail
+				@mqtt.publish_to dataTopic, {
+					file: @filename,
+					block: -1
+				}.to_json, qos: 2
+
+				@mqtt.wait_for answerTopic, qos: 2, timeout: 10 do |tList, data|
+					if(data == "READY_#{@filename}") then
+						@state = :TRANSFER
+					end
 				end
+
+				# Send out "n" blocks of data
+				# On a failure, use a `retry` block
+				# Break if transfer fails too often.
 			end
 		end
 
