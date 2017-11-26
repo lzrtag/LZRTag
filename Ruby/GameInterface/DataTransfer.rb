@@ -4,71 +4,117 @@ require 'base64'
 require_relative '../Libs/MQTTSubscriber.rb'
 
 module Lasertag
-	class TransferManager
-		def initialize(mqtt, blockSize: 512)
-			@mqtt = mqtt;
-
-			@blockSize = blockSize;
-
-			@playerUpdatedTimes = Hash.new do |h, k|
-				h[k] = Hash.new();
-			end
-		end
-
-		def raw_send_file(filename, target)
-			dataTopic 	= "Lasertag/Players/#{target}/Console/FileWrite"
-			answerTopic = "Lasertag/Players/#{target}/Console/FileAnswer"
-			@mqtt.publish_to "Lasertag/"
-		end
-	end
-
-	class SingleTransfer
+	class RawTransfer
 		attr_reader :state
+		attr_reader :Target
 
-		def initialize(mqtt, file, target, blocksize: 512)
-			@state = :CONNECTING
+		attr_reader :Filepath
+		attr_reader :Filename
+		attr_reader :Blocksize
+		attr_reader :BlockNum
+		attr_reader :currentBlock
 
-			@mqtt = mqtt;
+		def initialize(mqtt, target, filepath, **options)
+			@state = :IDLE;
 
-			@target = target;
+			@mqtt 	= mqtt;
+			@Target 	= target;
+			if options[:playertopic] then
+				@TransferTopic = options[:playertopic] + "#{target}/"
+			else
+				@TransferTopic = "Lasertag/Players/#{target}/"
+			end
+			@retryAttempts = 0;
+			@MaxRetries 	= (options[:MaxRetries] or 2);
 
-			@filename 	= File.basename(file);
-			@tmpFile 	= "tmp/#{@filename}.#{target}.upload";
+			@Filepath		= filepath;
+			@Filename 		= (options[:filename] or File.basename(filepath));
+			@file 			= File.open(@Filepath, "r");
 
-			`cp #{file} #{@tmpFile}`
-			@file = File.open(@tmpFile, "r");
+			@Blocksize 		= (options[:blocksize] or 256);
+			@BlockNum		= (@file.size.to_f / @Blocksize).ceil;
+			@currentBlock  = 0;
+		end
 
-			@blocksize		= blocksize
-			@blockNumber	= 0;
-			@numBlocks		= (@file.size.to_f / @blocksize).ceil;
+		def transfer()
+			return true if @state = :COMPLETED;
 
-			@transferThread = Thread.new do
-				dataTopic 	= "Lasertag/Players/#{target}/Console/FileWrite"
-				answerTopic = "Lasertag/Players/#{target}/Console/FileAnswer"
+			txTopic = @TransferTopic + "Console/FileWrite";
+			rxTopic = @TransferTopic + "Console/FileAnswer";
 
-				### PROTO-CODE
+			@state = :CONNECTING;
 
-				# Send a "prep" message to the Lasertag
-				# On success, continue on to the next stage, else fail
-				@mqtt.publish_to dataTopic, {
-					file: @filename,
-					block: -1
+			# Send a "prep" message to the Lasertag
+			# On success, continue on to the next stage, else fail
+			@retryAttempts = 0;
+			@currentBlock = 0;
+			loop do
+				@mqtt.publish_to txTopic, {
+					file: @Filename,
+					block: 0
 				}.to_json, qos: 2
 
-				@mqtt.wait_for answerTopic, qos: 2, timeout: 10 do |tList, data|
-					if(data == "READY_#{@filename}") then
+				@mqtt.wait_for rxTopic, qos: 2, timeout: 10 do |tList, data|
+					if(data == "READY: #{@Filename}") then
 						@state = :TRANSFER
+						true
 					end
 				end
 
-				# Send out "n" blocks of data
-				# On a failure, use a `retry` block
-				# Break if transfer fails too often.
+				if @state == :TRANSFER then
+					break;
+				else
+					@retryAttempts += 1;
+					if @retryAttempts >= @MaxRetries then
+						@state = :FAILED;
+						return false;
+					end
+				end
 			end
-		end
 
-		def join
-			@transferThread.join
+			# Send out "n" blocks of data
+			# On a failure, retry
+			# Break if transfer fails too often.
+			loop do
+				@currentBlock += 1;
+
+				packet = {
+					file: 	@Filename,
+					block: 	@currentBlock,
+				}
+
+				packet[:close] = true if @currentBlock == @BlockNum;
+
+				dataSegment = String.new
+				begin
+					@file.sysread(@Blocksize, dataSegment);
+				rescue EOFError
+				end
+				packet[:data] = Base64.strict_encode64(dataSegment);
+
+				@retryAttempts = 0;
+				loop do
+					@mqtt.publish_to txTopic, packet.to_json, qos: 2;
+
+					packetACKed = false;
+					@mqtt.wait_for rxTopic, qos: 2, timeout: 10 do |tList, data|
+						packetACKed = (data == "OK: #{@Filename}, #{@currentBlock}");
+					end
+
+					break if packetACKed;
+
+					@retryAttempts += 1;
+					if @retryAttempts >= @MaxRetries then
+						@state = :FAILED;
+						return false;
+					end
+				end
+
+				if(@currentBlock == @BlockNum) then
+					@state = :COMPLETED;
+					return true;
+				end
+			end
 		end
 	end
 end
