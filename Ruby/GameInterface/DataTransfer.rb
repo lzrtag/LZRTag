@@ -37,7 +37,7 @@ module Lasertag
 		end
 
 		def transfer()
-			return true if @state = :COMPLETED;
+			return true if @state == :COMPLETED;
 
 			txTopic = @TransferTopic + "Console/FileWrite";
 			rxTopic = @TransferTopic + "Console/FileAnswer";
