@@ -12,6 +12,9 @@ class Client
 	attr_reader :ping
 	attr_reader :heap
 
+	attr_reader   :fileTransferActive
+	attr_accessor :failedTransfers
+
 	attr_accessor :data
 
 	def initialize(name, mqtt)
@@ -28,6 +31,10 @@ class Client
 		@battery = 3.3;
 		@ping = 10000;
 		@heap = 40000;
+
+		@fileTransferActive = false;
+		@fileTransferQueue 	= Array.new();
+		@failedTransfers	= Array.new();
 	end
 
 	def connected?()
@@ -96,8 +103,30 @@ class Client
 		console("ping(#{startF},#{endF},#{(duration*1000).to_i});");
 	end
 
-	def prepare_file(filepath, **options)
+	def prepare_file_transfer(filepath, **options)
 		return Lasertag::RawTransfer.new(@mqtt, @name, filepath, **options);
+	end
+
+	def transfer_file(filepath, **options)
+		@fileTransferQueue << prepare_file_transfer(filepath, **options);
+
+		unless @fileTransferActive
+			@fileTransferActive = true;
+			@fileTransferThread = Thread.new do
+				while (nextTransfer = @fileTransferQueue.pop) do
+					if not nextTransfer.transfer then
+						@failedTransfers << nextTransfer;
+					end
+				end
+				@transferActive = false;
+			end
+		end
+	end
+
+	def complete_transfers()
+		if @fileTransferActive then
+			@fileTransferThread.join();
+		end
 	end
 
 	private :console
