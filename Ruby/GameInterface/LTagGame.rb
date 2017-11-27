@@ -102,6 +102,18 @@ class Game
 		end
 
 		at_exit {
+			fileTransferFound = false;
+			each_connected do |pName, player|
+				if(player.transferActive) then
+					print "Waiting for file transfers to complete ... \r" unless fileTransferFound;
+					fileTransferFound = true;
+
+					player.complete_transfers;
+				end
+			end
+
+			puts "All file transfers completed!              " if fileTransferFound;
+
 			print "Disconnecting Lasertag Clients ...\r"
 			remove_disconnected();
 			puts "Done disconnecting clients!          "
