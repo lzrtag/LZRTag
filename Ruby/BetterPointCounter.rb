@@ -1,5 +1,5 @@
 
-require_relative 'LTagGame.rb'
+require_relative 'GameInterface/LTagGame.rb'
 
 $mqtt = MQTT::SubHandler.new('iot.eclipse.org');
 $game = Lasertag::Game.new($mqtt);
