@@ -1,3 +1,5 @@
+require_relative 'DataTransfer.rb'
+
 
 module Lasertag
 class Client
@@ -92,6 +94,10 @@ class Client
 	def noise(duration: 0.5, startF: 440, endF: startF)
 		return false unless duration.is_a? Numeric and startF.is_a? Integer and endF.is_a? Integer
 		console("ping(#{startF},#{endF},#{(duration*1000).to_i});");
+	end
+
+	def prepare_file(filepath, **options)
+		return Lasertag::RawTransfer.new(@mqtt, @name, filepath, **options);
 	end
 
 	private :console
