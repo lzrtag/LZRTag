@@ -6,6 +6,8 @@ dofile("MQTTConnect.lua");
 
 StartSymbol = string.byte("!");
 
+SAFEMODE = not file.exists("BOOT_SAFECHECK");
+
 tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 	function(t)
 
@@ -36,8 +38,18 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 					onMQTTConnect(
 						function()
 							dofile("ConsoleRedir.lua");
-							dofile("Lasertag.lua");
-							dofile("MQTTPing.lua");
+
+							if(not SAFEMODE) then
+								file.open("BOOT_SAFECHECK","w"):close();
+
+								dofile("Lasertag.lua");
+								dofile("MQTTPing.lua");
+
+								tmr.create():alarm(3000, tmr.ALARM_SINGLE,
+									function()
+										file.remove("BOOT_SAFECHECK");
+									end);
+							end
 						end
 					);
 				end
