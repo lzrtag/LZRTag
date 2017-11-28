@@ -19,13 +19,10 @@ module Lasertag
 
 			@mqtt 	= targetPlayer.mqtt;
 			@Target = targetPlayer.name;
-			if options[:playertopic] then
-				@TransferTopic = options[:playertopic] + "#{target}/"
-			else
-				@TransferTopic = "Lasertag/Players/#{target}/"
-			end
-			@retryAttempts = 0;
-			@MaxRetries 	= (options[:MaxRetries] or 2);
+			@TransferTopic = "Lasertag/Players/#{@Target}/"
+
+			@retryAttempts  = 0;
+			@MaxRetries 	= (options[:maxRetries] or 2);
 
 			@Filepath		= filepath;
 			@Filename 		= (options[:filename] or File.basename(filepath));
