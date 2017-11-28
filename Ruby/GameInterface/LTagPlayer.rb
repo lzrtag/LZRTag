@@ -1,5 +1,3 @@
-require_relative 'DataTransfer.rb'
-
 
 module Lasertag
 class Client
