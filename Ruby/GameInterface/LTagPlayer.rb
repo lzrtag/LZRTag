@@ -3,6 +3,7 @@ require_relative 'DataTransfer.rb'
 
 module Lasertag
 class Client
+	attr_reader :mqtt
 	attr_reader :name
 	attr_reader :team
 	attr_reader :brightness
@@ -11,9 +12,6 @@ class Client
 	attr_reader :battery
 	attr_reader :ping
 	attr_reader :heap
-
-	attr_reader   :fileTransferActive
-	attr_accessor :failedTransfers
 
 	attr_accessor :data
 
@@ -31,10 +29,6 @@ class Client
 		@battery = 3.3;
 		@ping = 10000;
 		@heap = 40000;
-
-		@fileTransferActive = false;
-		@fileTransferQueue 	= Array.new();
-		@failedTransfers	= Array.new();
 	end
 
 	def connected?()
@@ -101,32 +95,6 @@ class Client
 	def noise(duration: 0.5, startF: 440, endF: startF)
 		return false unless duration.is_a? Numeric and startF.is_a? Integer and endF.is_a? Integer
 		console("ping(#{startF},#{endF},#{(duration*1000).to_i});");
-	end
-
-	def prepare_file_transfer(filepath, **options)
-		return Lasertag::RawTransfer.new(@mqtt, @name, filepath, **options);
-	end
-
-	def transfer_file(filepath, **options)
-		@fileTransferQueue << prepare_file_transfer(filepath, **options);
-
-		unless @fileTransferActive
-			@fileTransferActive = true;
-			@fileTransferThread = Thread.new do
-				while (nextTransfer = @fileTransferQueue.pop) do
-					if not nextTransfer.transfer then
-						@failedTransfers << nextTransfer;
-					end
-				end
-				@transferActive = false;
-			end
-		end
-	end
-
-	def complete_transfers()
-		if @fileTransferActive then
-			@fileTransferThread.join();
-		end
 	end
 
 	private :console
