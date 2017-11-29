@@ -30,9 +30,9 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 				if(data == StartSymbol) then
 					noTagTimer:unregister();
 
-					uart.write( 0, 10, 10,
-									11, 10, 7, 7,
-									101, 2);
+					uart.write( 0, 10, 10,		-- Vibrate a little?
+									11, 10, 7, 7,	-- Connect buzz
+									101, 2);			-- Set blue team
 
 					uart.on("data", 0, function(d) end, 0);
 
@@ -50,6 +50,10 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 									function()
 										file.remove("BOOT_SAFECHECK");
 									end);
+							else
+								uart.write(	200, 5,	-- Bright blink mode
+												101, 0,	-- Red team
+												11, 100, 33, 34); -- 2kHz "error" buzz
 							end
 						end
 					);
