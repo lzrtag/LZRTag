@@ -35,9 +35,7 @@ subscribeTo(playerTopic .. "/Console/FileWrite", 2,
 				file.remove(targetFilename);
 				file.rename(targetFilename .. ".BKUP", targetFilename);
 
-				if(SAFEMODE) then
-					file.remove("BOOT_SAFECHECK");
-				end
+				file.remove("BOOT_SAFECHECK");
 			end
 
 			homeQTT:publish(playerTopic .. "/Console/FileAnswer",
