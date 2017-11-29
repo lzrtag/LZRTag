@@ -14,11 +14,11 @@ module Lasertag
 		attr_reader :BlockNum
 		attr_reader :currentBlock
 
-		def initialize(targetPlayer, filepath, **options)
+		def initialize(mqtt, target, filepath, **options)
 			@state = :IDLE;
 
-			@mqtt 	= targetPlayer.mqtt;
-			@Target = targetPlayer.name;
+			@mqtt 	= mqtt;
+			@Target = target;
 			@TransferTopic = "Lasertag/Players/#{@Target}/"
 
 			@retryAttempts  = 0;
