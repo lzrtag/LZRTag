@@ -14,13 +14,6 @@ stds.nodemcu = {
 		"encoder",
 		"sntp",
 		"rtctime",
-	},
-	globals = {
-		"subscribeTo",
-		"registerUARTCommand",
-		"homeQTT",
-		"homeQTT_connected",
-		"onMQTTConnect",
 	}
 }
 
@@ -44,6 +37,12 @@ stds.lasertag = {
 		"fireWeapon",
 
 		"gameRunning",
+
+		"subscribeTo",
+		"registerUARTCommand",
+		"homeQTT",
+		"homeQTT_connected",
+		"onMQTTConnect",
 	}
 }
 
