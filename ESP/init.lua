@@ -7,6 +7,7 @@ dofile("MQTTConnect.lua");
 StartSymbol = string.byte("!");
 
 SAFEMODE = not file.exists("BOOT_SAFECHECK");
+systemIsSetUp = false;
 
 tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 	function(t)

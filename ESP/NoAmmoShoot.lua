@@ -97,7 +97,7 @@ registerUARTCommand(1, 2,
 
 		eP = '{"type":"hit","shooterID":' .. data:byte(1)
 		eP = eP .. ',"target":"' .. playerID .. '","arbCode":' .. data:byte(2)
-		eP = eP .. '",time":{"sec":' .. sec .. ',"msec":' .. usec/1000 .. '}}'
+		eP = eP .. ',"time":{"sec":' .. sec .. ',"msec":' .. usec/1000 .. '}}'
 
 		homeQTT:publish(lasertagTopic .. "/Game/Events", eP, 0, 0);
 

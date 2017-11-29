@@ -66,6 +66,7 @@ subscribeTo(playerTopic .. "/ID", 1,
 
 tmr.create():alarm(3000, tmr.ALARM_SINGLE, function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
+	systemIsSetUp = true;
 end);
 
 setVestColor(1);
