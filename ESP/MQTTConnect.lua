@@ -50,7 +50,7 @@ function resubToAll()
 	end
 end
 
-mqttSubTimer:register(2000, tmr.ALARM_SEMI, mqtt_raw_slow_subscribe);
+mqttSubTimer:register(1000, tmr.ALARM_SEMI, mqtt_raw_slow_subscribe);
 
 ---------------
 --- RECONNECTING FUNCTIONS
@@ -82,6 +82,12 @@ function mqtt_Connect()
 				homeQTT_FirstConnect();
 				homeQTT_FirstConnect = nil;
 			end
+
+			tmr.create():alarm(1000, tmr.ALARM_SINGLE, function()
+				if(systemIsSetUp) then
+					homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
+				end
+			end);
 		end,
 		function(client, reason)
 			homeQTT_connected = false;

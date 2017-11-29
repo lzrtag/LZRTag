@@ -6,6 +6,8 @@ dofile("MQTTConnect.lua");
 
 StartSymbol = string.byte("!");
 
+systemIsSetUp = false;
+
 tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 	function(t)
 
