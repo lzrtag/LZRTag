@@ -4,86 +4,33 @@ require 'mqtt'
 require 'json'
 require 'base64'
 
-raise "No file specified! :c" unless ARGV[0]
+require_relative 'Ruby/GameInterface/LTagGame.rb'
 
-$mHost = "iot.eclipse.org"
-$targetTag = "Xasin2"
+$mqtt = MQTT::SubHandler.new("iot.eclipse.org");
 
-$blockSize = 512;
-$sendDelay = 1;
+$game = Lasertag::Game.new($mqtt, id_assign: false);
+$game.on_register() do |pName, player|
+	player.data[:upload_queue] 	= Queue.new();
+	player.data[:upload_thread] = Thread.new do
+	loop do
+		player.data[:current_upload] = player.data[:upload_queue].pop;
+		player.data[:current_upload].transfer
+	end
+	end
+end
 
 lastArg = nil;
-inputData = Hash.new();
+inputData = Hash.new() do |h,k|
+	h[k] = Array.new();
+end
+
 ARGV[1..-1].each { |str|
 	if str[0] == "-" then
 		lastArg = str[1..-1];
-		inputData[lastArg] = true;
+		inputData[lastArg] ||= Array.new;
 	elsif lastArg == nil then
 		raise "Incorrect input arguments! :c"
 	else
-		inputData[lastArg] = str;
-		lastArg = nil;
+		inputData[lastArg] << str;
 	end
 }
-
-$targetTag = inputData["t"] if inputData["t"];
-
-$mPath = "Lasertag/Players/#{$targetTag}/Console/FileWrite";
-
-print "Connecting ... "
-MQTT::Client.connect($mHost) do |c|
-	print "Connected!\n"
-
-	$mqtt = c
-	def esp(cmd)
-		$mqtt.publish($mPath, cmd);
-	end
-
-	if inputData["R"] then
-		print "Running!\n"
-		$mPath = "Lasertag/Players/#{$targetTag}/Console/In";
-		esp "dofile(\"#{ARGV[0]}\")";
-	else
-		dataSource = File.open(ARGV[0], "r");
-		numBlocks = (dataSource.size / $blockSize).floor + 1;
-
-		$dataBlob = Hash.new();
-		$dataBlob[:targetFile] = ARGV[0];
-
-		dataBlobBlock = String.new();
-
-		begin
-			dataSource.sysread($blockSize, dataBlobBlock);
-		rescue EOFError
-			$dataBlob[:eof] = true;
-		end
-
-		$dataBlob[:block] = 1;
-		while true do
-			$dataBlob[:data] = Base64.strict_encode64(dataBlobBlock);
-
-			begin
-				dataSource.sysread($blockSize, dataBlobBlock);
-			rescue EOFError
-				$dataBlob[:eof] = true;
-			end
-
-			print "Sending block #{$dataBlob[:block]}/#{numBlocks}\n"
-			esp $dataBlob.to_json
-			$dataBlob[:block] += 1;
-
-			$dataBlob.delete(:targetFile);
-			break if($dataBlob[:eof]);
-
-			sleep $sendDelay;
-		end
-
-		if inputData["r"] then
-			print "Running!\n"
-			$mPath = "Lasertag/Players/#{$targetTag}/Console/In";
-			esp "dofile(\"#{ARGV[0]}\")";
-		end
-
-		print "Done!\n"
-	end
-end

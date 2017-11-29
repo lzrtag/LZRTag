@@ -1,6 +1,7 @@
 
 module Lasertag
 class Client
+	attr_reader :mqtt
 	attr_reader :name
 	attr_reader :team
 	attr_reader :brightness
