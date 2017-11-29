@@ -44,16 +44,18 @@ class Game
 		@mqtt.subscribe_to "#{@mqttTopic}/Connection" do |tList, data|
 			pName = tList[0];
 
-			if(data == "OK") then
-				# Check if the player is on record.
-				# If not, generate one and call the callbacks
-				if(not @clients.key? pName) then
-					@clients[pName] = Client.new(pName, @mqtt);
-					@clientRegisteredCBs.each do |cb|
-						cb.call(pName, @clients[pName]);
-					end
+			# Check if the player is on record.
+			# If not, generate one and call the callbacks
+			if(not @clients.key? pName) then
+				@clients[pName] = Client.new(pName, @mqtt);
+				@clientRegisteredCBs.each do |cb|
+					cb.call(pName, @clients[pName]);
 				end
+			end
 
+			@clients[pName].instance_variable_set(:@status, data);
+
+			if(data == "OK") then
 				# Check if the player is not registered as connected right now
 				# If he isn't, that means he reconnected. Call the callbacks
 				if(not @clients[pName].connected?) then
@@ -61,7 +63,6 @@ class Game
 						cb.call(pName, @clients[pName]);
 					end
 				end
-
 			else
 				# Check whether or not the player is connected, and this is the LWT disconnect
 				if(@clients.key?(pName) and @clients[pName].connected?) then

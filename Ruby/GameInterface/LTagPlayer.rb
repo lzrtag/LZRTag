@@ -3,8 +3,12 @@ module Lasertag
 class Client
 	attr_reader :mqtt
 	attr_reader :name
+
+	attr_reader :status
+
 	attr_reader :team
 	attr_reader :brightness
+
 	attr_reader :id
 
 	attr_reader :battery
@@ -19,18 +23,29 @@ class Client
 
 		@mqttTopic = "Lasertag/Players/#{@name}"
 
-		@data = Hash.new();
+		@status = nil;
 
 		@team = 0;
 		@brightness = 0;
 
+		@id = nil;
+
 		@battery = 3.3;
 		@ping = 10000;
 		@heap = 40000;
+
+		@data = Hash.new();
 	end
 
 	def connected?()
-		return @id != nil;
+		return @status == "OK"
+	end
+
+	def safemode?()
+		return @status == "SAFEMODE"
+	end
+	def clear_safemode()
+		console('file.remove("BOOT_SAFECHECK")') if safemode?
 	end
 
 	def team=(n)
