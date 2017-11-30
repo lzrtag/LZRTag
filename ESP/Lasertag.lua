@@ -76,5 +76,3 @@ function fancyPling()
 end
 fancyPling();
 tmr.create():alarm(200, tmr.ALARM_SINGLE, fancyPling);
-
-dofile("NoAmmoShoot.lua");

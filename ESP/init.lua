@@ -43,8 +43,9 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 							if(not(SAFEMODE)) then
 								file.open("BOOT_SAFECHECK","w"):close();
 
-								dofile("Lasertag.lua");
 								dofile("MQTTPing.lua");
+								dofile("Lasertag.lua");
+								dofile("FireHandling.lua");
 
 								tmr.create():alarm(1500, tmr.ALARM_SINGLE,
 									function()
