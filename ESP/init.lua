@@ -6,6 +6,7 @@ dofile("MQTTConnect.lua");
 
 StartSymbol = string.byte("!");
 
+SAFEMODE = file.exists("BOOT_SAFECHECK");
 systemIsSetUp = false;
 
 tmr.create():alarm(2000, tmr.ALARM_SINGLE,
@@ -29,19 +30,32 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 				if(data == StartSymbol) then
 					noTagTimer:unregister();
 
-					uart.write( 0, 10, 10,
-									11, 10, 7, 7,
-									101, 2);
+					uart.write( 0, 10, 10,		-- Vibrate a little
+									11, 10, 7, 7,	-- Connect buzz
+									101, 2);			-- Set blue team
 
 					uart.on("data", 0, function(d) end, 0);
 
 					onMQTTConnect(
 						function()
 							dofile("ConsoleRedir.lua");
-							dofile("Lasertag.lua");
-							dofile("MQTTPing.lua");
 
-							sntp.sync(nil, nil, nil, 1);
+							if(not(SAFEMODE)) then
+								file.open("BOOT_SAFECHECK","w"):close();
+
+								dofile("Lasertag.lua");
+								dofile("MQTTPing.lua");
+
+								tmr.create():alarm(1500, tmr.ALARM_SINGLE,
+									function()
+										file.remove("BOOT_SAFECHECK");
+									end);
+							else
+								uart.write(	0, 200, 10,	-- Bright blink mode
+												101, 0,		-- Red team
+												11, 100, 32, 34); -- 2kHz "error" buzz
+								homeQTT:publish(playerTopic .. "/Connection", "SAFEMODE", 0, 1);
+							end
 						end
 					);
 				end
