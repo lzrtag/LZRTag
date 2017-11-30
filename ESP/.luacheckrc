@@ -37,6 +37,7 @@ stds.lasertag = {
 		"fireWeapon",
 
 		"gameRunning",
+		"game",
 
 		"SAFEMODE",
 		"systemIsSetUp",

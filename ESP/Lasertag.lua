@@ -1,6 +1,11 @@
 
 dofile("UARTReceive.lua");
 
+game = {
+	brightness = 3,
+	team = 1,
+}
+
 function setVestBrightness(c)
 	uart.write(0, 200, c);
 end
@@ -29,12 +34,14 @@ end
 
 subscribeTo(playerTopic .. "/Brightness", 1,
 	function(data)
-		setVestBrightness(tonumber(data));
+		game.brightness = tonumber(data);
+		setVestBrightness(game.brightness);
 	end
 );
 subscribeTo(playerTopic .. "/Team", 1,
 	function(data)
-		setVestColor(tonumber(data));
+		game.team = tonumber(data);
+		setVestColor(game.team);
 	end
 );
 
