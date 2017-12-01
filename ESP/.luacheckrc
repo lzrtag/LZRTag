@@ -50,7 +50,13 @@ stds.lasertag = {
 	}
 }
 
-std="min+nodemcu+lasertag+playerdata"
+stds.serverconf = {
+	globals = {
+		"fireConf"
+	}
+}
+
+std="min+nodemcu+lasertag+playerdata+serverconf"
 
 allow_defined 			= true
 

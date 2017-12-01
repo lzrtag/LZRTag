@@ -1,31 +1,6 @@
 
-
-fireConfServer = {};
-fireConfDefaults = {
-	hitFlashBrightness 	= 10,
-	hitFlashDuration   	= 500,
-	hitVibration			= 500,
-
-	deathFlashBrightness = 10,
-	deathFlashDuration	= 1500,
-	deathBrightness		= 1,
-	deathVibration			= 1500,
-}
-
 playerDead = false;
 reviveTimer = tmr.create();
-
-subscribeTo(playerTopic .. "/FireConf", 1,
-	function(data)
-		fireConfServer = sjson.decode(data);
-	end);
-
-function fireConf(key)
-	if(fireConf[key] ~= nil) then
-		return fireConf[key];
-	end
-	return fireConfDefaults[key];
-end
 
 function canShoot()
 	if(playerDead) then
@@ -34,8 +9,8 @@ function canShoot()
 end
 
 function displayHit()
-	vibrate(fireConf("hitVibrateDuration"));
-	overrideVest(fireConf("hitFlashDuration", fireConf("hitFlashBrightness")));
+	vibrate(fireConf.hitVibrateDuration);
+	overrideVest(fireConf.hitFlashDuration, fireConf.hitFlashBrightness);
 end
 
 function revivePlayer()
@@ -49,12 +24,12 @@ function killPlayer()
 
 	playerDead = true;
 
-	vibrate(fireConf("deathVibration"));
-	overrideVest(fireConf("deathFlashDuration"), fireConf("deathFlashBrightness"));
-	setVestBrightness(fireConf("deathBrightness"));
+	vibrate(fireConf.deathVibration);
+	overrideVest(fireConf.deathFlashDuration, fireConf.deathFlashBrightness);
+	setVestBrightness(fireConf.deathBrightness);
 
-	if(fireConf("deathDuration")) then
-		reviveTimer:alarm(fireConf("deathDuration"), tmr.ALARM_SINGLE, revivePlayer);
+	if(fireConf.deathDuration) then
+		reviveTimer:alarm(fireConf.deathDuration, tmr.ALARM_SINGLE, revivePlayer);
 	end
 end
 
