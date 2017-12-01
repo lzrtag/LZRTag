@@ -1,16 +1,8 @@
 
-remoteConfMT = {
-	__index = loadConf
+game = {
+	brightness 	= 3,
+	team			= 1,
 }
-
-function loadConf(table, key)
-	return table.defaults[key];
-end
-
-function setupConf(table, defTable)
-	table.defaults = defTable;
-	setmetatable(table, remoteConfMT);
-end
 
 hitConfDefaults = {
 	hitFlashBrightness 	= 10,
@@ -22,11 +14,11 @@ hitConfDefaults = {
 	deathBrightness		= 1,
 	deathVibration			= 1500,
 }
+
 hitConf = {};
-setupConf(hitConf, hitConfDefaults);
 
 subscribeTo(playerTopic .. "/HitConf", 1,
 	function(data)
-		fireConf = sjson.decode(data);
-		setupConf(hitConf, hitConfDefaults);
+		hitConf = sjson.decode(data);
+		setmetatable(hitConf, {__index = hitConfDefaults});
 	end);
