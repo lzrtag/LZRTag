@@ -9,8 +9,8 @@ function canShoot()
 end
 
 function displayHit()
-	vibrate(fireConf.hitVibrateDuration);
-	overrideVest(fireConf.hitFlashDuration, fireConf.hitFlashBrightness);
+	vibrate(hitConf.hitVibrateDuration);
+	overrideVest(hitConf.hitFlashDuration, hitConf.hitFlashBrightness);
 end
 
 function revivePlayer()
@@ -24,12 +24,12 @@ function killPlayer()
 
 	playerDead = true;
 
-	vibrate(fireConf.deathVibration);
-	overrideVest(fireConf.deathFlashDuration, fireConf.deathFlashBrightness);
-	setVestBrightness(fireConf.deathBrightness);
+	vibrate(hitConf.deathVibration);
+	overrideVest(hitConf.deathFlashDuration, hitConf.deathFlashBrightness);
+	setVestBrightness(hitConf.deathBrightness);
 
-	if(fireConf.deathDuration) then
-		reviveTimer:alarm(fireConf.deathDuration, tmr.ALARM_SINGLE, revivePlayer);
+	if(hitConf.deathDuration) then
+		reviveTimer:alarm(hitConf.deathDuration, tmr.ALARM_SINGLE, revivePlayer);
 	end
 end
 
@@ -44,9 +44,9 @@ registerUARTCommand(1, 2,
 
 		homeQTT:publish(lasertagTopic .. "/Game/Events", eP, 0, 0);
 
-		if(fireConf("dieOnHit")) then
+		if(hitConf.dieOnHit) then
 			killPlayer();
-		elseif(fireConf("flashOnHit")) then
+		elseif(hitConf.flashOnHit) then
 			displayHit();
 		end
 	end);

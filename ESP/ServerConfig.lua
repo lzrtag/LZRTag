@@ -12,7 +12,7 @@ function setupConf(table, defTable)
 	setmetatable(table, remoteConfMT);
 end
 
-fireConfDefaults = {
+hitConfDefaults = {
 	hitFlashBrightness 	= 10,
 	hitFlashDuration   	= 500,
 	hitVibration			= 500,
@@ -22,11 +22,11 @@ fireConfDefaults = {
 	deathBrightness		= 1,
 	deathVibration			= 1500,
 }
-fireConf = {};
-setupConf(fireConf, fireConfDefaults);
+hitConf = {};
+setupConf(hitConf, hitConfDefaults);
 
-subscribeTo(playerTopic .. "/FireConf", 1,
+subscribeTo(playerTopic .. "/HitConf", 1,
 	function(data)
 		fireConf = sjson.decode(data);
-		setupConf(fireConf, fireConfDefaults);
+		setupConf(hitConf, hitConfDefaults);
 	end);
