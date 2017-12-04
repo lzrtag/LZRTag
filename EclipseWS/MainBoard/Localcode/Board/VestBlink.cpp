@@ -116,7 +116,7 @@ void slowUpdate() {
 		if((phase & 0b1))
 			lightsOn();
 		else
-			LEDPWM[team] = 10;
+			teamColorOn(4);
 	break;
 	}
 }
