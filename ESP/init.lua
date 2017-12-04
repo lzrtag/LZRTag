@@ -45,6 +45,7 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 
 								dofile("MQTTPing.lua");
 								dofile("Lasertag.lua");
+								dofile("ServerConfig.lua")
 								dofile("FireHandling.lua");
 
 								tmr.create():alarm(1500, tmr.ALARM_SINGLE,

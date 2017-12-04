@@ -1,11 +1,6 @@
 
 dofile("UARTReceive.lua");
 
-game = {
-	brightness = 3,
-	team = 1,
-}
-
 function setVestBrightness(c)
 	uart.write(0, 200, c);
 end
@@ -27,23 +22,10 @@ function vibrate(duration)
 end
 
 function fireWeapon()
-	if(playerIDNum) then
+	if(player.id) then
 		uart.write(0, 0, 99);
 	end
 end
-
-subscribeTo(playerTopic .. "/Brightness", 1,
-	function(data)
-		game.brightness = tonumber(data);
-		setVestBrightness(game.brightness);
-	end
-);
-subscribeTo(playerTopic .. "/Team", 1,
-	function(data)
-		game.team = tonumber(data);
-		setVestColor(game.team);
-	end
-);
 
 subscribeTo(lasertagTopic .. "/Game/Status", 1,
 	function(data)
@@ -61,13 +43,6 @@ subscribeTo(lasertagTopic .. "/Game/Status", 1,
 		elseif(data == "startwarn") then
 			ping(1500, 1500, 300);
 		end
-	end
-);
-
-subscribeTo(playerTopic .. "/ID", 1,
-	function(data)
-		playerIDNum = tonumber(data);
-		uart.write(0, 100, playerIDNum);
 	end
 );
 
