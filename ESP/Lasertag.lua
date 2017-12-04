@@ -51,7 +51,7 @@ tmr.create():alarm(3000, tmr.ALARM_SINGLE, function()
 	systemIsSetUp = true;
 end);
 
-setVestColor(1);
+setVestColor(2);
 function fancyPling()
 	ping(1000, 5000, 150);
 	vibrate(50);
