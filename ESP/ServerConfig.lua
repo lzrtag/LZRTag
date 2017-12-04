@@ -20,7 +20,7 @@ hitConfDefaults = {
 	deathVibration			= 1500,
 }
 
-hitConf = {};
+hitConf = hitConfDefaults;
 
 hitConfOptions = {
 	metatable = {
