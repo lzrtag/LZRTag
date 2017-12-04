@@ -24,3 +24,7 @@ Visibilitiy levels:
 - 3 = Dimmed with occasional blink, full nozzle flash.
 - 4 = Full light, full nozzle flash.
 - 5 = Special Mode - Full with white flashes, full nozzle flash with dim background.
+- 6 = Wave-Mode (in low brightness)
+- 7 = Wave-Mode (in full brightness)
+
+- 10 = Full brightness, constant white flashing. Used for hit and death animation
