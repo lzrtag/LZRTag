@@ -1,28 +1,29 @@
 
-playerDead = false;
 reviveTimer = tmr.create();
 
 function canShoot()
-	if(playerDead) then
+	if(player.dead) then
 		return false
 	end
 end
 
 function displayHit()
-	vibrate(hitConf.hitVibrateDuration);
+	vibrate(hitConf.hitVibration);
 	overrideVest(hitConf.hitFlashDuration, hitConf.hitFlashBrightness);
 end
 
 function revivePlayer()
-	playerDead = false;
+	player.dead = false;
 	setVestBrightness(game.brightness);
+	homeQTT:publish(playerTopic .. "/Dead", "", 0, 1);
 end
 function killPlayer()
-	if(playerDead) then
+	if(player.dead) then
 		return;
 	end
 
-	playerDead = true;
+	player.dead = true;
+	homeQTT:publish(playerTopic .. "/Dead", "true", 0, 1);
 
 	vibrate(hitConf.deathVibration);
 	overrideVest(hitConf.deathFlashDuration, hitConf.deathFlashBrightness);
@@ -33,10 +34,29 @@ function killPlayer()
 	end
 end
 
+subscribeTo(playerTopic .. "/Dead", 0,
+	function(data)
+		data = (data == "true");
+
+		if((data) and (not player.dead)) then
+			killPlayer();
+		elseif(not(data) and (player.dead)) then
+			reviveTimer:unregister();
+			revivePlayer();
+		end
+	end);
+
+registerUARTCommand(0, 1,
+	function(data)
+		if((data == 0) == invertButton) then
+			fireWeapon();
+		end
+	end);
+
 -- Handling of AVR-Detected shots
 registerUARTCommand(1, 2,
 	function(data)
-		sec, usec, rate = rtctime.get();
+		sec, usec, rate = rtctime.get()
 
 		eP = '{"type":"hit","shooterID":' .. data:byte(1)
 		eP = eP .. ',"target":"' .. playerID .. '","arbCode":' .. data:byte(2)
