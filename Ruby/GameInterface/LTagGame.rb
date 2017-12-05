@@ -53,19 +53,20 @@ class Game
 				end
 			end
 
+			oldStatus = @clients[pName].status;
 			@clients[pName].instance_variable_set(:@status, data);
 
 			if(data == "OK") then
 				# Check if the player is not registered as connected right now
 				# If he isn't, that means he reconnected. Call the callbacks
-				if(not @clients[pName].connected?) then
+				if(oldStatus != "OK") then
 					@clientConnectCBs.each do |cb|
 						cb.call(pName, @clients[pName]);
 					end
 				end
 			else
 				# Check whether or not the player is connected, and this is the LWT disconnect
-				if(@clients.key?(pName) and @clients[pName].connected?) then
+				if(@clients.key?(pName) and (oldStatus == "OK")) then
 					@clientDisconnectCBs.each do |cb|
 						cb.call(pName, @clients[pName]);
 					end
