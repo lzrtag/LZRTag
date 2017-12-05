@@ -27,7 +27,7 @@ function fireWeapon()
 	end
 end
 
-subscribeTo(lasertagTopic .. "/Game/Status", 1,
+subscribeTo(lasertagTopic .. "/Game/Status", 0,
 	function(data)
 		if(data == "stop") then
 			if(gameRunning) then
