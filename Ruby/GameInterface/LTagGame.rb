@@ -107,7 +107,9 @@ class Game
 
 		at_exit {
 			print "Disconnecting Lasertag Clients ...\r"
-			remove_disconnected();
+			@clients.each do |pName, player|
+				remove_player(pName);
+			end
 			puts "Done disconnecting clients!          "
 		}
 	end
@@ -149,7 +151,7 @@ class Game
 		@clientUnregisteredCBs.each do |cb|
 			cb.call(pName, @clients[pName]);
 		end
-		@clients[pName].clean_all_topics unless @clients[pName].connected?
+		@clients[pName].clean_all_topics;
 		@clients.delete pName;
 	end
 
