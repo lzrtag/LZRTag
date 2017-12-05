@@ -53,6 +53,7 @@ stds.lasertag = {
 stds.serverconf = {
 	globals = {
 		"hitConf",
+		"fireConf",
 		"player"
 	}
 }

@@ -19,16 +19,18 @@ hitConfDefaults = {
 	deathBrightness		= 1,
 	deathVibration			= 1500,
 }
-
 hitConf = hitConfDefaults;
 
-hitConfOptions = {
-	metatable = {
-		__index = hitConfDefaults}};
-subscribeTo(playerTopic .. "/HitConf", 1,
-	function(data)
-		hitConf = sjson.decode(data, hitConfOptions);
-	end);
+fireConfDefaults = {
+	ammoCap 			= 5,
+	perReloadAmmo 	= 5,
+
+	postShotReloadDelay = 3000,
+
+	perShotDelay	= 333,
+	shotVibration	= 200,
+}
+fireConf = fireConfDefaults;
 
 subscribeTo(playerTopic .. "/ID", 1,
 	function(data)
@@ -48,5 +50,37 @@ subscribeTo(playerTopic .. "/Brightness", 1,
 		game.brightness = tonumber(data) or 3;
 		if(not(player.dead)) then
 			setVestBrightness(game.brightness);
+		end
+	end);
+
+hitConfOptions = {
+	metatable = {
+		__index = hitConfDefaults}};
+subscribeTo(playerTopic .. "/HitConf", 1,
+	function(data)
+		if(data == "") then
+			hitConf = hitConfDefaults
+		else
+			hitConf = sjson.decode(data, hitConfOptions);
+		end
+	end);
+
+fireConfOptions = {
+	metatable = {
+		__index = fireConfDefaults}}
+subscribeTo(playerTopic .. "/FireConf", 1,
+	function(data)
+		if(data == "") then
+			fireConf = fireConfDefaults
+		else
+			fireConf = sjson.decode(data, fireConfDefaults);
+		end
+	end);
+
+subscribeTo(playerTopic .. "/Ammo", 1,
+	function(data)
+		data = tonumber(data)
+		if(data) then
+			player.ammo = data;
 		end
 	end);

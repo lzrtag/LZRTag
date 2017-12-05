@@ -1,8 +1,13 @@
 
 reviveTimer = tmr.create();
+shotTimer	= tmr.create();
+reloadTimer = tmr.create();
 
 function canShoot()
 	if(player.dead) then
+		return false
+	end
+	if((player.ammo == 0) and (fireConf.ammoCap ~= 0)) then
 		return false
 	end
 end
@@ -11,7 +16,6 @@ function displayHit()
 	vibrate(hitConf.hitVibration);
 	overrideVest(hitConf.hitFlashDuration, hitConf.hitFlashBrightness);
 end
-
 function revivePlayer()
 	player.dead = false;
 	setVestBrightness(game.brightness);
@@ -44,6 +48,11 @@ subscribeTo(playerTopic .. "/Dead", 0,
 			revivePlayer();
 		end
 	end);
+
+function updateAmmo(a)
+	player.ammo = a;
+	homeQTT:publish(playerTopic .. "/Ammo", player.ammo, 0, 1);
+end
 
 registerUARTCommand(0, 1,
 	function(data)
