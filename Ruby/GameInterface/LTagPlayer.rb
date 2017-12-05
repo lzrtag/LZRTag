@@ -58,6 +58,22 @@ class Client
 		@mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : 0), retain: true;
 	end
 
+	def hitConfig
+		return Hash.new unless @hitConfig;
+		return @hitConfig;
+	end
+	def hitConfig=(h)
+		if(h == nil) then
+			@mqtt.publish_to "#{@mqttTopic}/HitConf", "", retain: true;
+			@hitConfig = nil;
+			return;
+		end
+
+		raise ArgumentError, "Hit Config needs to be a hash or nil!" unless h.is_a? Hash
+		@hitConfig = h;
+		@mqtt.publish_to "#{@mqttTopic}/HitConf", @hitConfig.to_json, retain: true;
+	end
+
 	def id=(n)
 		if(n != nil) then
 			raise ArgumentError, "ID must be a integer!" unless n.is_a? Integer;
@@ -72,17 +88,18 @@ class Client
 	end
 
 	def clean_all_topics()
-		raise "Client still connected!" if connected?
-
 		@mqtt.publish_to "#{@mqttTopic}/Team", "", retain: true;
 		@mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
 		@mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
 		@mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
+
+		self.hitConfig = nil;
 	end
 
 	def console(str)
 		@mqtt.publish_to "#{@mqttTopic}/Console/In", str;
 	end
+	private :console
 
 	def override_brightness(level, duration)
 		return false unless level.is_a? Integer and duration.is_a? Numeric
@@ -106,6 +123,8 @@ class Client
 		console("ping(#{startF},#{endF},#{(duration*1000).to_i});");
 	end
 
-	private :console
+	def hit()
+		console("displayHit();");
+	end
 end
 end
