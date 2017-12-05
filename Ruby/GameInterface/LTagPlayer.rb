@@ -35,7 +35,7 @@ class Client
 
 	def team=(n)
 		n = n.to_i;
-		return false unless n != nil and n < 3 and n >= 0;
+		return false unless n != nil and n < 7 and n >= 0;
 		@team = n;
 		@mqtt.publish_to "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
@@ -43,7 +43,7 @@ class Client
 
 	def brightness=(n)
 		n = n.to_i;
-		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 5 and n >= 0;
+		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
 		@brightness = n;
 		@mqtt.publish_to "#{@mqttTopic}/Brightness", @brightness, retain: true;
 		return true;
@@ -67,6 +67,7 @@ class Client
 
 		@mqtt.publish_to "#{@mqttTopic}/Team", "", retain: true;
 		@mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
+		@mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
 	end
 
 	def console(str)
