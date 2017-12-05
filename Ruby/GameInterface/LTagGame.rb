@@ -23,11 +23,15 @@ class Game
 				@clients[tList[0]].instance_variable_set(:@team, teamNumber) if teamNumber;
 			end
 		end
-
 		@mqtt.subscribe_to "#{@mqttTopic}/Brightness" do |tList, data|
 			if @clients.key? tList[0] then
 				brightness = data.to_i;
 				@clients[tList[0]].instance_variable_set(:@brightness, brightness) if brightness;
+			end
+		end
+		@mqtt.subscribe_to "#{@mqttTopic}/Dead" do |tList, data|
+			if @clients.key? tList[0] then
+				@clients[tList[0]].instance_variable_set(:@dead, data == "true");
 			end
 		end
 

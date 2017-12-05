@@ -2,6 +2,7 @@
 module Lasertag
 class Client
 	attr_reader :mqtt
+
 	attr_reader :name
 	attr_reader :team
 	attr_reader :brightness
@@ -24,6 +25,8 @@ class Client
 		@team = 0;
 		@brightness = 0;
 
+		@dead = false;
+
 		@battery = 3.3;
 		@ping = 10000;
 		@heap = 40000;
@@ -35,18 +38,24 @@ class Client
 
 	def team=(n)
 		n = n.to_i;
-		return false unless n != nil and n < 7 and n >= 0;
+		return false unless n != nil and n <= 7 and n >= 0;
 		@team = n;
 		@mqtt.publish_to "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
 	end
-
 	def brightness=(n)
 		n = n.to_i;
 		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
 		@brightness = n;
 		@mqtt.publish_to "#{@mqttTopic}/Brightness", @brightness, retain: true;
 		return true;
+	end
+	def dead?
+		return @dead;
+	end
+	def dead=(d)
+		@dead = (d == true)
+		@mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : 0), retain: true;
 	end
 
 	def id=(n)
@@ -68,6 +77,7 @@ class Client
 		@mqtt.publish_to "#{@mqttTopic}/Team", "", retain: true;
 		@mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
 		@mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
+		@mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
 	end
 
 	def console(str)
