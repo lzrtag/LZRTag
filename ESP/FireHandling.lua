@@ -61,7 +61,7 @@ function canShoot()
 end
 function updateAmmo(a)
 	player.ammo = a;
-	homeQTT:publish(playerTopic .. "/Ammo", player.ammo, 0, 1);
+	homeQTT:publish(playerTopic .. "/Ammo", player.ammo, 0, 0);
 end
 function reloadAmmo()
 	if(fireConf.perReloadAmmo == 0) then
@@ -136,7 +136,7 @@ registerUARTCommand(1, 2,
 
 		homeQTT:publish(lasertagTopic .. "/Game/Events", eP, 0, 0);
 
-		if(hitConf.dieOnHit) then
+		if(hitConf.dieOnHit and not(player.dead)) then
 			killPlayer();
 			homeQTT:publish(playerTopic .. "/Dead", "true", 0, 1);
 		elseif(hitConf.flashOnHit) then
