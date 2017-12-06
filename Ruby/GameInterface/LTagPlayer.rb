@@ -55,7 +55,7 @@ class Client
 	end
 	def dead=(d)
 		@dead = (d == true)
-		@mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : 0), retain: true;
+		@mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
 	end
 
 	def hitConfig
