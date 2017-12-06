@@ -7,6 +7,8 @@ game = {
 player = {
 	dead = false,
 	ammo = 0,
+	lastShot = 0,
+	shotCooldown = false,
 }
 
 hitConfDefaults = {
@@ -25,10 +27,11 @@ fireConfDefaults = {
 	ammoCap 			= 5,
 	perReloadAmmo 	= 5,
 
-	postShotReloadDelay = 3000,
+	reloadDelay = 3000,
 
 	perShotDelay	= 333,
-	shotVibration	= 200,
+
+	flashBrightness = 10,
 }
 fireConf = fireConfDefaults;
 
@@ -73,11 +76,11 @@ subscribeTo(playerTopic .. "/FireConf", 1,
 		if(data == "") then
 			fireConf = fireConfDefaults
 		else
-			fireConf = sjson.decode(data, fireConfDefaults);
+			fireConf = sjson.decode(data, fireConfOptions);
 		end
 	end);
 
-subscribeTo(playerTopic .. "/Ammo", 1,
+subscribeTo(playerTopic .. "/AmmoSet", 1,
 	function(data)
 		data = tonumber(data)
 		if(data) then
