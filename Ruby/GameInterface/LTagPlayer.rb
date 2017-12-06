@@ -74,6 +74,22 @@ class Client
 		@mqtt.publish_to "#{@mqttTopic}/HitConf", @hitConfig.to_json, retain: true;
 	end
 
+	def fireConfig
+		return Hash.new unless @fireConfig;
+		return @fireConfig
+	end
+	def fireConfig=(h)
+		if(h == nil) then
+			@mqtt.publish_to "#{@mqttTopic}/FireConf", "", retain: true;
+			@fireConfig = nil;
+			return;
+		end
+
+		raise ArgumentError, "Fire Config needs to be a hash or nil!" unless h.is_a? Hash
+		@fireConfig = h;
+		@mqtt.publish_to "#{@mqttTopic}/FireConf", @fireConfig.to_json, retain: true;
+	end
+
 	def id=(n)
 		if(n != nil) then
 			raise ArgumentError, "ID must be a integer!" unless n.is_a? Integer;
