@@ -8,6 +8,8 @@ class Client
 	attr_reader :brightness
 	attr_reader :id
 
+	attr_reader :ammo
+
 	attr_reader :battery
 	attr_reader :ping
 	attr_reader :heap
@@ -24,6 +26,8 @@ class Client
 
 		@team = 0;
 		@brightness = 0;
+
+		@ammo = 0;
 
 		@dead = false;
 
@@ -50,12 +54,31 @@ class Client
 		@mqtt.publish_to "#{@mqttTopic}/Brightness", @brightness, retain: true;
 		return true;
 	end
+	def id=(n)
+		if(n != nil) then
+			raise ArgumentError, "ID must be a integer!" unless n.is_a? Integer;
+			raise ArgumentError, "ID out of range (0<ID<256)" unless n < 256 and n > 0;
+
+			@id = n;
+		else
+			@id = nil;
+		end
+
+		@mqtt.publish_to "#{@mqttTopic}/ID", @id, retain: true;
+	end
 	def dead?
 		return @dead;
 	end
 	def dead=(d)
 		@dead = (d == true)
 		@mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
+	end
+
+	def ammo=(a)
+		raise ArgumentError, "Ammo amount needs to be a number!" unless a.is_a? Integer
+
+		@ammo = a;
+		@mqtt.publish_to "#{@mqttTopic}/AmmoSet", a
 	end
 
 	def hitConfig
@@ -88,19 +111,6 @@ class Client
 		raise ArgumentError, "Fire Config needs to be a hash or nil!" unless h.is_a? Hash
 		@fireConfig = h;
 		@mqtt.publish_to "#{@mqttTopic}/FireConf", @fireConfig.to_json, retain: true;
-	end
-
-	def id=(n)
-		if(n != nil) then
-			raise ArgumentError, "ID must be a integer!" unless n.is_a? Integer;
-			raise ArgumentError, "ID out of range (0<ID<256)" unless n < 256 and n > 0;
-
-			@id = n;
-		else
-			@id = nil;
-		end
-
-		@mqtt.publish_to "#{@mqttTopic}/ID", @id, retain: true;
 	end
 
 	def clean_all_topics()

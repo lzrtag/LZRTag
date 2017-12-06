@@ -5,7 +5,7 @@ require 'json'
 
 module Lasertag
 class Game
-	def initialize(mqtt, delete_disconnected: false, id_assign: true)
+	def initialize(mqtt, delete_disconnected: false, id_assign: true, clean_on_exit: false)
 		@mqtt = mqtt;
 		@mqttTopic = "Lasertag/Players/+"
 
@@ -32,6 +32,11 @@ class Game
 		@mqtt.subscribe_to "#{@mqttTopic}/Dead" do |tList, data|
 			if @clients.key? tList[0] then
 				@clients[tList[0]].instance_variable_set(:@dead, data == "true");
+			end
+		end
+		@mqtt.subscribe_to "#{@mqttTopic}/Ammo" do |tList, data|
+			if @clients.key? tList[0] then
+				@clients[tList[0]].instance_variable_set(:@ammo, data.to_i);
 			end
 		end
 
@@ -105,13 +110,15 @@ class Game
 			end
 		end
 
-		at_exit {
-			print "Disconnecting Lasertag Clients ...\r"
-			@clients.each do |pName, player|
-				remove_player(pName);
-			end
-			puts "Done disconnecting clients!          "
-		}
+		if(clean_on_exit) then
+			at_exit {
+				print "Disconnecting Lasertag Clients ...\r"
+				@clients.each do |pName, player|
+					remove_player(pName);
+				end
+				puts "Done disconnecting clients!          "
+			}
+		end
 	end
 
 	def [](c)
@@ -159,12 +166,16 @@ class Game
 		@clients.each do |k, v|
 			yield(k, v);
 		end
+
+		return;
 	end
 
 	def each_connected()
 		@clients.each do |k, v|
 			yield(k, v) if v.connected?
 		end
+
+		return;
 	end
 
 	def remove_disconnected()
