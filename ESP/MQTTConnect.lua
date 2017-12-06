@@ -50,7 +50,7 @@ function resubToAll()
 	end
 end
 
-mqttSubTimer:register(1000, tmr.ALARM_SEMI, mqtt_raw_slow_subscribe);
+mqttSubTimer:register(2000, tmr.ALARM_SEMI, mqtt_raw_slow_subscribe);
 
 ---------------
 --- RECONNECTING FUNCTIONS
