@@ -75,7 +75,7 @@ class Client
 	end
 
 	def ammo=(a)
-		if (a.is_a?(Integer) and (a >= 0)) then
+		unless (a.is_a?(Integer) and (a >= 0)) then
 			raise ArgumentError, "Ammo amount needs to be a positive number!"
 		end
 
@@ -122,6 +122,7 @@ class Client
 		@mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
 
 		self.hitConfig = nil;
+		self.fireConfig = nil;
 	end
 
 	def console(str)
