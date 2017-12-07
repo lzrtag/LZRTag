@@ -31,6 +31,9 @@ fireConfDefaults = {
 	perShotDelay	= 333,
 
 	flashBrightness = 10,
+
+	shotLocked = true,
+	reportButton = false,
 }
 fireConf = fireConfDefaults;
 

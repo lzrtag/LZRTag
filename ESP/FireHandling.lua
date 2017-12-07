@@ -46,14 +46,13 @@ subscribeTo(playerTopic .. "/Dead", 0,
 function canShoot()
 	if(not(player.id)) then
 		return false
-	end
-	if(player.dead) then
+	elseif(fireConf.shotLocked) then
 		return false
-	end
-	if((player.ammo == 0) and (fireConf.ammoCap ~= 0)) then
+	elseif(player.dead) then
 		return false
-	end
-	if(player.shotCooldown) then
+	elseif((player.ammo == 0) and (fireConf.ammoCap ~= 0)) then
+		return false
+	elseif(player.shotCooldown) then
 		return false
 	end
 
@@ -107,8 +106,10 @@ end
 registerUARTCommand(0, 1,
 	function(data)
 		if((data:byte(1) == 0) == invertButton) then
-			eP = '{"type":"button","player":"' .. playerID .. '"}';
-			homeQTT:publish(lasertagTopic .. "/Game/Events", eP, 0, 0);
+			if(fireConf.reportButton) then
+				eP = '{"type":"button","player":"' .. playerID .. '"}';
+				homeQTT:publish(lasertagTopic .. "/Game/Events", eP, 0, 0);
+			end
 
 			player.button = true;
 			attemptShot();
