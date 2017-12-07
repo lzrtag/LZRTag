@@ -3,7 +3,7 @@
 Number | Short Desc. | Data
 :--- | --- | ---
 A000 | Shot cfg | 0 = Disable, 1 = Enable, 99 = Immediate, >=100 Set consequent shots
-E000 | Shot Fired
+E000 | Trigger status changed
 E001 | Shot detected | Player, ShotID
 A010 | Vibrate 	| Time (10ms)
 A011 | Buzzer 	| Time (10ms), Start, End (60Hz)
@@ -24,3 +24,7 @@ Visibilitiy levels:
 - 3 = Dimmed with occasional blink, full nozzle flash.
 - 4 = Full light, full nozzle flash.
 - 5 = Special Mode - Full with white flashes, full nozzle flash with dim background.
+- 6 = Wave-Mode (in low brightness)
+- 7 = Wave-Mode (in full brightness)
+
+- 10 = Full brightness, constant white flashing. Used for hit and death animation

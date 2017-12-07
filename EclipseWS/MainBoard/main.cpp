@@ -24,7 +24,7 @@
 
 volatile bool hasBeenShot = false;
 
-uint8_t playerID = 0;
+uint8_t playerID = 255;
 
 ESPComs::Endpoint PlayerIDEP(100, &playerID, 1, 0);
 
@@ -53,10 +53,10 @@ uint8_t currentShotID = 1;
 void handleShots() {
 	if(ESPComs::Endpoint::pubBuffer[0] == 99) {
 		Board::Vibrator::vibrate(200);
-		Board::Nozzle::flash(0b10 << Board::Vest::team);
+		Board::Nozzle::flash(Board::Vest::team << 1);
 		Board::Buzzer::sweep(3000, 1000, 150);
 		IR::TX::startTX({playerID, currentShotID++});
-		if(currentShotID & 16)
+		if(currentShotID == 16)
 			currentShotID = 1;
 	}
 }
@@ -76,6 +76,7 @@ int main() {
 	ESPComs::init();
 
 	Board::Vest::mode = 3;
+	Board::Vest::team = 1;
 
 	Connector::init();
 

@@ -10,7 +10,7 @@ targetFilename = nil;
 inStreamFile 	= nil;
 currentBlock	= -1;
 lastFileWrite 	= 0;
-subscribeTo(playerTopic .. "/Console/FileWrite", 2,
+subscribeTo(playerTopic .. "/Console/FileWrite", 0,
 	function(data)
 		cmd = sjson.decode(data);
 
@@ -24,7 +24,7 @@ subscribeTo(playerTopic .. "/Console/FileWrite", 2,
 				lastFileWrite 	= tmr.now();
 
 				homeQTT:publish(playerTopic .. "/Console/FileAnswer",
-						"READY: " .. targetFilename, 2, 0);
+						"READY: " .. targetFilename, 0, 0);
 			end
 		elseif((currentBlock == cmd.block) and (targetFilename == cmd.file)) then
 			inStreamFile:write(encoder.fromBase64(cmd.data));
@@ -39,7 +39,7 @@ subscribeTo(playerTopic .. "/Console/FileWrite", 2,
 			end
 
 			homeQTT:publish(playerTopic .. "/Console/FileAnswer",
-					"OK: " .. targetFilename .. ", " .. currentBlock, 2, 0);
+					"OK: " .. targetFilename .. ", " .. currentBlock, 0, 0);
 			lastFileWrite = tmr.now();
 
 			currentBlock = currentBlock+1;
