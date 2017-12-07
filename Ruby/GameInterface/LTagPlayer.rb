@@ -70,12 +70,14 @@ class Client
 		return @dead;
 	end
 	def dead=(d)
-		@dead = (d == true)
+		@dead = (d ? true : false);
 		@mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
 	end
 
 	def ammo=(a)
-		raise ArgumentError, "Ammo amount needs to be a number!" unless a.is_a? Integer
+		if (a.is_a?(Integer) and (a >= 0)) then
+			raise ArgumentError, "Ammo amount needs to be a positive number!"
+		end
 
 		@ammo = a;
 		@mqtt.publish_to "#{@mqttTopic}/AmmoSet", a

@@ -7,7 +7,6 @@ game = {
 player = {
 	dead = false,
 	ammo = 0,
-	lastShot = 0,
 	shotCooldown = false,
 }
 
@@ -61,7 +60,7 @@ hitConfOptions = {
 		__index = hitConfDefaults}};
 subscribeTo(playerTopic .. "/HitConf", 1,
 	function(data)
-		if(data == "") then
+		if(data:len() < 2) then
 			hitConf = hitConfDefaults
 		else
 			hitConf = sjson.decode(data, hitConfOptions);
@@ -73,17 +72,19 @@ fireConfOptions = {
 		__index = fireConfDefaults}}
 subscribeTo(playerTopic .. "/FireConf", 1,
 	function(data)
-		if(data == "") then
+		if(data:len() < 2) then
 			fireConf = fireConfDefaults
 		else
 			fireConf = sjson.decode(data, fireConfOptions);
 		end
 	end);
 
+-- luacheck: globals updateAmmo attemptShot
 subscribeTo(playerTopic .. "/AmmoSet", 1,
 	function(data)
-		data = tonumber(data)
+		data = tonumber(data);
 		if(data) then
-			player.ammo = data;
+			updateAmmo(data);
+			attemptShot();
 		end
 	end);

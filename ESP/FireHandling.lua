@@ -73,10 +73,7 @@ function reloadAmmo()
 	else
 		updateAmmo(player.ammo + fireConf.perReloadAmmo);
 
-		reloadTimer:alarm(fireConf.reloadDelay, tmr.ALARM_SINGLE,
-			function()
-				reloadAmmo();
-			end);
+		reloadTimer:alarm(fireConf.reloadDelay, tmr.ALARM_SINGLE, reloadAmmo);
 	end
 
 	attemptShot();
@@ -96,7 +93,6 @@ function attemptShot()
 		overrideVest(fireConf.flashDuration, fireConf.flashBrightness);
 	end
 
-	shotTimer:start();
 	shotTimer:alarm(fireConf.perShotDelay, tmr.ALARM_SINGLE,
 		function()
 			player.shotCooldown = false;
@@ -104,10 +100,7 @@ function attemptShot()
 		end);
 
 	if(fireConf.perReloadAmmo > 0) then
-		reloadTimer:alarm(fireConf.reloadDelay, tmr.ALARM_SINGLE,
-			function()
-				reloadAmmo();
-			end);
+		reloadTimer:alarm(fireConf.reloadDelay, tmr.ALARM_SINGLE, reloadAmmo);
 	end
 end
 
