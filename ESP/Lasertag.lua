@@ -18,7 +18,7 @@ function ping(sFreq, eFreq, duration)
 end
 
 function vibrate(duration)
-	uart.write(0, 10, duration/10);
+	uart.write(0, 10, duration%255, duration/255);
 end
 
 function fireWeapon()

@@ -45,9 +45,9 @@ void playPing() {
 ESPComs::Endpoint PingEndpoint(11, &ESPComs::Endpoint::pubBuffer, 3, playPing);
 
 void playVibration() {
-	Board::Vibrator::vibrate(ESPComs::Endpoint::pubBuffer[0]*10);
+	Board::Vibrator::vibrate(*(uint16_t *)&ESPComs::Endpoint::pubBuffer);
 }
-ESPComs::Endpoint VibrationEP(10, &ESPComs::Endpoint::pubBuffer, 1, playVibration);
+ESPComs::Endpoint VibrationEP(10, &ESPComs::Endpoint::pubBuffer, 2, playVibration);
 
 uint8_t currentShotID = 1;
 void handleShots() {
