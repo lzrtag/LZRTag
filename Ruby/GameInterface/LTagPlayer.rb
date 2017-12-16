@@ -2,10 +2,13 @@
 module Lasertag
 class Client
 	attr_reader :mqtt
+
 	attr_reader :name
 	attr_reader :team
 	attr_reader :brightness
 	attr_reader :id
+
+	attr_reader :ammo
 
 	attr_reader :battery
 	attr_reader :ping
@@ -24,6 +27,10 @@ class Client
 		@team = 0;
 		@brightness = 0;
 
+		@ammo = 0;
+
+		@dead = false;
+
 		@battery = 3.3;
 		@ping = 10000;
 		@heap = 40000;
@@ -35,20 +42,18 @@ class Client
 
 	def team=(n)
 		n = n.to_i;
-		return false unless n != nil and n < 3 and n >= 0;
+		return false unless n != nil and n <= 7 and n >= 0;
 		@team = n;
 		@mqtt.publish_to "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
 	end
-
 	def brightness=(n)
 		n = n.to_i;
-		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 5 and n >= 0;
+		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
 		@brightness = n;
 		@mqtt.publish_to "#{@mqttTopic}/Brightness", @brightness, retain: true;
 		return true;
 	end
-
 	def id=(n)
 		if(n != nil) then
 			raise ArgumentError, "ID must be a integer!" unless n.is_a? Integer;
@@ -61,17 +66,69 @@ class Client
 
 		@mqtt.publish_to "#{@mqttTopic}/ID", @id, retain: true;
 	end
+	def dead?
+		return @dead;
+	end
+	def dead=(d)
+		@dead = (d ? true : false);
+		@mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
+	end
+
+	def ammo=(a)
+		unless (a.is_a?(Integer) and (a >= 0)) then
+			raise ArgumentError, "Ammo amount needs to be a positive number!"
+		end
+
+		@ammo = a;
+		@mqtt.publish_to "#{@mqttTopic}/AmmoSet", a
+	end
+
+	def hitConfig
+		return Hash.new unless @hitConfig;
+		return @hitConfig;
+	end
+	def hitConfig=(h)
+		if(h == nil) then
+			@mqtt.publish_to "#{@mqttTopic}/HitConf", "", retain: true;
+			@hitConfig = nil;
+			return;
+		end
+
+		raise ArgumentError, "Hit Config needs to be a hash or nil!" unless h.is_a? Hash
+		@hitConfig = h;
+		@mqtt.publish_to "#{@mqttTopic}/HitConf", @hitConfig.to_json, retain: true;
+	end
+
+	def fireConfig
+		return Hash.new unless @fireConfig;
+		return @fireConfig
+	end
+	def fireConfig=(h)
+		if(h == nil) then
+			@mqtt.publish_to "#{@mqttTopic}/FireConf", "", retain: true;
+			@fireConfig = nil;
+			return;
+		end
+
+		raise ArgumentError, "Fire Config needs to be a hash or nil!" unless h.is_a? Hash
+		@fireConfig = h;
+		@mqtt.publish_to "#{@mqttTopic}/FireConf", @fireConfig.to_json, retain: true;
+	end
 
 	def clean_all_topics()
-		raise "Client still connected!" if connected?
-
 		@mqtt.publish_to "#{@mqttTopic}/Team", "", retain: true;
 		@mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
+		@mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
+		@mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
+
+		self.hitConfig = nil;
+		self.fireConfig = nil;
 	end
 
 	def console(str)
 		@mqtt.publish_to "#{@mqttTopic}/Console/In", str;
 	end
+	private :console
 
 	def override_brightness(level, duration)
 		return false unless level.is_a? Integer and duration.is_a? Numeric
@@ -95,6 +152,8 @@ class Client
 		console("ping(#{startF},#{endF},#{(duration*1000).to_i});");
 	end
 
-	private :console
+	def hit()
+		console("displayHit();");
+	end
 end
 end

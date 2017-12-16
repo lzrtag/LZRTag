@@ -5,7 +5,7 @@ require 'json'
 
 module Lasertag
 class Game
-	def initialize(mqtt, delete_disconnected: false, id_assign: true)
+	def initialize(mqtt, delete_disconnected: false, id_assign: true, clean_on_exit: false)
 		@mqtt = mqtt;
 		@mqttTopic = "Lasertag/Players/+"
 
@@ -23,11 +23,20 @@ class Game
 				@clients[tList[0]].instance_variable_set(:@team, teamNumber) if teamNumber;
 			end
 		end
-
 		@mqtt.subscribe_to "#{@mqttTopic}/Brightness" do |tList, data|
 			if @clients.key? tList[0] then
 				brightness = data.to_i;
 				@clients[tList[0]].instance_variable_set(:@brightness, brightness) if brightness;
+			end
+		end
+		@mqtt.subscribe_to "#{@mqttTopic}/Dead" do |tList, data|
+			if @clients.key? tList[0] then
+				@clients[tList[0]].instance_variable_set(:@dead, data == "true");
+			end
+		end
+		@mqtt.subscribe_to "#{@mqttTopic}/Ammo" do |tList, data|
+			if @clients.key? tList[0] then
+				@clients[tList[0]].instance_variable_set(:@ammo, data.to_i);
 			end
 		end
 
@@ -101,11 +110,15 @@ class Game
 			end
 		end
 
-		at_exit {
-			print "Disconnecting Lasertag Clients ...\r"
-			remove_disconnected();
-			puts "Done disconnecting clients!          "
-		}
+		if(clean_on_exit) then
+			at_exit {
+				print "Disconnecting Lasertag Clients ...\r"
+				@clients.each do |pName, player|
+					remove_player(pName);
+				end
+				puts "Done disconnecting clients!          "
+			}
+		end
 	end
 
 	def [](c)
@@ -145,7 +158,7 @@ class Game
 		@clientUnregisteredCBs.each do |cb|
 			cb.call(pName, @clients[pName]);
 		end
-		@clients[pName].clean_all_topics unless @clients[pName].connected?
+		@clients[pName].clean_all_topics;
 		@clients.delete pName;
 	end
 
@@ -153,12 +166,16 @@ class Game
 		@clients.each do |k, v|
 			yield(k, v);
 		end
+
+		return;
 	end
 
 	def each_connected()
 		@clients.each do |k, v|
 			yield(k, v) if v.connected?
 		end
+
+		return;
 	end
 
 	def remove_disconnected()

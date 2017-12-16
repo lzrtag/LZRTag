@@ -22,23 +22,12 @@ function vibrate(duration)
 end
 
 function fireWeapon()
-	if(playerIDNum) then
+	if(player.id) then
 		uart.write(0, 0, 99);
 	end
 end
 
-subscribeTo(playerTopic .. "/Brightness", 1,
-	function(data)
-		setVestBrightness(tonumber(data));
-	end
-);
-subscribeTo(playerTopic .. "/Team", 1,
-	function(data)
-		setVestColor(tonumber(data));
-	end
-);
-
-subscribeTo(lasertagTopic .. "/Game/Status", 1,
+subscribeTo(lasertagTopic .. "/Game/Status", 0,
 	function(data)
 		if(data == "stop") then
 			if(gameRunning) then
@@ -57,24 +46,15 @@ subscribeTo(lasertagTopic .. "/Game/Status", 1,
 	end
 );
 
-subscribeTo(playerTopic .. "/ID", 1,
-	function(data)
-		playerIDNum = tonumber(data);
-		uart.write(0, 100, playerIDNum);
-	end
-);
-
 tmr.create():alarm(3000, tmr.ALARM_SINGLE, function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 	systemIsSetUp = true;
 end);
 
-setVestColor(1);
+setVestColor(2);
 function fancyPling()
 	ping(1000, 5000, 150);
 	vibrate(50);
 end
 fancyPling();
 tmr.create():alarm(200, tmr.ALARM_SINGLE, fancyPling);
-
-dofile("NoAmmoShoot.lua");
