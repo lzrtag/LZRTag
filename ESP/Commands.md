@@ -7,7 +7,7 @@ E000 | Trigger status changed
 E001 | Shot detected | Player, ShotID
 A010 | Vibrate 	| Time (10ms)
 A011 | Buzzer 	| Time (10ms), Start, End (60Hz)
-A012 | Vest Blink Override | Level + time in 100ms
+A012 | Vest Blink Override | Level + time in segments
 
 ### Config commands
 Number | Short Desc.
