@@ -30,9 +30,9 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 				if(data == StartSymbol) then
 					noTagTimer:unregister();
 
-					uart.write( 0, 10, 10,		-- Vibrate a little
-									11, 10, 7, 7,	-- Connect buzz
-									101, 4);			-- Set blue team
+					uart.write( 0, 10, 100, 0,					-- Vibrate a little
+									11, 100, 0, 164, 1, 164, 1,-- Connect buzz
+									101, 4);							-- Set blue team
 
 					uart.on("data", 0, function(d) end, 0);
 
@@ -64,6 +64,7 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 			end
 		, 0);
 
-		uart.write(0, StartSymbol);
+		-- Flush any potential buffer, then send the start signal
+		uart.write(0, 255, 255, 255, 255, 255, 255, StartSymbol);
 	end
 );

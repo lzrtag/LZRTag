@@ -38,6 +38,12 @@ ISR(USART_RX_vect) {
 	break;
 
 	case RX_COMMAND:
+		if(rData == START_CHAR) {
+			UDR0 = START_CHAR;
+			UDREI_ON;
+			return;
+		}
+
 		RXEndpoint = Endpoint::getHeadEndpoint();
 		while(1) {
 			if(RXEndpoint == 0)
