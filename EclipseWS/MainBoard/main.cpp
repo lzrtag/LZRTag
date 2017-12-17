@@ -33,16 +33,16 @@ ESPComs::Endpoint VestBrightnessEP(200, &Board::Vest::mode, 1, 0);
 ESPComs::Endpoint BrightnessOverrideEp(12, &Board::Vest::overrides, 3, 0);
 
 struct BuzzCommand {
-	uint8_t length;
-	uint8_t startFreq;
-	uint8_t endFreq;
+	uint16_t length;
+	uint16_t startFreq;
+	uint16_t endFreq;
 };
 void playPing() {
 	BuzzCommand buzzCommand = *(BuzzCommand*)&ESPComs::Endpoint::pubBuffer;
 
-	Board::Buzzer::sweep(buzzCommand.startFreq*60, buzzCommand.endFreq*60, buzzCommand.length*10);
+	Board::Buzzer::sweep(buzzCommand.startFreq, buzzCommand.endFreq, buzzCommand.length);
 }
-ESPComs::Endpoint PingEndpoint(11, &ESPComs::Endpoint::pubBuffer, 3, playPing);
+ESPComs::Endpoint PingEndpoint(11, &ESPComs::Endpoint::pubBuffer, 6, playPing);
 
 void playVibration() {
 	Board::Vibrator::vibrate(*(uint16_t *)&ESPComs::Endpoint::pubBuffer);

@@ -6,7 +6,7 @@ A000 | Shot cfg | 0 = Disable, 1 = Enable, 99 = Immediate, >=100 Set consequent 
 E000 | Trigger status changed
 E001 | Shot detected | Player, ShotID
 A010 | Vibrate 	| Time (in MS, up to 2^16 ms)
-A011 | Buzzer 	| Time (10ms), Start, End (60Hz)
+A011 | Buzzer 	| Time (in ms), Start, End (in Hz)
 A012 | Vest Blink Override | Level + time in segments
 
 ### Config commands
