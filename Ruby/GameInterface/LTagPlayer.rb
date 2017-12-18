@@ -1,7 +1,12 @@
 
 module Lasertag
 class Client
-	attr_reader :mqtt
+	def self.mqtt
+		nil
+	end
+	def self.game
+		nil
+	end
 
 	attr_reader :name
 	attr_reader :team
@@ -16,8 +21,7 @@ class Client
 
 	attr_accessor :data
 
-	def initialize(name, mqtt)
-		@mqtt = mqtt;
+	def initialize(name)
 		@name = name;
 
 		@mqttTopic = "Lasertag/Players/#{@name}"
@@ -36,6 +40,13 @@ class Client
 		@heap = 40000;
 	end
 
+	def mqtt
+		self.class.mqtt
+	end
+	def game
+		self.class.game
+	end
+
 	def connected?()
 		return @id != nil;
 	end
@@ -44,14 +55,14 @@ class Client
 		n = n.to_i;
 		raise ArgumentError, "Team out of range (must be between 0 and 255)" unless n != nil and n <= 255 and n >= 0;
 		@team = n;
-		@mqtt.publish_to "#{@mqttTopic}/Team", @team, retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
 	end
 	def brightness=(n)
 		n = n.to_i;
 		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
 		@brightness = n;
-		@mqtt.publish_to "#{@mqttTopic}/Brightness", @brightness, retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Brightness", @brightness, retain: true;
 		return true;
 	end
 	def id=(n)
@@ -64,14 +75,14 @@ class Client
 			@id = nil;
 		end
 
-		@mqtt.publish_to "#{@mqttTopic}/ID", @id, retain: true;
+		mqtt.publish_to "#{@mqttTopic}/ID", @id, retain: true;
 	end
 	def dead?
 		return @dead;
 	end
 	def dead=(d)
 		@dead = (d ? true : false);
-		@mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
 	end
 
 	def ammo=(a)
@@ -80,7 +91,7 @@ class Client
 		end
 
 		@ammo = a;
-		@mqtt.publish_to "#{@mqttTopic}/AmmoSet", a
+		mqtt.publish_to "#{@mqttTopic}/AmmoSet", a
 	end
 
 	def hitConfig
@@ -89,14 +100,14 @@ class Client
 	end
 	def hitConfig=(h)
 		if(h == nil) then
-			@mqtt.publish_to "#{@mqttTopic}/HitConf", "", retain: true;
+			mqtt.publish_to "#{@mqttTopic}/HitConf", "", retain: true;
 			@hitConfig = nil;
 			return;
 		end
 
 		raise ArgumentError, "Hit Config needs to be a hash or nil!" unless h.is_a? Hash
 		@hitConfig = h;
-		@mqtt.publish_to "#{@mqttTopic}/HitConf", @hitConfig.to_json, retain: true;
+		mqtt.publish_to "#{@mqttTopic}/HitConf", @hitConfig.to_json, retain: true;
 	end
 
 	def fireConfig
@@ -105,28 +116,28 @@ class Client
 	end
 	def fireConfig=(h)
 		if(h == nil) then
-			@mqtt.publish_to "#{@mqttTopic}/FireConf", "", retain: true;
+			mqtt.publish_to "#{@mqttTopic}/FireConf", "", retain: true;
 			@fireConfig = nil;
 			return;
 		end
 
 		raise ArgumentError, "Fire Config needs to be a hash or nil!" unless h.is_a? Hash
 		@fireConfig = h;
-		@mqtt.publish_to "#{@mqttTopic}/FireConf", @fireConfig.to_json, retain: true;
+		mqtt.publish_to "#{@mqttTopic}/FireConf", @fireConfig.to_json, retain: true;
 	end
 
 	def clean_all_topics()
-		@mqtt.publish_to "#{@mqttTopic}/Team", "", retain: true;
-		@mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
-		@mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
-		@mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Team", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
 
 		self.hitConfig = nil;
 		self.fireConfig = nil;
 	end
 
 	def console(str)
-		@mqtt.publish_to "#{@mqttTopic}/Console/In", str;
+		mqtt.publish_to "#{@mqttTopic}/Console/In", str;
 	end
 	private :console
 
