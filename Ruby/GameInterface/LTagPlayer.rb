@@ -2,10 +2,10 @@
 module Lasertag
 class Client
 	def self.mqtt
-		nil
+		@mqtt
 	end
 	def self.game
-		nil
+		@game
 	end
 
 	attr_reader :name
@@ -165,6 +165,15 @@ class Client
 
 	def hit()
 		console("displayHit();");
+	end
+
+
+	def inspect()
+		iString = "<Player:#{@name}##{@id ? @id : "OFFLINE"}, Team=#{@team}";
+		iString += ", DEAD" if dead?
+		iString += ", Battery=#{@battery.round(2)}"
+		iString += ", Heap=#{@heap}" if @heap < 10000;
+		iString +=  ", Ping=#{@ping.ceil}ms>";
 	end
 end
 end
