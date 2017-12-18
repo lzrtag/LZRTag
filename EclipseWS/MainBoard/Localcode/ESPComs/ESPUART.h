@@ -31,6 +31,8 @@ enum TXStates {
 	TX_SENDING,
 };
 
+void onReset(void (* const resetCallback)());
+
 bool tryToStart(Source * txSource);
 void init();
 

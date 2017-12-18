@@ -12,6 +12,8 @@ namespace ESPComs {
 #define UDREI_ON 	UCSR0B |= (1<< UDRIE0)
 #define UDREI_OFF	UCSR0B &= ~(1<< UDRIE0)
 
+void (* resetCallback)() = 0;
+
 RXStates RXStatus = WAIT_FOR_START_RX;
 TXStates TXStatus = WAIT_FOR_START_TX;
 
@@ -41,6 +43,8 @@ ISR(USART_RX_vect) {
 		if(rData == START_CHAR) {
 			UDR0 = START_CHAR;
 			UDREI_ON;
+			if(resetCallback != 0)
+				resetCallback();
 			return;
 		}
 
@@ -94,6 +98,10 @@ void nextTXSource() {
 
 	UDREI_OFF;
 	TXStatus = TX_IDLE;
+}
+
+void onReset(void (* const newResetCallback)()) {
+	resetCallback = newResetCallback;
 }
 
 bool tryToStart(Source * txSource) {
