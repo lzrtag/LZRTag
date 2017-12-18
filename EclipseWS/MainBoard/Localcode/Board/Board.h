@@ -61,6 +61,8 @@ namespace Board {
 		void sweep(uint16_t start, uint16_t end, uint16_t duration);
 	}
 
+	void reset();
+
 	void ISR1a();
 }
 

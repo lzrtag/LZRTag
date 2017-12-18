@@ -42,7 +42,7 @@ class Client
 
 	def team=(n)
 		n = n.to_i;
-		return false unless n != nil and n <= 7 and n >= 0;
+		raise ArgumentError, "Team out of range (must be between 0 and 255)" unless n != nil and n <= 255 and n >= 0;
 		@team = n;
 		@mqtt.publish_to "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
@@ -56,7 +56,7 @@ class Client
 	end
 	def id=(n)
 		if(n != nil) then
-			raise ArgumentError, "ID must be a integer!" unless n.is_a? Integer;
+			raise ArgumentError, "ID must be integer or nil!" unless n.is_a? Integer;
 			raise ArgumentError, "ID out of range (0<ID<256)" unless n < 256 and n > 0;
 
 			@id = n;
@@ -131,7 +131,7 @@ class Client
 	private :console
 
 	def override_brightness(level, duration)
-		return false unless level.is_a? Integer and duration.is_a? Numeric
+		raise ArgumentError unless level.is_a? Integer and duration.is_a? Numeric
 		console("overrideVest(#{(duration*1000).to_i},#{level});");
 	end
 	def stop_brightness_override()
@@ -139,7 +139,7 @@ class Client
 	end
 
 	def vibrate(duration)
-		return false unless duration.is_a? Numeric and duration <= 2.55
+		raise ArgumentError, "Vibration-duration out of range (between 0 and 65.536)" unless duration.is_a? Numeric and duration <= 65.536 and duration >= 0
 		console("vibrate(#{(duration*1000).to_i});");
 	end
 

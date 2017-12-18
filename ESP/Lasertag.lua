@@ -14,11 +14,14 @@ function overrideVest(duration, brightness)
 end
 
 function ping(sFreq, eFreq, duration)
-	uart.write(0, 11, duration/10 or 2, sFreq/60 or 67, eFreq/60 or sFreq/60 or 67);
+	duration = duration or 20;
+	sFreq = sFreq or 4000;
+	eFreq = eFreq or sFreq;
+	uart.write(0, 11, duration%255, duration/255, sFreq%255, sFreq/255, eFreq%255, eFreq/255);
 end
 
 function vibrate(duration)
-	uart.write(0, 10, duration/10);
+	uart.write(0, 10, duration%255, duration/255);
 end
 
 function fireWeapon()

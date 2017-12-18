@@ -50,9 +50,15 @@ namespace Board {
 		}
 
 		void vibrate(uint16_t duration) {
-			on();
-			if(duration > vibratorDuration) {
-				vibratorDuration = duration;
+			if(duration == 0) {
+				vibratorDuration = 0;
+				off();
+			}
+			else {
+				on();
+				if(duration > vibratorDuration) {
+					vibratorDuration = duration;
+				}
 			}
 		}
 
@@ -63,9 +69,9 @@ namespace Board {
 				default: break;
 				case 1:
 					if(vibratorDuration & 0b100000)
-						on();
-					else
 						off();
+					else
+						on();
 				}
 			}
 			else
@@ -132,6 +138,13 @@ namespace Board {
 				}
 			}
 		}
+	}
+
+	void reset() {
+		Vibrator::vibrate(0);
+
+		Buzzer::buzzerDuration = 0;
+		Buzzer::off();
 	}
 
 	void ISR1a() {

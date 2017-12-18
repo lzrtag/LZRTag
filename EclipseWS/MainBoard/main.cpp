@@ -33,21 +33,21 @@ ESPComs::Endpoint VestBrightnessEP(200, &Board::Vest::mode, 1, 0);
 ESPComs::Endpoint BrightnessOverrideEp(12, &Board::Vest::overrides, 3, 0);
 
 struct BuzzCommand {
-	uint8_t length;
-	uint8_t startFreq;
-	uint8_t endFreq;
+	uint16_t length;
+	uint16_t startFreq;
+	uint16_t endFreq;
 };
 void playPing() {
 	BuzzCommand buzzCommand = *(BuzzCommand*)&ESPComs::Endpoint::pubBuffer;
 
-	Board::Buzzer::sweep(buzzCommand.startFreq*60, buzzCommand.endFreq*60, buzzCommand.length*10);
+	Board::Buzzer::sweep(buzzCommand.startFreq, buzzCommand.endFreq, buzzCommand.length);
 }
-ESPComs::Endpoint PingEndpoint(11, &ESPComs::Endpoint::pubBuffer, 3, playPing);
+ESPComs::Endpoint PingEndpoint(11, &ESPComs::Endpoint::pubBuffer, 6, playPing);
 
 void playVibration() {
-	Board::Vibrator::vibrate(ESPComs::Endpoint::pubBuffer[0]*10);
+	Board::Vibrator::vibrate(*(uint16_t *)&ESPComs::Endpoint::pubBuffer);
 }
-ESPComs::Endpoint VibrationEP(10, &ESPComs::Endpoint::pubBuffer, 1, playVibration);
+ESPComs::Endpoint VibrationEP(10, &ESPComs::Endpoint::pubBuffer, 2, playVibration);
 
 uint8_t currentShotID = 1;
 void handleShots() {
@@ -74,6 +74,7 @@ void IRRXCB(IR::ShotPacket data) {
 int main() {
 	_delay_ms(1500);
 	ESPComs::init();
+	ESPComs::onReset(Board::reset);
 
 	Board::Vest::mode = 3;
 	Board::Vest::team = 1;
