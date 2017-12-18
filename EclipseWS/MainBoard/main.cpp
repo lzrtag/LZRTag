@@ -74,6 +74,7 @@ void IRRXCB(IR::ShotPacket data) {
 int main() {
 	_delay_ms(1500);
 	ESPComs::init();
+	ESPComs::onReset(Board::reset);
 
 	Board::Vest::mode = 3;
 	Board::Vest::team = 1;
