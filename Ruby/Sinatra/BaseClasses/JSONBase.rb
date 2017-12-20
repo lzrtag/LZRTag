@@ -7,7 +7,7 @@ module Lasertag
 		class Basic < Sinatra::Application
 
 			def find_template(views, name, engine, &block)
-				[views, File.join(File.dirname(__FILE__), "../Views")].flatten.each do |v|
+				[views, File.join(File.dirname(__FILE__), "../views")].flatten.each do |v|
 					super(v, name, engine, &block);
 				end
 			end
@@ -17,13 +17,7 @@ module Lasertag
 			end
 
 			get '/Players' do
-				hamlString = 	"%h1 Currently connected players:\n";
-				hamlString += 	"%ul\n"
-				settings.game.each do |pName, player|
-					hamlString += "	%li&= '#{player.inspect}'\n";
-				end
-
-				haml hamlString
+				haml :simplePlayerListing
 			end
 		end
 	end
