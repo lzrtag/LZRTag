@@ -1,0 +1,5 @@
+%h1.centered Currently connected players:
+
+%ul.playerList
+	- settings.game.each do |pName, player|
+		%li&= player.inspect

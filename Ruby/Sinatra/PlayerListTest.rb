@@ -1,7 +1,7 @@
 #!/usr/bin/ruby2.4
 
 require 'json'
-require_relative '../Ruby/GameInterface/LTagGame.rb'
+require_relative '../GameInterface/LTagGame.rb'
 
 $mqtt = MQTT::SubHandler.new('iot.eclipse.org');
 $game = Lasertag::Game.new($mqtt);
@@ -34,5 +34,4 @@ $mqtt.subscribe_to "Lasertag/Game/Events" do |tList, data|
 end
 
 Lasertag::HTTP::Basic.set :game, $game
-
 Lasertag::HTTP::Basic.run!
