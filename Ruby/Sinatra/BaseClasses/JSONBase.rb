@@ -12,6 +12,10 @@ module Lasertag
 				end
 			end
 
+			get '/stylesheet.css' do
+				scss :stylesheet
+			end
+
 			get '/JSON/Game' do
 				game.to_json
 			end

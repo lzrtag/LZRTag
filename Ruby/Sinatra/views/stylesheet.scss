@@ -1,0 +1,32 @@
+html {
+	height: 100%;
+}
+body {
+	background-color: #000000;
+	height: 95%;
+}
+
+@keyframes unfold {
+	from { height: 0px; }
+	to { height: 100%; }
+}
+
+.content-div {
+	background-color: #0f0f0f;
+	color: #cccccc;
+
+	margin: 0 auto 0 auto;
+	padding-top: 0;
+	padding-bottom: 0;
+
+	width: 500px;
+
+	animation-name: unfold;
+	animation-duration: 1500ms;
+	animation-delay: 150ms;
+	animation-fill-mode: both;
+}
+
+.centered {
+	text-align: center;
+}
