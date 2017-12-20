@@ -10,7 +10,6 @@ body {
 	from { height: 0px; }
 	to { height: 100%; }
 }
-
 .content-div {
 	background-color: #0f0f0f;
 	color: #cccccc;
@@ -27,6 +26,27 @@ body {
 	animation-fill-mode: both;
 }
 
+@keyframes brightness-6-frames {
+	0% 	{ opacity: 0; }
+	50%	{ opacity: 0.5; }
+	100%	{ opacity: 0; }
+}
+
+.brightness-6 {
+	position: absolute;
+
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+
+	animation-name: brightness-6-frames;
+	animation-duration: 1080ms;
+	animation-iteration-count: infinite;
+	animation-delay: 0s;
+}
+
 .centered {
 	text-align: center;
+	width: auto;
 }
