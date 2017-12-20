@@ -3,7 +3,11 @@ html {
 }
 body {
 	background-color: #000000;
-	height: 95%;
+
+	height: 100%;
+
+	margin: 0px;
+	padding: 0px;
 }
 
 @keyframes unfold {
@@ -14,9 +18,8 @@ body {
 	background-color: #0f0f0f;
 	color: #cccccc;
 
-	margin: 0 auto 0 auto;
-	padding-top: 0;
-	padding-bottom: 0;
+	margin: auto;
+	padding: 0px;
 
 	width: 500px;
 
@@ -24,6 +27,9 @@ body {
 	animation-duration: 1500ms;
 	animation-delay: 150ms;
 	animation-fill-mode: both;
+
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 @keyframes brightness-6-frames {
@@ -32,7 +38,7 @@ body {
 	100%	{ opacity: 0; }
 }
 
-.brightness-6 {
+.brightness-general {
 	position: absolute;
 
 	top: 0px;
@@ -40,13 +46,22 @@ body {
 	left: 0px;
 	right: 0px;
 
-	animation-name: brightness-6-frames;
 	animation-duration: 1080ms;
 	animation-iteration-count: infinite;
 	animation-delay: 0s;
 }
 
+.brightness-6 {
+	@extend .brightness-general;
+	animation-name: brightness-6-frames;
+}
+.brightness-wrapper {
+	position: relative;
+}
+.brightness-content {
+	position: relative;
+}
+
 .centered {
 	text-align: center;
-	width: auto;
 }

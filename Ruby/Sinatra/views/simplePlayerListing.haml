@@ -4,7 +4,8 @@
 	- settings.game.each do |pName, player|
 		%li&= player.inspect
 
-.centered{style: "position: relative;"}
-	%div{style: "z-index: 2; display: block;"}
-		Test!
-	.brightness-6{style: "background-color: red; z-index: 1;"}
+- (1..360).step(30).each do |i|
+	.brightness-wrapper
+		%div{class: "brightness-6", style: "background-color: hsl(#{i}, 100%, 50%); animation-delay: #{i}ms;"}
+		.brightness-content.centered
+			Test!
