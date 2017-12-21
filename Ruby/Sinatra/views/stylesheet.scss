@@ -21,7 +21,7 @@ body {
 	margin: auto;
 	padding: 0px;
 
-	width: 500px;
+	max-width: 500px;
 
 	animation-name: unfold;
 	animation-duration: 1500ms;
@@ -57,6 +57,7 @@ body {
 }
 .brightness-wrapper {
 	position: relative;
+	margin: auto;
 }
 .brightness-content {
 	position: relative;
