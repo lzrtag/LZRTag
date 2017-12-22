@@ -9,17 +9,23 @@ $game = Lasertag::Game.new($mqtt);
 require_relative 'BaseClasses/JSONBase'
 
 $game.on_connect do |pName, player|
-	player.ammo = 1000;
-	player.hitConfig = {
-		dieOnHit: true,
-		deathDuration: 5000,
-	}
+	Thread.new do
+		player.ammo = 1000;
+		sleep 0.1;
 
-	player.fireConfig = {
-		shotLocked: false,
-	}
+		player.hitConfig = {
+			dieOnHit: true,
+			deathDuration: 5000,
+		}
+		sleep 0.1;
 
-	player.team = rand(1..7);
+		player.fireConfig = {
+			shotLocked: false,
+		}
+		sleep 0.1;
+
+		player.team = rand(1..7);
+	end
 end
 
 $mqtt.subscribe_to "Lasertag/Game/Events" do |tList, data|
