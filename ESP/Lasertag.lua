@@ -49,7 +49,7 @@ subscribeTo(lasertagTopic .. "/Game/Status", 0,
 	end
 );
 
-tmr.create():alarm(3000, tmr.ALARM_SINGLE, function()
+tmr.create():alarm(5000, tmr.ALARM_SINGLE, function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 	systemIsSetUp = true;
 end);

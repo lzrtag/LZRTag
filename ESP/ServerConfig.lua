@@ -37,6 +37,16 @@ fireConfDefaults = {
 }
 fireConf = fireConfDefaults;
 
+-- luacheck: globals updateAmmo attemptShot
+subscribeTo(playerTopic .. "/AmmoSet", 1,
+	function(data)
+		data = tonumber(data);
+		if(data) then
+			updateAmmo(data);
+			attemptShot();
+		end
+	end);
+
 subscribeTo(playerTopic .. "/ID", 1,
 	function(data)
 		player.id = tonumber(data);
@@ -79,15 +89,5 @@ subscribeTo(playerTopic .. "/FireConf", 1,
 			fireConf = fireConfDefaults
 		else
 			fireConf = sjson.decode(data, fireConfOptions);
-		end
-	end);
-
--- luacheck: globals updateAmmo attemptShot
-subscribeTo(playerTopic .. "/AmmoSet", 1,
-	function(data)
-		data = tonumber(data);
-		if(data) then
-			updateAmmo(data);
-			attemptShot();
 		end
 	end);

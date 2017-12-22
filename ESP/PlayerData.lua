@@ -1,6 +1,6 @@
 
-playerID 		= "Red";
-invertButton 	= false;
+playerID 		= "White";
+invertButton 	= true;
 
-serverURL 		= 'iot.eclipse.org'
+serverURL 		= 'xasin.hopto.org'
 lasertagTopic	= 'Lasertag'
