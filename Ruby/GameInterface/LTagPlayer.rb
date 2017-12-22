@@ -38,6 +38,15 @@ class Client
 		@battery = 3.3;
 		@ping = 10000;
 		@heap = 40000;
+
+		@slowMessageQueue = Queue.new();
+		@slowMessageThread = Thread.new do
+			loop do
+				message = @slowMessageQueue.pop;
+				mqtt.publish_to message[:topic], message[:data], retain: message[:retain]
+				sleep 0.1;
+			end
+		end
 	end
 
 	def mqtt
@@ -51,18 +60,30 @@ class Client
 		return @id != nil;
 	end
 
+	def send_message(topic, data, retain: nil)
+		@slowMessageQueue << {topic: topic, data: data, retain: retain};
+	end
+
 	def team=(n)
 		n = n.to_i;
 		raise ArgumentError, "Team out of range (must be between 0 and 255)" unless n != nil and n <= 255 and n >= 0;
 		@team = n;
+<<<<<<< HEAD
 		mqtt.publish_to "#{@mqttTopic}/Team", @team, retain: true;
+=======
+		send_message "#{@mqttTopic}/Team", @team, retain: true;
+>>>>>>> Slowed_Client_Pushing
 		return true;
 	end
 	def brightness=(n)
 		n = n.to_i;
 		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
 		@brightness = n;
+<<<<<<< HEAD
 		mqtt.publish_to "#{@mqttTopic}/Brightness", @brightness, retain: true;
+=======
+		send_message "#{@mqttTopic}/Brightness", @brightness, retain: true;
+>>>>>>> Slowed_Client_Pushing
 		return true;
 	end
 	def id=(n)
@@ -75,14 +96,22 @@ class Client
 			@id = nil;
 		end
 
+<<<<<<< HEAD
 		mqtt.publish_to "#{@mqttTopic}/ID", @id, retain: true;
+=======
+		send_message "#{@mqttTopic}/ID", @id, retain: true;
+>>>>>>> Slowed_Client_Pushing
 	end
 	def dead?
 		return @dead;
 	end
 	def dead=(d)
 		@dead = (d ? true : false);
+<<<<<<< HEAD
 		mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
+=======
+		send_message "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
+>>>>>>> Slowed_Client_Pushing
 	end
 
 	def ammo=(a)
@@ -91,7 +120,11 @@ class Client
 		end
 
 		@ammo = a;
+<<<<<<< HEAD
 		mqtt.publish_to "#{@mqttTopic}/AmmoSet", a
+=======
+		send_message "#{@mqttTopic}/AmmoSet", a
+>>>>>>> Slowed_Client_Pushing
 	end
 
 	def hitConfig
@@ -107,7 +140,11 @@ class Client
 
 		raise ArgumentError, "Hit Config needs to be a hash or nil!" unless h.is_a? Hash
 		@hitConfig = h;
+<<<<<<< HEAD
 		mqtt.publish_to "#{@mqttTopic}/HitConf", @hitConfig.to_json, retain: true;
+=======
+		send_message "#{@mqttTopic}/HitConf", @hitConfig.to_json, retain: true;
+>>>>>>> Slowed_Client_Pushing
 	end
 
 	def fireConfig
@@ -123,7 +160,11 @@ class Client
 
 		raise ArgumentError, "Fire Config needs to be a hash or nil!" unless h.is_a? Hash
 		@fireConfig = h;
+<<<<<<< HEAD
 		mqtt.publish_to "#{@mqttTopic}/FireConf", @fireConfig.to_json, retain: true;
+=======
+		send_message "#{@mqttTopic}/FireConf", @fireConfig.to_json, retain: true;
+>>>>>>> Slowed_Client_Pushing
 	end
 
 	def clean_all_topics()
@@ -137,7 +178,11 @@ class Client
 	end
 
 	def console(str)
+<<<<<<< HEAD
 		mqtt.publish_to "#{@mqttTopic}/Console/In", str;
+=======
+		send_message "#{@mqttTopic}/Console/In", str;
+>>>>>>> Slowed_Client_Pushing
 	end
 	private :console
 
