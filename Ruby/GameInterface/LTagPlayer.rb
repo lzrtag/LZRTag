@@ -104,6 +104,7 @@ class Client
 		end
 
 		@ammo = a;
+
 		send_message "#{@mqttTopic}/AmmoSet", a
 	end
 
@@ -120,6 +121,7 @@ class Client
 
 		raise ArgumentError, "Hit Config needs to be a hash or nil!" unless h.is_a? Hash
 		@hitConfig = h;
+
 		send_message "#{@mqttTopic}/HitConf", @hitConfig.to_json, retain: true;
 	end
 
@@ -136,6 +138,7 @@ class Client
 
 		raise ArgumentError, "Fire Config needs to be a hash or nil!" unless h.is_a? Hash
 		@fireConfig = h;
+
 		send_message "#{@mqttTopic}/FireConf", @fireConfig.to_json, retain: true;
 	end
 
