@@ -3,6 +3,16 @@ clientID = "Lasertag_"..playerID
 homeQTT = mqtt.Client(clientID, 10);
 homeQTT:lwt(playerTopic .. "/Connection", "", 1, 1);
 
+-- DEBUG
+gpio.mode(4, gpio.OUTPUT);
+gpio.write(4, 1);
+
+function tstmp()
+	gpio.write(4, 1);
+	tmr.delay(10);
+	gpio.write(4, 0);
+end
+
 --------------
 --- SUB HANDLER FUNCTIONS
 --------------
@@ -122,5 +132,7 @@ end
 
 homeQTT:on("message",
 	function(client, topic, data)
+		gpio.write(4, 0);
 		mqttSubList[topic].c(data);
+		gpio.write(4, 1);
 	end);
