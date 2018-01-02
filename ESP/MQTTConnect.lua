@@ -3,16 +3,6 @@ clientID = "Lasertag_"..playerID
 homeQTT = mqtt.Client(clientID, 10);
 homeQTT:lwt(playerTopic .. "/Connection", "", 1, 1);
 
--- DEBUG
-gpio.mode(4, gpio.OUTPUT);
-gpio.write(4, 1);
-
-function tstmp()
-	gpio.write(4, 1);
-	tmr.delay(10);
-	gpio.write(4, 0);
-end
-
 --------------
 --- SUB HANDLER FUNCTIONS
 --------------
@@ -36,8 +26,14 @@ function mqtt_raw_slow_subscribe()
 			homeQTT:subscribe(t, mqttSubList[t].q);
 		end
 	end
+
 	if(#mqttSubQueue > 0) then
 		mqttSubTimer:start();
+	else
+		if(on_mqtt_sub_finish) then
+			on_mqtt_sub_finish();
+			on_mqtt_sub_finish = nil;
+		end
 	end
 end
 
@@ -60,7 +56,7 @@ function resubToAll()
 	end
 end
 
-mqttSubTimer:register(2000, tmr.ALARM_SEMI, mqtt_raw_slow_subscribe);
+mqttSubTimer:register(750, tmr.ALARM_SEMI, mqtt_raw_slow_subscribe);
 
 ---------------
 --- RECONNECTING FUNCTIONS
@@ -132,7 +128,5 @@ end
 
 homeQTT:on("message",
 	function(client, topic, data)
-		gpio.write(4, 0);
 		mqttSubList[topic].c(data);
-		gpio.write(4, 1);
 	end);
