@@ -9,6 +9,10 @@ class Game
 		@mqtt = mqtt;
 		@mqttTopic = "Lasertag/Players/+"
 
+		@clientClass = Class.new(Lasertag::Client)
+		@clientClass.instance_variable_set(:@mqtt, mqtt);
+		@clientClass.instance_variable_set(:@game, self);
+
 		@clients = Hash.new();
 		@idTable = Hash.new();
 
@@ -57,7 +61,7 @@ class Game
 				# Check if the player is on record.
 				# If not, generate one and call the callbacks
 				if(not @clients.key? pName) then
-					@clients[pName] = Client.new(pName, @mqtt);
+					@clients[pName] = @clientClass.new(pName);
 					@clientRegisteredCBs.each do |cb|
 						cb.call(pName, @clients[pName]);
 					end

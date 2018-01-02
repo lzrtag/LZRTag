@@ -1,7 +1,12 @@
 
 module Lasertag
 class Client
-	attr_reader :mqtt
+	def self.mqtt
+		@mqtt
+	end
+	def self.game
+		@game
+	end
 
 	attr_reader :name
 	attr_reader :team
@@ -16,8 +21,7 @@ class Client
 
 	attr_accessor :data
 
-	def initialize(name, mqtt)
-		@mqtt = mqtt;
+	def initialize(name)
 		@name = name;
 
 		@mqttTopic = "Lasertag/Players/#{@name}"
@@ -34,24 +38,44 @@ class Client
 		@battery = 3.3;
 		@ping = 10000;
 		@heap = 40000;
+
+		@slowMessageQueue = Queue.new();
+		@slowMessageThread = Thread.new do
+			loop do
+				message = @slowMessageQueue.pop;
+				mqtt.publish_to message[:topic], message[:data], retain: message[:retain]
+				sleep 0.1;
+			end
+		end
+	end
+
+	def mqtt
+		self.class.mqtt
+	end
+	def game
+		self.class.game
 	end
 
 	def connected?()
 		return @id != nil;
 	end
 
+	def send_message(topic, data, retain: nil)
+		@slowMessageQueue << {topic: topic, data: data, retain: retain};
+	end
+
 	def team=(n)
 		n = n.to_i;
 		raise ArgumentError, "Team out of range (must be between 0 and 255)" unless n != nil and n <= 255 and n >= 0;
 		@team = n;
-		@mqtt.publish_to "#{@mqttTopic}/Team", @team, retain: true;
+		send_message "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
 	end
 	def brightness=(n)
 		n = n.to_i;
 		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
 		@brightness = n;
-		@mqtt.publish_to "#{@mqttTopic}/Brightness", @brightness, retain: true;
+		send_message "#{@mqttTopic}/Brightness", @brightness, retain: true;
 		return true;
 	end
 	def id=(n)
@@ -64,14 +88,14 @@ class Client
 			@id = nil;
 		end
 
-		@mqtt.publish_to "#{@mqttTopic}/ID", @id, retain: true;
+		send_message "#{@mqttTopic}/ID", @id, retain: true;
 	end
 	def dead?
 		return @dead;
 	end
 	def dead=(d)
 		@dead = (d ? true : false);
-		@mqtt.publish_to "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
+		send_message "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
 	end
 
 	def ammo=(a)
@@ -80,7 +104,8 @@ class Client
 		end
 
 		@ammo = a;
-		@mqtt.publish_to "#{@mqttTopic}/AmmoSet", a
+
+		send_message "#{@mqttTopic}/AmmoSet", a
 	end
 
 	def hitConfig
@@ -89,14 +114,15 @@ class Client
 	end
 	def hitConfig=(h)
 		if(h == nil) then
-			@mqtt.publish_to "#{@mqttTopic}/HitConf", "", retain: true;
+			mqtt.publish_to "#{@mqttTopic}/HitConf", "", retain: true;
 			@hitConfig = nil;
 			return;
 		end
 
 		raise ArgumentError, "Hit Config needs to be a hash or nil!" unless h.is_a? Hash
 		@hitConfig = h;
-		@mqtt.publish_to "#{@mqttTopic}/HitConf", @hitConfig.to_json, retain: true;
+
+		send_message "#{@mqttTopic}/HitConf", @hitConfig.to_json, retain: true;
 	end
 
 	def fireConfig
@@ -105,28 +131,29 @@ class Client
 	end
 	def fireConfig=(h)
 		if(h == nil) then
-			@mqtt.publish_to "#{@mqttTopic}/FireConf", "", retain: true;
+			mqtt.publish_to "#{@mqttTopic}/FireConf", "", retain: true;
 			@fireConfig = nil;
 			return;
 		end
 
 		raise ArgumentError, "Fire Config needs to be a hash or nil!" unless h.is_a? Hash
 		@fireConfig = h;
-		@mqtt.publish_to "#{@mqttTopic}/FireConf", @fireConfig.to_json, retain: true;
+
+		send_message "#{@mqttTopic}/FireConf", @fireConfig.to_json, retain: true;
 	end
 
 	def clean_all_topics()
-		@mqtt.publish_to "#{@mqttTopic}/Team", "", retain: true;
-		@mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
-		@mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
-		@mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Team", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
 
 		self.hitConfig = nil;
 		self.fireConfig = nil;
 	end
 
 	def console(str)
-		@mqtt.publish_to "#{@mqttTopic}/Console/In", str;
+		send_message "#{@mqttTopic}/Console/In", str;
 	end
 	private :console
 
@@ -154,6 +181,15 @@ class Client
 
 	def hit()
 		console("displayHit();");
+	end
+
+
+	def inspect()
+		iString = "<Player:#{@name}##{@id ? @id : "OFFLINE"}, Team=#{@team}";
+		iString += ", DEAD" if dead?
+		iString += ", Battery=#{@battery.round(2)}"
+		iString += ", Heap=#{@heap}" if @heap < 10000;
+		iString +=  ", Ping=#{@ping.ceil}ms>";
 	end
 end
 end
