@@ -145,6 +145,8 @@ namespace Board {
 
 		Buzzer::buzzerDuration = 0;
 		Buzzer::off();
+
+		Vest::overrides = {0, 0};
 	}
 
 	void ISR1a() {
