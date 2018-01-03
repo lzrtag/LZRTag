@@ -38,15 +38,6 @@ class Client
 		@battery = 3.3;
 		@ping = 10000;
 		@heap = 40000;
-
-		@slowMessageQueue = Queue.new();
-		@slowMessageThread = Thread.new do
-			loop do
-				message = @slowMessageQueue.pop;
-				mqtt.publish_to message[:topic], message[:data], retain: message[:retain]
-				sleep 0.1;
-			end
-		end
 	end
 
 	def mqtt
@@ -61,7 +52,7 @@ class Client
 	end
 
 	def send_message(topic, data, retain: nil)
-		@slowMessageQueue << {topic: topic, data: data, retain: retain};
+		mqtt().publish_to topic, data, retain: retain;
 	end
 
 	def team=(n)

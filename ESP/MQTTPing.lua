@@ -4,15 +4,17 @@ sysInfoTopic = playerTopic .. "/System"
 
 currentPing = 1000000;
 
+pubString = "";
+
 subscribeTo(pingTopic .. "/PingOut", 0,
 	function(data)
 		currentPing = tmr.now() - tonumber(data);
 
-		homeQTT:publish(sysInfoTopic, sjson.encode(
-			{	heap = node.heap(),
-				battery = adc.readvdd33(0),
-				ping = currentPing,
-				sigStrength = wifi.sta.getrssi()}), 0, 0);
+		pubString = '{"heap":' .. node.heap();
+		pubString = pubString .. ',"battery":' .. adc.readvdd33(0);
+		pubString = pubString .. ',"ping":' .. currentPing .. '}';
+
+		homeQTT:publish(sysInfoTopic, pubString, 0, 0);
 	end
 );
 

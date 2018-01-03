@@ -49,12 +49,16 @@ subscribeTo(lasertagTopic .. "/Game/Status", 0,
 	end
 );
 
-tmr.create():alarm(5000, tmr.ALARM_SINGLE, function()
+on_mqtt_sub_finish = function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 	systemIsSetUp = true;
-end);
+	setVestColor(7);
+	ping(5000, 1000, 50);
+end
 
-setVestColor(2);
+setVestBrightness(0);
+setVestColor(5);
+
 function fancyPling()
 	ping(1000, 5000, 150);
 	vibrate(50);
