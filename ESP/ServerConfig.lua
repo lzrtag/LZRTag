@@ -47,12 +47,12 @@ subscribeTo(playerTopic .. "/ID", 1,
 
 subscribeTo(playerTopic .. "/Team", 1,
 	function(data)
-		game.team = tonumber(data) or 0;
+		game.team = tonumber(data) or 7;
 		setVestColor(game.team);
 	end);
 subscribeTo(playerTopic .. "/Brightness", 1,
 	function(data)
-		game.brightness = tonumber(data) or 3;
+		game.brightness = tonumber(data) or 0;
 		if(not(player.dead)) then
 			setVestBrightness(game.brightness);
 		end
@@ -63,7 +63,7 @@ hitConfOptions = {
 		__index = hitConfDefaults}};
 subscribeTo(playerTopic .. "/HitConf", 1,
 	function(data)
-		if(data:len() < 2) then
+		if(data == nil or data:len() < 2) then
 			hitConf = hitConfDefaults
 		else
 			hitConf = sjson.decode(data, hitConfOptions);
@@ -75,7 +75,7 @@ fireConfOptions = {
 		__index = fireConfDefaults}}
 subscribeTo(playerTopic .. "/FireConf", 1,
 	function(data)
-		if(data:len() < 2) then
+		if(data == nil or data:len() < 2) then
 			fireConf = fireConfDefaults
 		else
 			fireConf = sjson.decode(data, fireConfOptions);
