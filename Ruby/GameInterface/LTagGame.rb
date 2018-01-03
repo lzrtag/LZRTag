@@ -221,5 +221,9 @@ class Game
 			players:		player_hash,
 		};
 	end
+
+	def to_json()
+		return self.to_hash.to_json();
+	end
 end
 end

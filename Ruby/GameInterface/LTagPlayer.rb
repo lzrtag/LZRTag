@@ -202,5 +202,9 @@ class Client
 		}
 	end
 	alias to_h to_hash
+
+	def to_json()
+		return self.to_hash.to_json
+	end
 end
 end
