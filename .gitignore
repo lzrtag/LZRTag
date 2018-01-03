@@ -27,4 +27,7 @@
 *.out
 *.app
 
+# Sinatra caches
+.sass-cache
+
 Gemfile.lock
