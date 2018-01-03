@@ -196,6 +196,15 @@ class Game
 		return outputHash;
 	end
 
+	def player_hash()
+		outputHash = Hash.new();
+		@clients.each do |k, v|
+			outputHash[k] = v.to_hash;
+		end
+
+		return outputHash;
+	end
+
 	def num_connected()
 		n = 0;
 		self.each_connected do |k, v|
@@ -204,5 +213,13 @@ class Game
 		return n;
 	end
 
+	def to_hash()
+		return {
+			idtable: 	@idTable,
+			registered: @clients.length,
+			connected:	num_connected,
+			players:		player_hash,
+		};
+	end
 end
 end
