@@ -17,7 +17,22 @@ module Lasertag
 			end
 
 			get '/JSON/Game' do
-				game.to_json
+				content_type :json
+				settings.game.to_json
+			end
+
+			get '/JSON/Players' do
+				content_type :json
+				settings.game.player_hash.to_json
+			end
+
+			get '/JSON/Players/:player' do
+				content_type :json
+				if(player = settings.game[params[:player]]) then
+					player.to_json
+				else
+					"{}"
+				end
 			end
 
 			get '/Players' do
