@@ -191,5 +191,22 @@ class Client
 		iString += ", Heap=#{@heap}" if @heap < 10000;
 		iString +=  ", Ping=#{@ping.ceil}ms>";
 	end
+
+	def to_hash()
+		return {
+			data: @data,
+
+			team: @team,
+			brightness: @brightness,
+			ammo: @ammo,
+
+			dead: @dead,
+
+			battery: @battery,
+			ping: @ping,
+			heap: @heap
+		}
+	end
+	alias to_h to_hash
 end
 end
