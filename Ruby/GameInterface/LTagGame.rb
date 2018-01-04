@@ -5,7 +5,7 @@ require 'json'
 
 module Lasertag
 class Game
-	def initialize(mqtt, delete_disconnected: false, id_assign: true, clean_on_exit: false)
+	def initialize(mqtt, delete_disconnected: false, id_assign: true, clean_on_exit: true)
 		@mqtt = mqtt;
 		@mqttTopic = "Lasertag/Players/+"
 
