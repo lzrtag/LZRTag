@@ -40,10 +40,7 @@ namespace Board {
 	namespace Vibrator {
 		uint16_t vibratorDuration = 0;
 
-		enum {
-			no_pattern,
-			heartbeat,
-		} patternMode = heartbeat;
+		uint8_t  patternMode = 0;
 		uint16_t patternTiming = 0;
 
 		void off() {
@@ -78,12 +75,11 @@ namespace Board {
 			else {
 				switch(patternMode) {
 				default:
-				case no_pattern:
 					off();
 					patternTiming = 0;
 				break;
 
-				case heartbeat:
+				case 1:
 					switch(patternTiming++) {
 					case 190:
 					case 0:
