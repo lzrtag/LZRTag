@@ -39,7 +39,12 @@ namespace Board {
 
 	namespace Vibrator {
 		uint16_t vibratorDuration = 0;
-		uint8_t vibratorMode = 1;
+
+		enum {
+			no_pattern,
+			heartbeat,
+		} patternMode = heartbeat;
+		uint16_t patternTiming = 0;
 
 		void off() {
 			VIBRATOR_PORTx &= ~(1<< VIBRATOR_PIN);
@@ -65,17 +70,38 @@ namespace Board {
 		void update() {
 			if(vibratorDuration != 0) {
 				vibratorDuration--;
-				switch(vibratorMode) {
-				default: break;
-				case 1:
-					if(vibratorDuration & 0b100000)
-						off();
-					else
+				if(vibratorDuration & 0b100000)
+					off();
+				else
+					on();
+			}
+			else {
+				switch(patternMode) {
+				default:
+				case no_pattern:
+					off();
+					patternTiming = 0;
+				break;
+
+				case heartbeat:
+					switch(patternTiming++) {
+					case 190:
+					case 0:
 						on();
+					break;
+
+					case 220:
+					case 30:
+						off();
+					break;
+
+					case 1000:
+						patternTiming = 0;
+					break;
+					default: break;
+					}
 				}
 			}
-			else
-				off();
 		}
 	}
 
