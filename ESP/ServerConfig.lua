@@ -11,9 +11,9 @@ player = {
 }
 
 hitConfDefaults = {
-	hitFlashBrightness 	= 10,
-	hitFlashDuration   	= 500,
-	hitVibration			= 500,
+	hitFlashBrightness 	= 4,
+	hitFlashDuration   	= 100,
+	hitVibration			= 100,
 
 	deathFlashBrightness = 10,
 	deathFlashDuration	= 1500,
@@ -57,6 +57,12 @@ subscribeTo(playerTopic .. "/Brightness", 1,
 			setVestBrightness(game.brightness);
 		end
 	end);
+
+subscribeTo(playerTopic .. "/Heartbeat", 1,
+	function(data)
+		setVibratePattern(tonumber(data) or 0);
+	end
+);
 
 hitConfOptions = {
 	metatable = {
