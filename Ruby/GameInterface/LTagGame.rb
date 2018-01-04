@@ -116,10 +116,11 @@ class Game
 
 		if(clean_on_exit) then
 			at_exit {
-				print "Disconnecting Lasertag Clients ...\r"
 				@clients.each do |pName, player|
+					print "Disconnecting client #{pName}...          \r"
 					remove_player(pName);
 				end
+				sleep 1;
 				puts "Done disconnecting clients!          "
 			}
 		end
