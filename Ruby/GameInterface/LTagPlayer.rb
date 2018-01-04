@@ -138,6 +138,7 @@ class Client
 		mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
 		mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
 		mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Heartbeat", "", retain: true;
 
 		self.hitConfig = nil;
 		self.fireConfig = nil;
@@ -160,14 +161,27 @@ class Client
 		raise ArgumentError, "Vibration-duration out of range (between 0 and 65.536)" unless duration.is_a? Numeric and duration <= 65.536 and duration >= 0
 		console("vibrate(#{(duration*1000).to_i});");
 	end
+
 	def vibrate_pattern(pattern)
 		valid_patterns = {
-			off: 0,
-			heartbeat: 1,
+			off: "0",
+			heartbeat: "1",
 		};
 		raise ArgumentError, "No valid pattern selected!" unless valid_patterns.has_key? pattern;
+		return if pattern == @currentVibratePattern;
 
-		console("setVibratePattern(#{valid_patterns[pattern]});");
+		@currentVibratePattern = pattern;
+		send_message("#{@mqttTopic}/Heartbeat", valid_patterns[pattern], retain: true);
+	end
+	def heartbeat=(data)
+		if(data) then
+			vibrate_pattern(:heartbeat);
+		else
+			vibrate_pattern(:off);
+		end
+	end
+	def heartbeat
+		return @currentVibratePattern == :heartbeat;
 	end
 
 	def fire
