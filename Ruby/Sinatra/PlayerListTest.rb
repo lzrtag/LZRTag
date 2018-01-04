@@ -3,7 +3,7 @@
 require 'json'
 require_relative '../GameInterface/LTagGame.rb'
 
-$mqtt = MQTT::SubHandler.new('xasin.hopto.org');
+$mqtt = MQTT::SubHandler.new('iot.eclipse.org');
 $game = Lasertag::Game.new($mqtt);
 
 require_relative 'BaseClasses/JSONBase'
