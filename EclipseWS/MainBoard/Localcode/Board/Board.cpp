@@ -67,7 +67,9 @@ namespace Board {
 		void update() {
 			if(vibratorDuration != 0) {
 				vibratorDuration--;
-				if(vibratorDuration & 0b100000)
+				if(vibratorDuration == 0)
+					off();
+				else if(vibratorDuration & 0b100000)
 					off();
 				else
 					on();
