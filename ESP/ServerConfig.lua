@@ -1,7 +1,7 @@
 
 game = {
-	brightness 	= 3,
-	team			= 1,
+	brightness 	= 0,
+	team			= 7,
 }
 
 player = {
