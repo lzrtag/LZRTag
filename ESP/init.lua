@@ -55,7 +55,7 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 							else
 								uart.write(	0, 200, 10,	-- Bright blink mode
 												101, 1,		-- Red team
-												11, 100, 32, 34); -- 2kHz "error" buzz
+												11, 235, 3, 0x80, 0x7, 0xF8, 0x7); -- 2kHz "error" buzz
 								homeQTT:publish(playerTopic .. "/Connection", "SAFEMODE", 0, 1);
 							end
 						end
