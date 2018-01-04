@@ -58,6 +58,8 @@ class Client
 	def team=(n)
 		n = n.to_i;
 		raise ArgumentError, "Team out of range (must be between 0 and 255)" unless n != nil and n <= 255 and n >= 0;
+
+		return if @team == n;
 		@team = n;
 		send_message "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
@@ -65,6 +67,8 @@ class Client
 	def brightness=(n)
 		n = n.to_i;
 		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
+		return if @brightness == n;
+
 		@brightness = n;
 		send_message "#{@mqttTopic}/Brightness", @brightness, retain: true;
 		return true;
@@ -85,7 +89,9 @@ class Client
 		return @dead;
 	end
 	def dead=(d)
-		@dead = (d ? true : false);
+		dead = (d ? true : false);
+		return if @dead == dead;
+		@dead = dead;
 		send_message "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
 	end
 
