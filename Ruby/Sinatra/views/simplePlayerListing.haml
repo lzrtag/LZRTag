@@ -1,11 +1,21 @@
 %h1.centered Currently connected players:
 
-%ul.playerList
+%ul#playerList
 	- settings.game.each do |pName, player|
-		%li&= player.inspect
+		%li{id: pName}&= player.inspect
 
-- (1..360).step(30).each do |i|
-	.brightness-wrapper
-		%div{class: "brightness-6", style: "background-color: hsl(#{i}, 100%, 50%); animation-delay: #{i}ms;"}
-		.brightness-content.centered
-			Test!
+:javascript
+	function updatePlayers() {
+		var playerUpdate = new XMLHttpRequest();
+		playerUpdate.open("GET", "/Players.XHR", true);
+		playerUpdate.onreadystatechange = function() {
+			if(this.readyState == 4) {
+				document.getElementById("playerList").innerHTML = this.responseText;
+
+				setTimeout(updatePlayers, 2000);
+			}
+		}
+		playerUpdate.send();
+	}
+
+	updatePlayers();

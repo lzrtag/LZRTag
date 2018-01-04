@@ -36,7 +36,12 @@ module Lasertag
 			end
 
 			get '/Players' do
+
 				haml :simplePlayerListing
+			end
+
+			get '/Players.XHR' do
+				haml :_rawPlayerList, layout: false;
 			end
 		end
 	end
