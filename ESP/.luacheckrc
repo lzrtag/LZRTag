@@ -34,6 +34,7 @@ stds.lasertag = {
 		"overrideVest",
 		"ping",
 		"vibrate",
+		"setVibratePattern",
 		"fireWeapon",
 
 		"gameRunning",
