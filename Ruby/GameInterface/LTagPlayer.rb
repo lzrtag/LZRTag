@@ -35,13 +35,9 @@ class Client
 		@team = 0;
 		@brightness = 0;
 
-<<<<<<< HEAD
-		@id = nil;
-=======
 		@ammo = 0;
 
 		@dead = false;
->>>>>>> master
 
 		@battery = 3.3;
 		@ping = 10000;
