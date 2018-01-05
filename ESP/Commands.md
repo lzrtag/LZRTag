@@ -2,7 +2,7 @@
 ### Immediate commands
 Number | Short Desc. | Data
 :--- | --- | ---
-A000 | Shot cfg | 0 = Disable, 1 = Enable, 99 = Immediate, >=100 Set consequent shots
+A000 | Shot cfg | 0 = Normal shot
 E000 | Trigger status changed
 E001 | Shot detected | Player, ShotID
 A010 | Vibrate 	| Time (in MS, up to 2^16 ms)
@@ -13,7 +13,8 @@ A012 | Vest Blink Override | Level + time in segments
 Number | Short Desc.
 :--- | ---
 A100 | Set Player ID
-A101 | Set Player Team (0-3)
+A101 | Set Player Team (0-7)
+A110 | Set vibration pattern
 A200 | Set vest visibility level
 
 ###### A200

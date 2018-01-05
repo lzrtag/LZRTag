@@ -23,10 +23,13 @@ end
 function vibrate(duration)
 	uart.write(0, 10, duration%255, duration/255);
 end
+function setVibratePattern(n)
+	uart.write(0, 110, n);
+end
 
 function fireWeapon()
 	if(player.id) then
-		uart.write(0, 0, 99);
+		uart.write(0, 0, 0);
 	end
 end
 
@@ -52,7 +55,7 @@ subscribeTo(lasertagTopic .. "/Game/Status", 0,
 on_mqtt_sub_finish = function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 	systemIsSetUp = true;
-	setVestColor(7);
+	setVestColor(game.team);
 	ping(5000, 1000, 50);
 end
 
