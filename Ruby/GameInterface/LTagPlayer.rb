@@ -64,6 +64,20 @@ class Client
 		send_message "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
 	end
+	def team_color()
+		colors = {
+			0 => "#050505",
+			1 => "#aa0505",
+			2 => "#05aa05",
+			3 => "#aaaa05",
+			4 => "#0505aa",
+			5 => "#aa05aa",
+			6 => "#05aaaa",
+			7 => "#aaaaaa"
+		}
+
+		return colors[@team];
+	end
 	def brightness=(n)
 		n = n.to_i;
 		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
