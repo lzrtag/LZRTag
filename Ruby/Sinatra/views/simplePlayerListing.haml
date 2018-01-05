@@ -1,8 +1,6 @@
 %h1.centered Currently connected players:
 
 %ul#playerList
-	- settings.game.each do |pName, player|
-		%li{id: pName}&= player.inspect
 
 :javascript
 	function updatePlayers() {
@@ -12,7 +10,7 @@
 			if(this.readyState == 4) {
 				document.getElementById("playerList").innerHTML = this.responseText;
 
-				setTimeout(updatePlayers, 2000);
+				setTimeout(updatePlayers, 1000);
 			}
 		}
 		playerUpdate.send();
