@@ -66,3 +66,47 @@ body {
 .centered {
 	text-align: center;
 }
+
+#playerList {
+	list-style-type: none;
+	padding-right: 40px;
+}
+.playerInfoBox {
+	margin-top: 10px;
+
+	background-color: #202020;
+	border-width: 3px;
+	border-style: solid;
+
+	border-radius: 2px 18px;
+
+	min-height: 30px;
+
+	overflow: hidden;
+}
+.playerInfoBox h3 {
+	margin: 0;
+	padding: 10px 0px 10px 15px;
+}
+.playerInfoBox ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 2px 0px 2px 0px;
+
+	display: none;
+}
+.playerInfoBox ul li {
+	padding: 3px 0px 3px 15px;
+
+	border-bottom: black solid 1px;
+}
+.playerInfoBox ul li:last-child {
+	border-bottom: none;
+}
+
+.playerInfoBox:hover h3 {
+	border-bottom: black solid 3px;
+}
+.playerInfoBox:hover ul {
+	display: block;
+}
