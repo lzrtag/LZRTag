@@ -58,6 +58,8 @@ class Client
 	def team=(n)
 		n = n.to_i;
 		raise ArgumentError, "Team out of range (must be between 0 and 255)" unless n != nil and n <= 255 and n >= 0;
+
+		return if @team == n;
 		@team = n;
 		send_message "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
@@ -65,6 +67,8 @@ class Client
 	def brightness=(n)
 		n = n.to_i;
 		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
+		return if @brightness == n;
+
 		@brightness = n;
 		send_message "#{@mqttTopic}/Brightness", @brightness, retain: true;
 		return true;
@@ -85,7 +89,9 @@ class Client
 		return @dead;
 	end
 	def dead=(d)
-		@dead = (d ? true : false);
+		dead = (d ? true : false);
+		return if @dead == dead;
+		@dead = dead;
 		send_message "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
 	end
 
@@ -138,6 +144,7 @@ class Client
 		mqtt.publish_to "#{@mqttTopic}/Brightness", "", retain: true;
 		mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
 		mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/Heartbeat", "", retain: true;
 
 		self.hitConfig = nil;
 		self.fireConfig = nil;
@@ -159,6 +166,28 @@ class Client
 	def vibrate(duration)
 		raise ArgumentError, "Vibration-duration out of range (between 0 and 65.536)" unless duration.is_a? Numeric and duration <= 65.536 and duration >= 0
 		console("vibrate(#{(duration*1000).to_i});");
+	end
+
+	def vibrate_pattern(pattern)
+		valid_patterns = {
+			off: "0",
+			heartbeat: "1",
+		};
+		raise ArgumentError, "No valid pattern selected!" unless valid_patterns.has_key? pattern;
+		return if pattern == @currentVibratePattern;
+
+		@currentVibratePattern = pattern;
+		send_message("#{@mqttTopic}/Heartbeat", valid_patterns[pattern], retain: true);
+	end
+	def heartbeat=(data)
+		if(data) then
+			vibrate_pattern(:heartbeat);
+		else
+			vibrate_pattern(:off);
+		end
+	end
+	def heartbeat
+		return @currentVibratePattern == :heartbeat;
 	end
 
 	def fire

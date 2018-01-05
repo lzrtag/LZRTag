@@ -48,10 +48,15 @@ void playVibration() {
 	Board::Vibrator::vibrate(*(uint16_t *)&ESPComs::Endpoint::pubBuffer);
 }
 ESPComs::Endpoint VibrationEP(10, &ESPComs::Endpoint::pubBuffer, 2, playVibration);
+void setVibrationMode() {
+	Board::Vibrator::patternTiming = 0;
+}
+ESPComs::Endpoint VibrationPatternEP(110, &Board::Vibrator::patternMode, 1, setVibrationMode);
+
 
 uint8_t currentShotID = 1;
 void handleShots() {
-	if(ESPComs::Endpoint::pubBuffer[0] == 99) {
+	if(ESPComs::Endpoint::pubBuffer[0] == 0) {
 		Board::Vibrator::vibrate(200);
 		Board::Nozzle::flash(Board::Vest::team << 1);
 		Board::Buzzer::sweep(3000, 1000, 150);
