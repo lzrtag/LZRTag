@@ -39,7 +39,9 @@ namespace Board {
 
 	namespace Vibrator {
 		uint16_t vibratorDuration = 0;
-		uint8_t vibratorMode = 1;
+
+		uint8_t  patternMode = 0;
+		uint16_t patternTiming = 0;
 
 		void off() {
 			VIBRATOR_PORTx &= ~(1<< VIBRATOR_PIN);
@@ -50,26 +52,54 @@ namespace Board {
 		}
 
 		void vibrate(uint16_t duration) {
-			on();
-			if(duration > vibratorDuration) {
-				vibratorDuration = duration;
+			if(duration == 0) {
+				vibratorDuration = 0;
+				off();
+			}
+			else {
+				on();
+				if(duration > vibratorDuration) {
+					vibratorDuration = duration;
+				}
 			}
 		}
 
 		void update() {
 			if(vibratorDuration != 0) {
 				vibratorDuration--;
-				switch(vibratorMode) {
-				default: break;
+				if(vibratorDuration == 0)
+					off();
+				else if(vibratorDuration & 0b100000)
+					off();
+				else
+					on();
+			}
+			else {
+				switch(patternMode) {
+				default:
+					off();
+					patternTiming = 0;
+				break;
+
 				case 1:
-					if(vibratorDuration & 0b100000)
+					switch(patternTiming++) {
+					case 190:
+					case 0:
 						on();
-					else
+					break;
+
+					case 220:
+					case 30:
 						off();
+					break;
+
+					case 1000:
+						patternTiming = 0;
+					break;
+					default: break;
+					}
 				}
 			}
-			else
-				off();
 		}
 	}
 
@@ -132,6 +162,15 @@ namespace Board {
 				}
 			}
 		}
+	}
+
+	void reset() {
+		Vibrator::vibrate(0);
+
+		Buzzer::buzzerDuration = 0;
+		Buzzer::off();
+
+		Vest::overrides = {0, 0};
 	}
 
 	void ISR1a() {

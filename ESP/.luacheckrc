@@ -34,9 +34,11 @@ stds.lasertag = {
 		"overrideVest",
 		"ping",
 		"vibrate",
+		"setVibratePattern",
 		"fireWeapon",
 
 		"gameRunning",
+		"game",
 
 		"SAFEMODE",
 		"systemIsSetUp",
@@ -49,7 +51,15 @@ stds.lasertag = {
 	}
 }
 
-std="min+nodemcu+lasertag+playerdata"
+stds.serverconf = {
+	globals = {
+		"hitConf",
+		"fireConf",
+		"player"
+	}
+}
+
+std="min+nodemcu+lasertag+playerdata+serverconf"
 
 allow_defined 			= true
 

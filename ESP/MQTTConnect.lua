@@ -21,13 +21,19 @@ end
 
 function mqtt_raw_slow_subscribe()
 	if(#mqttSubQueue > 0) then
-		t = table.remove(mqttSubQueue);
+		t = table.remove(mqttSubQueue, 1);
 		if(not (t == "")) then
 			homeQTT:subscribe(t, mqttSubList[t].q);
 		end
 	end
+
 	if(#mqttSubQueue > 0) then
 		mqttSubTimer:start();
+	else
+		if(on_mqtt_sub_finish) then
+			on_mqtt_sub_finish();
+			on_mqtt_sub_finish = nil;
+		end
 	end
 end
 
@@ -50,7 +56,7 @@ function resubToAll()
 	end
 end
 
-mqttSubTimer:register(1000, tmr.ALARM_SEMI, mqtt_raw_slow_subscribe);
+mqttSubTimer:register(750, tmr.ALARM_SEMI, mqtt_raw_slow_subscribe);
 
 ---------------
 --- RECONNECTING FUNCTIONS

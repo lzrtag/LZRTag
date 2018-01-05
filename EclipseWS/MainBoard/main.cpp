@@ -24,7 +24,7 @@
 
 volatile bool hasBeenShot = false;
 
-uint8_t playerID = 0;
+uint8_t playerID = 255;
 
 ESPComs::Endpoint PlayerIDEP(100, &playerID, 1, 0);
 
@@ -33,30 +33,35 @@ ESPComs::Endpoint VestBrightnessEP(200, &Board::Vest::mode, 1, 0);
 ESPComs::Endpoint BrightnessOverrideEp(12, &Board::Vest::overrides, 3, 0);
 
 struct BuzzCommand {
-	uint8_t length;
-	uint8_t startFreq;
-	uint8_t endFreq;
+	uint16_t length;
+	uint16_t startFreq;
+	uint16_t endFreq;
 };
 void playPing() {
 	BuzzCommand buzzCommand = *(BuzzCommand*)&ESPComs::Endpoint::pubBuffer;
 
-	Board::Buzzer::sweep(buzzCommand.startFreq*60, buzzCommand.endFreq*60, buzzCommand.length*10);
+	Board::Buzzer::sweep(buzzCommand.startFreq, buzzCommand.endFreq, buzzCommand.length);
 }
-ESPComs::Endpoint PingEndpoint(11, &ESPComs::Endpoint::pubBuffer, 3, playPing);
+ESPComs::Endpoint PingEndpoint(11, &ESPComs::Endpoint::pubBuffer, 6, playPing);
 
 void playVibration() {
-	Board::Vibrator::vibrate(ESPComs::Endpoint::pubBuffer[0]*10);
+	Board::Vibrator::vibrate(*(uint16_t *)&ESPComs::Endpoint::pubBuffer);
 }
-ESPComs::Endpoint VibrationEP(10, &ESPComs::Endpoint::pubBuffer, 1, playVibration);
+ESPComs::Endpoint VibrationEP(10, &ESPComs::Endpoint::pubBuffer, 2, playVibration);
+void setVibrationMode() {
+	Board::Vibrator::patternTiming = 0;
+}
+ESPComs::Endpoint VibrationPatternEP(110, &Board::Vibrator::patternMode, 1, setVibrationMode);
+
 
 uint8_t currentShotID = 1;
 void handleShots() {
-	if(ESPComs::Endpoint::pubBuffer[0] == 99) {
+	if(ESPComs::Endpoint::pubBuffer[0] == 0) {
 		Board::Vibrator::vibrate(200);
-		Board::Nozzle::flash(0b10 << Board::Vest::team);
+		Board::Nozzle::flash(Board::Vest::team << 1);
 		Board::Buzzer::sweep(3000, 1000, 150);
 		IR::TX::startTX({playerID, currentShotID++});
-		if(currentShotID & 16)
+		if(currentShotID == 16)
 			currentShotID = 1;
 	}
 }
@@ -74,8 +79,10 @@ void IRRXCB(IR::ShotPacket data) {
 int main() {
 	_delay_ms(1500);
 	ESPComs::init();
+	ESPComs::onReset(Board::reset);
 
 	Board::Vest::mode = 3;
+	Board::Vest::team = 1;
 
 	Connector::init();
 

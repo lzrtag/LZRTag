@@ -14,31 +14,26 @@ function overrideVest(duration, brightness)
 end
 
 function ping(sFreq, eFreq, duration)
-	uart.write(0, 11, duration/10 or 2, sFreq/60 or 67, eFreq/60 or sFreq/60 or 67);
+	duration = duration or 20;
+	sFreq = sFreq or 4000;
+	eFreq = eFreq or sFreq;
+	uart.write(0, 11, duration%255, duration/255, sFreq%255, sFreq/255, eFreq%255, eFreq/255);
 end
 
 function vibrate(duration)
-	uart.write(0, 10, duration/10);
+	uart.write(0, 10, duration%255, duration/255);
+end
+function setVibratePattern(n)
+	uart.write(0, 110, n);
 end
 
 function fireWeapon()
-	if(playerIDNum) then
-		uart.write(0, 0, 99);
+	if(player.id) then
+		uart.write(0, 0, 0);
 	end
 end
 
-subscribeTo(playerTopic .. "/Brightness", 1,
-	function(data)
-		setVestBrightness(tonumber(data));
-	end
-);
-subscribeTo(playerTopic .. "/Team", 1,
-	function(data)
-		setVestColor(tonumber(data));
-	end
-);
-
-subscribeTo(lasertagTopic .. "/Game/Status", 1,
+subscribeTo(lasertagTopic .. "/Game/Status", 0,
 	function(data)
 		if(data == "stop") then
 			if(gameRunning) then
@@ -57,24 +52,19 @@ subscribeTo(lasertagTopic .. "/Game/Status", 1,
 	end
 );
 
-subscribeTo(playerTopic .. "/ID", 1,
-	function(data)
-		playerIDNum = tonumber(data);
-		uart.write(0, 100, playerIDNum);
-	end
-);
-
-tmr.create():alarm(3000, tmr.ALARM_SINGLE, function()
+on_mqtt_sub_finish = function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 	systemIsSetUp = true;
-end);
+	setVestColor(game.team);
+	ping(5000, 1000, 50);
+end
 
-setVestColor(1);
+setVestBrightness(0);
+setVestColor(5);
+
 function fancyPling()
 	ping(1000, 5000, 150);
 	vibrate(50);
 end
 fancyPling();
 tmr.create():alarm(200, tmr.ALARM_SINGLE, fancyPling);
-
-dofile("NoAmmoShoot.lua");

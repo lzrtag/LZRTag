@@ -49,6 +49,9 @@ namespace Board {
 	}
 
 	namespace Vibrator {
+		extern uint16_t patternTiming;
+		extern uint8_t	patternMode;
+
 		void vibrate(uint16_t duration);
 	}
 
@@ -60,6 +63,8 @@ namespace Board {
 
 		void sweep(uint16_t start, uint16_t end, uint16_t duration);
 	}
+
+	void reset();
 
 	void ISR1a();
 }
