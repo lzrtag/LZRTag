@@ -1,10 +1,13 @@
 
 require_relative '../Libs/MQTTSubscriber.rb'
+require_relative 'EventHook.rb'
 require_relative 'LTagPlayer.rb'
 require 'json'
 
 module Lasertag
-class Game
+class Game < Lasertag::EventHook
+	attr_accessor :mqtt
+
 	def initialize(mqtt, delete_disconnected: false, id_assign: true, clean_on_exit: true)
 		@mqtt = mqtt;
 		@mqttTopic = "Lasertag/Players/+"
@@ -16,10 +19,8 @@ class Game
 		@clients = Hash.new();
 		@idTable = Hash.new();
 
-		@clientConnectCBs 		= Array.new();
-		@clientDisconnectCBs	= Array.new();
-		@clientRegisteredCBs	= Array.new();
-		@clientUnregisteredCBs	= Array.new();
+		@hooks   = Array.new();
+		@hooks  << self;
 
 		@mqtt.subscribe_to "#{@mqttTopic}/Team" do |tList, data|
 			if @clients.key? tList[0] then
@@ -60,29 +61,29 @@ class Game
 			# Check if the player is on record.
 			# If not, generate one and call the callbacks
 			if(not @clients.key? pName) then
-				@clients[pName] = Client.new(pName, @mqtt);
-				@clientRegisteredCBs.each do |cb|
-					cb.call(pName, @clients[pName]);
+				@clients[pName] = @clientClass.new(pName);
+				@hooks.each do |h|
+					h.onPlayerRegistration(@clients[pName]);
 				end
 			end
 
-			oldStatus = @clients[pName].status;
-			@clients[pName].instance_variable_set(:@status, data);
+			player = @clients[pName];
+
+			oldStatus = player.status;
+			player.instance_variable_set(:@status, data);
 
 			if(data == "OK") then
 				# Check if the player is not registered as connected right now
 				# If he isn't, that means he reconnected. Call the callbacks
 				if(oldStatus != "OK") then
-					@clientConnectCBs.each do |cb|
-						cb.call(pName, @clients[pName]);
+					@hooks.each do |h|
+						h.onPlayerConnect(player);
 					end
 				end
-			else
-				# Check whether or not the player is connected, and this is the LWT disconnect
-				if(@clients.key?(pName) and (oldStatus == "OK")) then
-					@clientDisconnectCBs.each do |cb|
-						cb.call(pName, @clients[pName]);
-					end
+			# Check whether or not the player is connected, and this is the LWT disconnect
+			elsif(oldStatus == "OK") then
+				@hooks.each do |h|
+					h.onPlayerDisconnect(player);
 				end
 			end
 		end
@@ -135,35 +136,25 @@ class Game
 		raise ArgumentError, "Unknown identifier for the player id!"
 	end
 
-	def on_connect(&connectProc)
-		@clientConnectCBs << connectProc;
-		return connectProc;
-	end
-	def on_disconnect(&disconnectProc)
-		# Using "unshift" here so that the higher level functions get called first
-		@clientDisconnectCBs.unshift(disconnectProc);
-		return disconnectProc;
-	end
-	def on_register(&registerProc);
-		@clientRegisteredCBs << registerProc;
-		return registerProc;
-	end
-	def on_unregister(&unregisterProc);
-		# Using "unshift" here so that the higher level functions get called first
-		@clientUnregisteredCBs.unshift(unregisterProc);
-		return unregisterProc;
-	end
+	def add_hook(hook)
+		unless(hook.is_a? Lasertag::EventHook) then
+			raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
+		end
 
-	def remove_callback(callback)
-		@clientConnectCBs.delete callback
-		@clientDisconnectCBs.delete callback
-		@clientRegisteredCBs.delete callback
-		@clientUnregisteredCBs.delete callback
+		hook.onHookin(self);
+		@hooks << hook unless @hooks.include? hook;
+	end
+	def remove_hook(hook)
+		unless(hook.is_a? Lasertag::EventHook) then
+			raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
+		end
+
+		@hooks.delete(hook);
 	end
 
 	def remove_player(pName)
-		@clientUnregisteredCBs.each do |cb|
-			cb.call(pName, @clients[pName]);
+		@hooks.each do |h|
+			h.onPlayerUnregistration(@clients[pName]);
 		end
 		@clients[pName].clean_all_topics;
 		@clients.delete pName;
