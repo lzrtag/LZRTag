@@ -141,8 +141,16 @@ class Game < Lasertag::EventHook
 			raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
 		end
 
+		return if(@hooks.include? hook);
 		hook.onHookin(self);
-		@hooks << hook unless @hooks.include? hook;
+		@hooks << hook;
+
+		if(hook.catch_up_players) then
+			@clients.each do |pName, player|
+				hook.onPlayerRegistration(player);
+				hook.onPlayerConnect(player) if player.connected?
+			end
+		end
 	end
 	def remove_hook(hook)
 		unless(hook.is_a? Lasertag::EventHook) then
