@@ -114,16 +114,6 @@ class Game
 
 				@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
 			end
-		else
-			@mqtt.subscribe_to "Lasertag/Game/ID" do |tPath, data|
-				begin
-					@idTable = JSON.parse(data);
-					@idTable.each do |k, v|
-						@clients[v].instance_variable_set(:@id, k) if @clients.key? v
-					end
-				rescue
-				end
-			end
 		end
 
 		if(clean_on_exit) then
