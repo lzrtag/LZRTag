@@ -8,7 +8,7 @@ module Lasertag
 class Game < Lasertag::EventHook
 	attr_accessor :mqtt
 
-	def initialize(mqtt, delete_disconnected: false, id_assign: true, clean_on_exit: true)
+	def initialize(mqtt, delete_disconnected: false, clean_on_exit: true)
 		@mqtt = mqtt;
 		@mqttTopic = "Lasertag/Players/+"
 
@@ -76,6 +76,17 @@ class Game < Lasertag::EventHook
 				# Check if the player is not registered as connected right now
 				# If he isn't, that means he reconnected. Call the callbacks
 				if(oldStatus != "OK") then
+					# Search for a free ID number.
+					# Since the table of free ID numbers does not need to be continuous,
+					# each ID has to be looked at.
+					i = 1;
+					while @idTable[i] do
+						i += 1;
+					end
+					@idTable[i] = pName;
+					player.id 	= i;
+					@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
+
 					@hooks.each do |h|
 						h.onPlayerConnect(player);
 					end
@@ -85,35 +96,12 @@ class Game < Lasertag::EventHook
 				@hooks.each do |h|
 					h.onPlayerDisconnect(player);
 				end
-			end
-		end
 
-		if(delete_disconnected) then
-			on_disconnect do |pName, player|
-				remove_player(pName);
-			end
-		end
-
-		if(id_assign) then
-			on_connect do |pName, player|
-				# Search for a free ID number.
-				# Since the table of free ID numbers does not need to be continuous,
-				# each ID has to be looked at.
-				i = 1;
-				while @idTable[i] do
-					i += 1;
-				end
-				@idTable[i] = pName;
-				player.id 	= i;
-
-				@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
-			end
-
-			on_disconnect do |pName, player|
 				@idTable.delete player.id;
 				player.id = nil;
-
 				@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
+
+				remove_player(pName) if delete_disconnected;
 			end
 		end
 
@@ -164,6 +152,8 @@ class Game < Lasertag::EventHook
 		@hooks.each do |h|
 			h.onPlayerUnregistration(@clients[pName]);
 		end
+		@idTable.delete @clients[pName].id if @clients[pName].id;
+
 		@clients[pName].clean_all_topics;
 		@clients.delete pName;
 	end
