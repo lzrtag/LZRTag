@@ -1,3 +1,10 @@
+* {
+	box-sizing: border-box;
+
+	margin: 0px;
+	padding: 0px;
+}
+
 html {
 	height: 100%;
 }
@@ -5,9 +12,6 @@ body {
 	background-color: #000000;
 
 	height: 100%;
-
-	margin: 0px;
-	padding: 0px;
 }
 
 @keyframes unfold {
@@ -21,7 +25,7 @@ body {
 	margin: auto;
 	padding: 0px;
 
-	max-width: 500px;
+	max-width: 1000px;
 
 	animation-name: unfold;
 	animation-duration: 1500ms;
@@ -70,9 +74,28 @@ body {
 #playerList {
 	list-style-type: none;
 	padding-right: 40px;
+	padding-left:  40px;
+
+	margin-left: auto;
+	margin-right: auto;
+
+	display: grid;
+	justify-content: space-around;
+	align-items: start;
+	justify-items: center;
+
+	grid-auto-flow: row;
+
+	grid-template-columns: 1fr 1fr;
 }
+@media screen and (max-width: 750px) {
+	#playerList {
+		grid-template-columns: 1fr;
+	}
+}
+
 .playerInfoBox {
-	margin-top: 10px;
+	margin: 10px;
 
 	background-color: #202020;
 	border-width: 3px;
@@ -80,20 +103,21 @@ body {
 
 	border-radius: 2px 18px;
 
-	min-height: 30px;
+	width: 350px;
+	height: 48px;
 
 	overflow: hidden;
 }
 .playerInfoBox h3 {
 	margin: 0;
 	padding: 10px 0px 10px 15px;
+
+	border-bottom: black solid 3px;
 }
 .playerInfoBox ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 2px 0px 2px 0px;
-
-	display: none;
 }
 .playerInfoBox ul li {
 	padding: 3px 0px 3px 15px;
@@ -104,9 +128,6 @@ body {
 	border-bottom: none;
 }
 
-.playerInfoBox:hover h3 {
-	border-bottom: black solid 3px;
-}
-.playerInfoBox:hover ul {
-	display: block;
+.playerInfoBox:hover {
+	height: 48px + 3px + 25px*3;
 }
