@@ -10,6 +10,8 @@ module Lasertag
 
 		def onHookin(game)
 		end
+		def onHookout()
+		end
 
 		def onPlayerRegistration(player)
 		end
@@ -23,6 +25,9 @@ module Lasertag
 
 		def processHit(hitPlayer, sourcePlayer, shotID)
 			return true;
+		end
+
+		def onGameTick()
 		end
 
 		def onHit(hitPlayer, sourcePlayer)

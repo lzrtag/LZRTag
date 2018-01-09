@@ -20,7 +20,6 @@ class Game < Lasertag::EventHook
 		@idTable = Hash.new();
 
 		@hooks   = Array.new();
-		@hooks  << self;
 
 		@mqtt.subscribe_to "#{@mqttTopic}/Team" do |tList, data|
 			if @clients.key? tList[0] then
@@ -144,7 +143,9 @@ class Game < Lasertag::EventHook
 		unless(hook.is_a? Lasertag::EventHook) then
 			raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
 		end
-
+		
+		return unless @hooks.include? hook
+		hook.onHookout();
 		@hooks.delete(hook);
 	end
 
