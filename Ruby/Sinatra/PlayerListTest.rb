@@ -3,7 +3,7 @@
 require 'json'
 require_relative '../GameInterface/LTagGame.rb'
 
-$mqtt = MQTT::SubHandler.new('localhost');
+$mqtt = MQTT::SubHandler.new('xasin.hopto.org');
 $game = Lasertag::Game.new($mqtt);
 
 $game.on_connect do |pName, player|
