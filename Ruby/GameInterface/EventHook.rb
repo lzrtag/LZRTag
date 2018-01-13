@@ -21,7 +21,7 @@ module Lasertag
 		def onPlayerDisconnect(player)
 		end
 
-		def processHit(hitPlayer, sourcePlayer, shotID)
+		def processHit(hitPlayer, sourcePlayer, arbCode)
 			return true;
 		end
 

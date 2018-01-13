@@ -25,6 +25,8 @@ class Client
 
 	attr_accessor :data
 
+	attr_accessor :hitIDTimetable
+
 	def initialize(name)
 		@name = name;
 
@@ -44,6 +46,8 @@ class Client
 		@heap = 40000;
 
 		@data = Hash.new();
+
+		@hitIDTimetable = Hash.new(Time.new(0));
 	end
 
 	def mqtt

@@ -60,6 +60,17 @@ class Game < Lasertag::EventHook
 			_handle_player_connection_update(pName, data);
 		end
 
+		@mqtt.subscribe_to "Lasertag/Game/Events" do |tList, data|
+			begin
+				data = JSON.parse(data, symbolize_names: true);
+				case data[:type]
+				when "hit"
+					_handle_shot_event(data);
+				end
+			rescue
+			end
+		end
+
 		if(clean_on_exit) then
 			at_exit {
 				@clients.each do |pName, player|
@@ -121,12 +132,33 @@ class Game < Lasertag::EventHook
 	end
 	private :_handle_player_connection_update
 
+	def _handle_shot_event(data)
+		unless  (hitPlayer = fetch_player(data[:target])) and
+				  (sourcePlayer = fetch_player(data[:shooterID])) and
+				  (arbCode = data[:arbCode])
+			return
+		end
+
+		return if (sourcePlayer.hitIDTimetable[arbCode] + 3) > Time.now();
+
+		@hooks.each do |h|
+			return unless h.processHit(hitPlayer, sourcePlayer, arbCode);
+		end
+
+		shooterPlayer.hitIDTimetable[arbCode] = Time.now();
+		@hooks.each do |h|
+			h.onHit(hitPlayer, sourcePlayer);
+		end
+	end
+	private :_handle_shot_event
+
 	def [](c)
 		return @clients[c] if c.is_a? String
 		return @clients[@idTable[c]] if c.is_a? Integer
 
 		raise ArgumentError, "Unknown identifier for the player id!"
 	end
+	alias fetch_player []
 
 	def add_hook(hook)
 		unless(hook.is_a? Lasertag::EventHook) then
@@ -159,7 +191,7 @@ class Game < Lasertag::EventHook
 
 	def each()
 		@clients.each do |k, v|
-			yield(k, v);
+			yield(v);
 		end
 
 		return;
@@ -167,7 +199,7 @@ class Game < Lasertag::EventHook
 
 	def each_connected()
 		@clients.each do |k, v|
-			yield(k, v) if v.connected?
+			yield(v) if v.connected?
 		end
 
 		return;
