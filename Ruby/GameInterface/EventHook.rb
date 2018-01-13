@@ -2,13 +2,11 @@
 
 module Lasertag
 	class EventHook
-		attr_accessor :catch_up_players
-
 		def initialize()
-			@catch_up_players = true;
 		end
 
 		def onHookin(game)
+			@game = game;
 		end
 		def onHookout()
 		end

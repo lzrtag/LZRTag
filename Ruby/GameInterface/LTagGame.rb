@@ -92,7 +92,7 @@ class Game < Lasertag::EventHook
 				end
 			# Check whether or not the player is connected, and this is the LWT disconnect
 			elsif(oldStatus == "OK") then
-				@hooks.each do |h|
+				@hooks.reverse.each do |h|
 					h.onPlayerDisconnect(player);
 				end
 
@@ -131,26 +131,19 @@ class Game < Lasertag::EventHook
 		return if(@hooks.include? hook);
 		hook.onHookin(self);
 		@hooks << hook;
-
-		if(hook.catch_up_players) then
-			@clients.each do |pName, player|
-				hook.onPlayerRegistration(player);
-				hook.onPlayerConnect(player) if player.connected?
-			end
-		end
 	end
 	def remove_hook(hook)
 		unless(hook.is_a? Lasertag::EventHook) then
 			raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
 		end
-		
+
 		return unless @hooks.include? hook
 		hook.onHookout();
 		@hooks.delete(hook);
 	end
 
 	def remove_player(pName)
-		@hooks.each do |h|
+		@hooks.reverse.each do |h|
 			h.onPlayerUnregistration(@clients[pName]);
 		end
 		@idTable.delete @clients[pName].id if @clients[pName].id;
