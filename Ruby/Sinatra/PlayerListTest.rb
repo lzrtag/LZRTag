@@ -3,11 +3,11 @@
 require 'json'
 require_relative '../GameInterface/LTagGame.rb'
 
-$mqtt = MQTT::SubHandler.new('localhost');
+$mqtt = MQTT::SubHandler.new('xasin.hopto.org');
 $game = Lasertag::Game.new($mqtt);
 
 $game.on_connect do |pName, player|
-	player.ammo = 1000;
+	player.ammo = 5;
 
 	player.team = rand(1..6);
 	player.brightness = 7;
@@ -17,14 +17,15 @@ $game.on_connect do |pName, player|
 		hitFlashDuration: 180,
 		hitVibration: 100,
 
-		deathDuration: 5000,
+		deathDuration: 7000,
 	}
 
 	player.fireConfig = {
 		shotLocked: false,
+		perShotDelay: 400,
 	}
 
-	player.data[:hitpoints] = 10;
+	player.data[:hitpoints] = 1.5;
 end
 
 require_relative 'BaseClasses/JSONBase'
@@ -49,12 +50,12 @@ end
 Thread.new do loop do
 	sleep 0.1;
 	$game.each_connected do |pName, player|
-		if(player.data[:hitpoints] < 10 and not player.dead?) then
-			player.data[:hitpoints] += 0.02;
+		if(player.data[:hitpoints] < 1.5 and not player.dead?) then
+			player.data[:hitpoints] += 0.015;
 		end
 
-		player.heartbeat = ((player.data[:hitpoints] <= 3) and (not player.dead?));
-		player.brightness = (player.data[:hitpoints] <= 3) ? 6 : 7;
+		player.heartbeat = ((player.data[:hitpoints] <= 1) and (not player.dead?));
+		player.brightness = (player.data[:hitpoints] <= 1) ? 6 : 7;
 	end
 end end
 
