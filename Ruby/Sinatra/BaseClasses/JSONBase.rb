@@ -15,6 +15,10 @@ module Lasertag
 			get '/stylesheet.css' do
 				scss :stylesheet
 			end
+			get '/scripts/:script' do
+				content_type :javascript
+				send_file File.join(File.dirname(__FILE__), "../JScripts/#{params[:script]}")
+			end
 
 			get '/JSON/Game' do
 				content_type :json
