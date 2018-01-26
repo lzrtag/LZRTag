@@ -145,12 +145,18 @@ class Game < Lasertag::EventHook
 			return unless h.processHit(hitPlayer, sourcePlayer, arbCode);
 		end
 
-		shooterPlayer.hitIDTimetable[arbCode] = Time.now();
+		sourcePlayer.hitIDTimetable[arbCode] = Time.now();
 		@hooks.each do |h|
 			h.onHit(hitPlayer, sourcePlayer);
 		end
 	end
 	private :_handle_shot_event
+
+	def _handle_player_kill(killedPlayer, sourcePlayer)
+		@hooks.each do |h|
+			h.onKill(killedPlayer, sourcePlayer);
+		end
+	end
 
 	def [](c)
 		return @clients[c] if c.is_a? String

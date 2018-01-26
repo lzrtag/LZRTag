@@ -19,6 +19,8 @@ class Client
 
 	attr_reader :ammo
 
+	attr_reader :deadSince
+
 	attr_reader :battery
 	attr_reader :ping
 	attr_reader :heap
@@ -109,7 +111,17 @@ class Client
 		dead = (d ? true : false);
 		return if @dead == dead;
 		@dead = dead;
+
+		@deadSince = @dead ? Time.now() : nil;
+
 		send_message "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
+	end
+	def kill_by(sourcePlayer)
+		return if @dead;
+		self.dead= true;
+
+		send_message "Lasertag/Game/Events", {source: sourcePlayer.name, target: @name, type: "kill"}.to_json
+		game()._handle_player_kill(self, sourcePlayer);
 	end
 
 	def ammo=(a)
