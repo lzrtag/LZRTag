@@ -25,7 +25,7 @@ module Lasertag
 			return true;
 		end
 
-		def onGameTick()
+		def onGameTick(dT)
 		end
 
 		def onHit(hitPlayer, sourcePlayer)

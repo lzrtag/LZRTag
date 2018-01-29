@@ -81,6 +81,19 @@ class Game < Lasertag::EventHook
 				puts "Done disconnecting clients!          "
 			}
 		end
+
+		@lastGameTick	 = Time.now();
+		@nextGameTick 	 = Time.now();
+		@gameTickThread = Thread.new do
+			loop do
+				dT = Time.now() - @lastGameTick;
+				@lastGameTick = Time.now();
+				@hooks.each do |h|
+					h.onGameTick(dT);
+				end
+				sleep [((@nextGameTick += 0.2) - Time.now()).to_f, 0].max;
+			end
+		end.abort_on_exception = true;
 	end
 
 	def _handle_player_connection_update(pName, newStatus)
