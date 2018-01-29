@@ -180,6 +180,8 @@ class Game < Lasertag::EventHook
 	alias fetch_player []
 
 	def add_hook(hook)
+		hook = hook.new() if hook.is_a? Class and hook <= Lasertag::EventHook;
+
 		unless(hook.is_a? Lasertag::EventHook) then
 			raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
 		end
@@ -187,6 +189,8 @@ class Game < Lasertag::EventHook
 		return if(@hooks.include? hook);
 		hook.onHookin(self);
 		@hooks << hook;
+
+		hook;
 	end
 	def remove_hook(hook)
 		unless(hook.is_a? Lasertag::EventHook) then
