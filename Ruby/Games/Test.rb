@@ -1,6 +1,6 @@
 require_relative '../GameInterface/LTagGame.rb'
 
-$mqtt = MQTT::SubHandler.new('localhost');
+$mqtt = MQTT::SubHandler.new('xasin.hopto.org');
 $game = Lasertag::Game.new($mqtt, clean_on_exit: true);
 
 class RandomTeam < Lasertag::EventHook
@@ -10,7 +10,20 @@ class RandomTeam < Lasertag::EventHook
 	end
 end
 
-class KillOnHit_DM < Lasertag::EventHook
+class Zombies < Lasertag::EventHook
+	def onKill(hitPlayer, sourcePlayer)
+		hitPlayer.team = sourcePlayer.team;
+	end
+end
+
+class LifeBased_DM < Lasertag::EventHook
+	def initialize(life = 3, regRate = 0.2, teams: false)
+		@life = life;
+		@regenerationRate = regRate;
+
+		@disableTeamfire = teams;
+	end
+
 	def onPlayerConnect(player)
 		player.ammo = 100;
 
@@ -23,61 +36,49 @@ class KillOnHit_DM < Lasertag::EventHook
 		}
 
 		player.fireConfig = {shotLocked: false};
+
+		player.data[:hitpoints] = @life;
 	end
-end
 
-def sendData()
-	$r.ammo = 1000;
+	def processHit(hitPlayer, sourcePlayer, code)
+		return false if hitPlayer.dead?
+		return false if @disableTeamfire and (hitPlayer.team == sourcePlayer.team)
 
-	$r.team = rand(1..6);
-	$r.brightness = 7;
-
-	$r.hitConfig = {
-		hitFlashBrightness: 10,
-		hitFlashDuration: 180,
-		hitVibration: 100,
-
-		deathDuration: 5000,
-	}
-
-	$r.fireConfig = {
-		shotLocked: false,
-	}
-
-	$r.data[:hitpoints] = 10;
-end
-
-$game.on_connect do |pName, player|
-	#puts "Sending player data to #{pName}!"
-	$r = player;
-	sendData();
-end
-
-Thread.new do loop do
-	sleep 0.1;
-	$game.each_connected do |pName, player|
-		if(player.data[:hitpoints] < 10 and not player.dead?) then
-			player.data[:hitpoints] += 0.02;
-		end
-
-		player.heartbeat = ((player.data[:hitpoints] <= 3) and (not player.dead?));
-		player.brightness = (player.data[:hitpoints] <= 3) ? 6 : 7;
+		return true;
 	end
-end end
 
-$mqtt.subscribe_to "Lasertag/Game/Events" do |topic, data|
-	data = JSON.parse(data);
-	if(data["type"] == "hit") then
-		player = $game[data["target"]];
-		if(player.data[:hitpoints] -= 1) <= 0 then
-			player.data[:hitpoints] = 0;
-			player.dead = true;
+	def onHit(hitPlayer, sourcePlayer)
+		if (hitPlayer.data[:hitpoints] -= 1) <= 0 then
+			hitPlayer.data[:hitpoints] = 0;
+			hitPlayer.kill_by(sourcePlayer);
+
+			sourcePlayer.noise(duration: 0.1, startF: 2000, endF: 2500);
 		else
-			player.hit
+			hitPlayer.hit();
+			sourcePlayer.noise(duration: 0.02, startF: 2000);
 		end
-		$game[data["shooterID"]].noise(duration: 0.02, startF: 2000);
+	end
+
+	def onGameTick(dT)
+		@game.each do |player|
+			player.heartbeat = ((player.data[:hitpoints] <= 1) and (not player.dead?));
+			player.brightness = (player.data[:hitpoints] <= 1) ? 6 : 7;
+
+			next if player.dead?
+
+			if (player.data[:hitpoints] += dT*@regenerationRate) > @life
+				player.data[:hitpoints] = @life;
+			end
+		end
 	end
 end
+
+$game.add_hook(Lasertag::VerbooseDebugHook)
+$game.add_hook(RandomTeam);
+
+deathMatch = LifeBased_DM.new(4, 0.5, teams: true);
+$game.add_hook(deathMatch);
+$game.add_hook(Zombies);
 
 if(__FILE__ == $0) then
 	loop do
