@@ -158,7 +158,7 @@ class Game < Lasertag::EventHook
 			return unless h.processHit(hitPlayer, sourcePlayer, arbCode);
 		end
 
-		sourcePlayer.hitIDTimetable[arbCode] = Time.now();
+		sourcePlayer.hitIDTimetable[arbCode] = Time.now() unless arbCode == 0;
 		@hooks.each do |h|
 			h.onHit(hitPlayer, sourcePlayer);
 		end
