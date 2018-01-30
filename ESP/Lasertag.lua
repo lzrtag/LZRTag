@@ -52,6 +52,7 @@ subscribeTo(lasertagTopic .. "/Game/Status", 0,
 	end
 );
 
+homeQTT:publish(playerTopic .. "/Connection", "CONNECTING", 1, 1);
 on_mqtt_sub_finish = function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 	systemIsSetUp = true;
