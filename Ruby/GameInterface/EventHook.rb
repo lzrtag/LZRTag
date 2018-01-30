@@ -5,10 +5,36 @@ module Lasertag
 		def initialize()
 		end
 
+		def _simulate_registration()
+			@game.each do |h|
+				self.onPlayerRegistration(h);
+			end
+		end
+		def _simulate_connect()
+			@game.each_connected do |h|
+				self.onPlayerConnect(h);
+			end
+		end
+		def _simulate_disconnect()
+			@game.each_connected do |h|
+				self.onPlayerDisconnect(h);
+			end
+		end
+		def _simulate_unregistration()
+			@game.each do |h|
+				self.onPlayerUnregistration(h);
+			end
+		end
+
 		def onHookin(game)
 			@game = game;
+
+			_simulate_registration();
+			_simulate_connect();
 		end
 		def onHookout()
+			_simulate_disconnect();
+			_simulate_unregistration();
 		end
 
 		def onPlayerRegistration(player)
