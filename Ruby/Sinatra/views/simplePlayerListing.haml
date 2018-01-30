@@ -2,7 +2,24 @@
 
 %ul#playerList
 
+%svg#testSVG{width: 200, height: 200}
+
 :javascript
+	function polyPoints(size, offsetX = 0, offsetY = 0) {
+		var polygonString = "";
+
+		for (i=0; i<6; i++) {
+			var angle = i * Math.PI/3;
+			var xPos = Math.cos(angle) * size + offsetX;
+			var yPos = Math.sin(angle) * size + offsetY;
+
+			polygonString += Math.round(xPos) + "," + Math.round(yPos);
+			if(i!=5) {polygonString += " ";}
+		}
+
+		return polygonString;
+	}
+
 	function updatePlayers() {
 		var playerUpdate = new XMLHttpRequest();
 		playerUpdate.open("GET", "/Players.XHR", true);
@@ -15,5 +32,16 @@
 		}
 		playerUpdate.send();
 	}
+
+	var containerSVG = document.getElementById("testSVG");
+	var newPolygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+
+	newPolygon.setAttribute("points",polyPoints(10, 100, 100));
+	console.log(polyPoints(10));
+	newPolygon.style.fill = "lime";
+	newPolygon.style.stroke = "purple";
+	newPolygon.style.strokeWidth = "2"
+
+	containerSVG.appendChild(newPolygon);
 
 	updatePlayers();
