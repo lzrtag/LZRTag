@@ -5,7 +5,7 @@ require_relative 'LTagPlayer.rb'
 require 'json'
 
 module Lasertag
-class Game < Lasertag::EventHook
+class Game
 	attr_accessor :mqtt
 
 	def initialize(mqtt, delete_disconnected: false, clean_on_exit: true)
