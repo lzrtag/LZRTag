@@ -5,6 +5,10 @@ require_relative '../Libs/MQTTSubscriber.rb'
 
 module Lasertag
 	class RawTransfer
+		def self.to_player(player, filepath)
+			return self.new(player.mqtt, player.name, filepath);
+		end
+
 		attr_reader :state
 		attr_reader :Target
 
