@@ -9,11 +9,17 @@ class Client
 	end
 
 	attr_reader :name
+
+	attr_reader :status
+
 	attr_reader :team
 	attr_reader :brightness
+
 	attr_reader :id
 
 	attr_reader :ammo
+
+	attr_reader :deadSince
 
 	attr_reader :battery
 	attr_reader :ping
@@ -21,12 +27,14 @@ class Client
 
 	attr_accessor :data
 
+	attr_accessor :hitIDTimetable
+
 	def initialize(name)
 		@name = name;
 
 		@mqttTopic = "Lasertag/Players/#{@name}"
 
-		@data = Hash.new();
+		@status = nil;
 
 		@team = 0;
 		@brightness = 0;
@@ -38,6 +46,10 @@ class Client
 		@battery = 3.3;
 		@ping = 10000;
 		@heap = 40000;
+
+		@data = Hash.new();
+
+		@hitIDTimetable = Hash.new(Time.new(0));
 	end
 
 	def mqtt
@@ -48,7 +60,14 @@ class Client
 	end
 
 	def connected?()
-		return @id != nil;
+		return @status == "OK"
+	end
+
+	def safemode?()
+		return @status == "SAFEMODE"
+	end
+	def clear_safemode()
+		console('file.remove("BOOT_SAFECHECK")') if safemode?
 	end
 
 	def send_message(topic, data, retain: nil)
@@ -92,7 +111,17 @@ class Client
 		dead = (d ? true : false);
 		return if @dead == dead;
 		@dead = dead;
+
+		@deadSince = @dead ? Time.now() : nil;
+
 		send_message "#{@mqttTopic}/Dead", (@dead ? "true" : ""), retain: true;
+	end
+	def kill_by(sourcePlayer)
+		return if @dead;
+		self.dead= true;
+
+		send_message "Lasertag/Game/Events", {source: sourcePlayer.name, target: @name, type: "kill"}.to_json
+		game()._handle_player_kill(self, sourcePlayer);
 	end
 
 	def ammo=(a)

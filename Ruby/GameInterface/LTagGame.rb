@@ -1,11 +1,14 @@
 
 require_relative '../Libs/MQTTSubscriber.rb'
+require_relative 'EventHook.rb'
 require_relative 'LTagPlayer.rb'
 require 'json'
 
 module Lasertag
 class Game
-	def initialize(mqtt, delete_disconnected: false, id_assign: true, clean_on_exit: true)
+	attr_accessor :mqtt
+
+	def initialize(mqtt, delete_disconnected: false, clean_on_exit: true)
 		@mqtt = mqtt;
 		@mqttTopic = "Lasertag/Players/+"
 
@@ -16,10 +19,7 @@ class Game
 		@clients = Hash.new();
 		@idTable = Hash.new();
 
-		@clientConnectCBs 		= Array.new();
-		@clientDisconnectCBs	= Array.new();
-		@clientRegisteredCBs	= Array.new();
-		@clientUnregisteredCBs	= Array.new();
+		@hooks   = Array.new();
 
 		@mqtt.subscribe_to "#{@mqttTopic}/Team" do |tList, data|
 			if @clients.key? tList[0] then
@@ -54,63 +54,20 @@ class Game
 			end
 		end
 
+		@delete_disconnected = delete_disconnected;
 		@mqtt.subscribe_to "#{@mqttTopic}/Connection" do |tList, data|
 			pName = tList[0];
-
-			if(data == "OK") then
-				# Check if the player is on record.
-				# If not, generate one and call the callbacks
-				if(not @clients.key? pName) then
-					@clients[pName] = @clientClass.new(pName);
-					@clientRegisteredCBs.each do |cb|
-						cb.call(pName, @clients[pName]);
-					end
-				end
-
-				# Check if the player is not registered as connected right now
-				# If he isn't, that means he reconnected. Call the callbacks
-				if(not @clients[pName].connected?) then
-					@clientConnectCBs.each do |cb|
-						cb.call(pName, @clients[pName]);
-					end
-				end
-
-			else
-				# Check whether or not the player is connected, and this is the LWT disconnect
-				if(@clients.key?(pName) and @clients[pName].connected?) then
-					@clientDisconnectCBs.each do |cb|
-						cb.call(pName, @clients[pName]);
-					end
-				end
-			end
+			_handle_player_connection_update(pName, data);
 		end
 
-		if(delete_disconnected) then
-			on_disconnect do |pName, player|
-				remove_player(pName);
-			end
-		end
-
-		if(id_assign) then
-			on_connect do |pName, player|
-				# Search for a free ID number.
-				# Since the table of free ID numbers does not need to be continuous,
-				# each ID has to be looked at.
-				i = 1;
-				while @idTable[i] do
-					i += 1;
+		@mqtt.subscribe_to "Lasertag/Game/Events" do |tList, data|
+			begin
+				data = JSON.parse(data, symbolize_names: true);
+				case data[:type]
+				when "hit"
+					_handle_shot_event(data);
 				end
-				@idTable[i] = pName;
-				player.id 	= i;
-
-				@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
-			end
-
-			on_disconnect do |pName, player|
-				@idTable.delete player.id;
-				player.id = nil;
-
-				@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
+			rescue
 			end
 		end
 
@@ -124,6 +81,94 @@ class Game
 				puts "Done disconnecting clients!          "
 			}
 		end
+
+		@lastGameTick	 = Time.now();
+		@nextGameTick 	 = Time.now();
+		@gameTickThread = Thread.new do
+			loop do
+				dT = Time.now() - @lastGameTick;
+				@lastGameTick = Time.now();
+				@hooks.each do |h|
+					h.onGameTick(dT);
+				end
+				sleep [((@nextGameTick += 0.2) - Time.now()).to_f, 0].max;
+			end
+		end.abort_on_exception = true;
+	end
+
+	def _handle_player_connection_update(pName, newStatus)
+		# Check if the player is on record.
+		# If not, generate one and call the callbacks
+		if(not @clients.key? pName) then
+			@clients[pName] = @clientClass.new(pName);
+			@hooks.each do |h|
+				h.onPlayerRegistration(@clients[pName]);
+			end
+		end
+
+		player = @clients[pName];
+
+		oldStatus = player.status;
+		player.instance_variable_set(:@status, newStatus);
+
+		if(newStatus == "OK") then
+			# Check if the player is not registered as connected right now
+			# If he isn't, that means he reconnected. Call the callbacks
+			if(oldStatus != "OK") then
+				# Search for a free ID number.
+				# Since the table of free ID numbers does not need to be continuous,
+				# each ID has to be looked at.
+				i = 1;
+				while @idTable[i] do
+					i += 1;
+				end
+				@idTable[i] = pName;
+				player.id 	= i;
+				@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
+
+				@hooks.each do |h|
+					h.onPlayerConnect(player);
+				end
+			end
+		# Check whether or not the player is connected, and this is the LWT disconnect
+		elsif(oldStatus == "OK") then
+			@hooks.reverse.each do |h|
+				h.onPlayerDisconnect(player);
+			end
+
+			@idTable.delete player.id;
+			player.id = nil;
+			@mqtt.publish_to "Lasertag/Game/ID", @idTable.to_json, retain: true;
+
+			remove_player(pName) if @delete_disconnected;
+		end
+	end
+	private :_handle_player_connection_update
+
+	def _handle_shot_event(data)
+		unless  (hitPlayer = fetch_player(data[:target])) and
+				  (sourcePlayer = fetch_player(data[:shooterID])) and
+				  (arbCode = data[:arbCode])
+			return
+		end
+
+		return if (sourcePlayer.hitIDTimetable[arbCode] + 3) > Time.now();
+
+		@hooks.each do |h|
+			return unless h.processHit(hitPlayer, sourcePlayer, arbCode);
+		end
+
+		sourcePlayer.hitIDTimetable[arbCode] = Time.now() unless arbCode == 0;
+		@hooks.each do |h|
+			h.onHit(hitPlayer, sourcePlayer);
+		end
+	end
+	private :_handle_shot_event
+
+	def _handle_player_kill(killedPlayer, sourcePlayer)
+		@hooks.each do |h|
+			h.onKill(killedPlayer, sourcePlayer);
+		end
 	end
 
 	def [](c)
@@ -132,44 +177,44 @@ class Game
 
 		raise ArgumentError, "Unknown identifier for the player id!"
 	end
+	alias fetch_player []
 
-	def on_connect(&connectProc)
-		@clientConnectCBs << connectProc;
-		return connectProc;
-	end
-	def on_disconnect(&disconnectProc)
-		# Using "unshift" here so that the higher level functions get called first
-		@clientDisconnectCBs.unshift(disconnectProc);
-		return disconnectProc;
-	end
-	def on_register(&registerProc);
-		@clientRegisteredCBs << registerProc;
-		return registerProc;
-	end
-	def on_unregister(&unregisterProc);
-		# Using "unshift" here so that the higher level functions get called first
-		@clientUnregisteredCBs.unshift(unregisterProc);
-		return unregisterProc;
-	end
+	def add_hook(hook)
+		hook = hook.new() if hook.is_a? Class and hook <= Lasertag::EventHook;
 
-	def remove_callback(callback)
-		@clientConnectCBs.delete callback
-		@clientDisconnectCBs.delete callback
-		@clientRegisteredCBs.delete callback
-		@clientUnregisteredCBs.delete callback
+		unless(hook.is_a? Lasertag::EventHook) then
+			raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
+		end
+
+		return if(@hooks.include? hook);
+		hook.onHookin(self);
+		@hooks << hook;
+
+		hook;
+	end
+	def remove_hook(hook)
+		unless(hook.is_a? Lasertag::EventHook) then
+			raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
+		end
+
+		return unless @hooks.include? hook
+		hook.onHookout();
+		@hooks.delete(hook);
 	end
 
 	def remove_player(pName)
-		@clientUnregisteredCBs.each do |cb|
-			cb.call(pName, @clients[pName]);
+		@hooks.reverse.each do |h|
+			h.onPlayerUnregistration(@clients[pName]);
 		end
+		@idTable.delete @clients[pName].id if @clients[pName].id;
+
 		@clients[pName].clean_all_topics;
 		@clients.delete pName;
 	end
 
 	def each()
 		@clients.each do |k, v|
-			yield(k, v);
+			yield(v);
 		end
 
 		return;
@@ -177,17 +222,26 @@ class Game
 
 	def each_connected()
 		@clients.each do |k, v|
-			yield(k, v) if v.connected?
+			yield(v) if v.connected?
 		end
 
 		return;
 	end
 
-	def remove_disconnected()
+	def delete_disconnected!()
 		@clients.each do |k, v|
 			remove_player k unless v.connected?
 		end
 	end
+	def delete_disconnected=(val)
+		@delete_disconnected = val;
+
+		remove_disconnected
+	end
+	def delete_disconnected?
+		return @delete_disconnected
+	end
+	alias delete_disconnected delete_disconnected?
 
 	def get_connected()
 		outputHash = Hash.new();

@@ -33,25 +33,7 @@ function fireWeapon()
 	end
 end
 
-subscribeTo(lasertagTopic .. "/Game/Status", 0,
-	function(data)
-		if(data == "stop") then
-			if(gameRunning) then
-				overrideVest(5000, 10);
-				ping(5000, 1000, 2000);
-			end
-			gameRunning = false;
-		elseif(data == "start") then
-			if(not gameRunning) then
-				ping(2000, 2000, 2000);
-			end
-			gameRunning = true;
-		elseif(data == "startwarn") then
-			ping(1500, 1500, 300);
-		end
-	end
-);
-
+homeQTT:publish(playerTopic .. "/Connection", "CONNECTING", 1, 1);
 on_mqtt_sub_finish = function()
 	homeQTT:publish(playerTopic .. "/Connection", "OK", 1, 1);
 	systemIsSetUp = true;
