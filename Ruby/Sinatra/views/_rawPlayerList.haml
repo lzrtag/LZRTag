@@ -1,5 +1,5 @@
-- settings.game.each do |pName, player|
-	%li.playerInfoBox{id: pName, style: "border-color: #{player.team_color}"}
+- settings.game.each do |player|
+	%li.playerInfoBox{id: player.name, style: "border-color: #{player.team_color}"}
 		%h3{style: player.connected? ? "" : "color: #606060"}
 			&= player.name
 		%ul
