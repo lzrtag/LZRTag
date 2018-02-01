@@ -104,30 +104,23 @@ body {
 	border-radius: 2px 18px;
 
 	width: 350px;
-	height: 48px;
-
-	overflow: hidden;
 }
 .playerInfoBox h3 {
 	margin: 0;
 	padding: 10px 0px 10px 15px;
-
-	border-bottom: black solid 3px;
 }
 .playerInfoBox ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 2px 0px 2px 0px;
+
+	display: none;
 }
 .playerInfoBox ul li {
 	padding: 3px 0px 3px 15px;
 
-	border-bottom: black solid 1px;
+	border-top: black solid 1px;
 }
-.playerInfoBox ul li:last-child {
-	border-bottom: none;
-}
-
-.playerInfoBox:hover {
-	height: 48px + 3px + 25px*3;
+.playerInfoBox ul li:first-child {
+	border-top: black solid 3px;
 }

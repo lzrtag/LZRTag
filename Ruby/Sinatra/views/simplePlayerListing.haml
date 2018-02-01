@@ -20,20 +20,7 @@
 		return polygonString;
 	}
 
-	function updatePlayers() {
-		var playerUpdate = new XMLHttpRequest();
-		playerUpdate.open("GET", "/Players.XHR", true);
-		playerUpdate.onreadystatechange = function() {
-			if(this.readyState == 4) {
-				document.getElementById("playerList").innerHTML = this.responseText;
-
-				setTimeout(updatePlayers, 1000);
-			}
-		}
-		playerUpdate.send();
-	}
-
-	var containerSVG = document.getElementById("testSVG");
+	var containerSVG = $("#testSVG");
 	var newPolygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
 
 	newPolygon.setAttribute("points",polyPoints(10, 100, 100));
@@ -42,6 +29,15 @@
 	newPolygon.style.stroke = "purple";
 	newPolygon.style.strokeWidth = "2"
 
-	containerSVG.appendChild(newPolygon);
+	containerSVG.append(newPolygon);
 
-	updatePlayers();
+	setInterval(function() { $("#playerList").load("/Players.XHR", function() {
+		$(".playerInfoBox").hover(
+			function() {
+				$(this).children("ul").slideDown();
+			},
+			function() {
+				$(this).children("ul").slideUp();
+			}
+			);
+	});}, 3000);
