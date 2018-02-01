@@ -81,8 +81,11 @@ $game.add_hook(deathMatch);
 $game.add_hook(Zombies);
 
 if(__FILE__ == $0) then
-	loop do
-		print "#{$game["Red"].inspect}      \r" if $game["Red"];
-		sleep 1;
-	end
+	print "Going into server mode ..."
+
+	require_relative "../Sinatra/BaseClasses/JSONBase.rb"
+
+	Lasertag::HTTP::Basic.set :game, $game
+	Lasertag::HTTP::Basic.set :bind, "0.0.0.0"
+	Lasertag::HTTP::Basic.run!
 end
