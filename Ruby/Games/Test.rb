@@ -60,7 +60,7 @@ class LifeBased_DM < Lasertag::EventHook
 	end
 
 	def onGameTick(dT)
-		@game.each do |player|
+		@game.each_connected do |player|
 			player.heartbeat = ((player.data[:hitpoints] <= 1) and (not player.dead?));
 			player.brightness = (player.data[:hitpoints] <= 1) ? 6 : 7;
 
