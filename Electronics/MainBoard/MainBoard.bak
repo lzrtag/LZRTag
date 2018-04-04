@@ -49,7 +49,7 @@ L Crystal_Small QRZ1
 U 1 1 572B3734
 P 8100 3100
 F 0 "QRZ1" H 8100 3200 50  0000 C CNN
-F 1 "Crystal_Small" H 8100 3000 50  0000 C CNN
+F 1 "4MHz" H 8100 3000 50  0000 C CNN
 F 2 "Crystals:Crystal_HC49-U_Vertical" H 8100 3100 50  0001 C CNN
 F 3 "" H 8100 3100 50  0000 C CNN
 	1    8100 3100
@@ -105,8 +105,9 @@ U 1 1 572B5519
 P 10250 5750
 F 0 "BT1" H 10350 5800 50  0000 L CNN
 F 1 "Battery" H 10350 5700 50  0000 L CNN
-F 2 "Connectors_JST:JST_PH_S2B-PH-K_02x2.00mm_Angled" V 10250 5790 50  0001 C CNN
+F 2 "Connectors_JST:JST_PH_B2B-PH-K_02x2.00mm_Straight" V 10250 5790 50  0001 C CNN
 F 3 "" V 10250 5790 50  0000 C CNN
+F 4 "https://www.reichelt.de/JST-Vielfachsteckverbinder/JST-PH2P-ST/3/index.html?ACTION=3&LA=2&ARTICLE=185049&GROUPID=7980&artnr=JST+PH2P+ST&trstct=pol_7" H 10250 5750 60  0001 C CNN "URL"
 	1    10250 5750
 	1    0    0    -1  
 $EndComp
@@ -235,7 +236,7 @@ P 7950 2150
 F 0 "R6" H 7980 2170 50  0000 L CNN
 F 1 "1MΩ" H 7980 2110 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 7950 2150 50  0001 C CNN
-F 3 "" H 7950 2150 50  0000 C CNN
+F 3 "https://www.reichelt.de/SMD-0603-von-1-bis-910-kOhm/RND-0603-1-100K/3/index.html?ACTION=3&LA=2&ARTICLE=183102&GROUPID=7968&artnr=RND+0603+1+100K&trstct=pol_1;SID=94WOY5-qwQATcAAG79Goo0acb105dd429f907499a137e0497339a" H 7950 2150 50  0001 C CNN
 	1    7950 2150
 	1    0    0    -1  
 $EndComp
@@ -325,7 +326,7 @@ U 1 1 572E16B2
 P 5800 5900
 F 0 "SW1" H 5950 6010 50  0000 C CNN
 F 1 "SW_PUSH" H 5800 5820 50  0000 C CNN
-F 2 "Main-Cache:SolderWirePad_2x_0-8mmDrill" H 5800 5900 50  0001 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02_Pitch2.54mm" H 5800 5900 50  0001 C CNN
 F 3 "" H 5800 5900 50  0000 C CNN
 	1    5800 5900
 	1    0    0    -1  
@@ -347,7 +348,7 @@ U 1 1 572E493F
 P 6100 6625
 F 0 "M1" H 6350 6575 60  0000 C CNN
 F 1 "Vibr_Motor" H 6150 6675 60  0000 C CNN
-F 2 "Main-Cache:SolderWirePad_2x_0-8mmDrill" H 6000 6625 60  0001 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02_Pitch2.54mm" H 6000 6625 60  0001 C CNN
 F 3 "" H 6000 6625 60  0000 C CNN
 	1    6100 6625
 	1    0    0    -1  
@@ -415,7 +416,7 @@ P 9500 1100
 F 0 "R9" H 9530 1120 50  0001 L CNN
 F 1 "RST" H 9530 1060 50  0001 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 9500 1100 50  0001 C CNN
-F 3 "" H 9500 1100 50  0001 C CNN
+F 3 "https://www.reichelt.de/SMD-0603-von-1-bis-910-kOhm/RND-0603-1-100K/3/index.html?ACTION=3&LA=2&ARTICLE=183102&GROUPID=7968&artnr=RND+0603+1+100K&trstct=pol_1;SID=94WOY5-qwQATcAAG79Goo0acb105dd429f907499a137e0497339a" H 9500 1100 50  0001 C CNN
 	1    9500 1100
 	1    0    0    -1  
 $EndComp
@@ -437,7 +438,7 @@ P 9600 1100
 F 0 "R11" H 9630 1120 50  0001 L CNN
 F 1 "RST" H 9630 1060 50  0001 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" H 9600 1100 50  0001 C CNN
-F 3 "" H 9600 1100 50  0001 C CNN
+F 3 "https://www.reichelt.de/SMD-0603-von-1-bis-910-kOhm/RND-0603-1-100K/3/index.html?ACTION=3&LA=2&ARTICLE=183102&GROUPID=7968&artnr=RND+0603+1+100K&trstct=pol_1;SID=94WOY5-qwQATcAAG79Goo0acb105dd429f907499a137e0497339a" H 9600 1100 50  0001 C CNN
 	1    9600 1100
 	1    0    0    -1  
 $EndComp
@@ -592,9 +593,9 @@ L R_Pack04 RN2
 U 1 1 5A74E9FD
 P 3525 2550
 F 0 "RN2" V 3225 2550 50  0000 C CNN
-F 1 "100Ω" V 3725 2550 50  0000 C CNN
+F 1 "220Ω" V 3725 2550 50  0000 C CNN
 F 2 "Resistors_SMD:R_Array_Convex_4x1206" V 3800 2550 50  0001 C CNN
-F 3 "" H 3525 2550 50  0001 C CNN
+F 3 "https://www.reichelt.de/4-Widerstaende-SMD-1206/BCN16-220/3/index.html?ACTION=3&LA=2&ARTICLE=42464&GROUPID=4495&artnr=BCN16+220&trstct=pol_0" H 3525 2550 50  0001 C CNN
 	1    3525 2550
 	0    1    1    0   
 $EndComp
@@ -605,18 +606,14 @@ P 1450 3325
 F 0 "RN1" V 1150 3325 50  0000 C CNN
 F 1 "220Ω" V 1650 3325 50  0000 C CNN
 F 2 "Resistors_SMD:R_Array_Convex_4x1206" V 1725 3325 50  0001 C CNN
-F 3 "" H 1450 3325 50  0001 C CNN
+F 3 "https://www.reichelt.de/4-Widerstaende-SMD-1206/BCN16-220/3/index.html?ACTION=3&LA=2&ARTICLE=42464&GROUPID=4495&artnr=BCN16+220&trstct=pol_0" H 1450 3325 50  0001 C CNN
 	1    1450 3325
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	7900 3200 8100 3200
+	7900 3200 8300 3200
 Wire Wire Line
-	8100 3200 8300 3200
-Wire Wire Line
-	7900 3000 8100 3000
-Wire Wire Line
-	8100 3000 8300 3000
+	7900 3000 8300 3000
 Wire Wire Line
 	8500 3000 8500 3200
 Wire Wire Line
@@ -630,52 +627,12 @@ Wire Wire Line
 	7900 3150 7900 3200
 Connection ~ 8100 3200
 Wire Wire Line
-	5200 4550 5200 4650
-Wire Wire Line
-	5200 4650 5200 4750
-Wire Wire Line
-	5200 4750 5200 4800
+	5200 4550 5200 4800
 Connection ~ 5200 4750
 Wire Wire Line
-	5200 2450 5200 2550
-Wire Wire Line
-	5200 2550 5200 2750
+	5200 2450 5200 2750
 Wire Bus Line
-	7500 1850 7500 2350
-Wire Bus Line
-	7500 2350 7500 2850
-Wire Bus Line
-	7500 2850 7500 2950
-Wire Bus Line
-	7500 2950 7500 3050
-Wire Bus Line
-	7500 3050 7500 3800
-Wire Bus Line
-	7500 3800 7500 3900
-Wire Bus Line
-	7500 3900 7500 4000
-Wire Bus Line
-	7500 4000 7500 4150
-Wire Bus Line
-	7500 4150 7500 4250
-Wire Bus Line
-	7500 4250 7500 4450
-Wire Bus Line
-	7500 4450 7500 4550
-Wire Bus Line
-	7500 4550 7500 4650
-Wire Bus Line
-	7500 4650 7500 4750
-Wire Bus Line
-	7500 4750 7500 4850
-Wire Bus Line
-	7500 4850 7500 5200
-Wire Bus Line
-	7500 5200 7500 5600
-Wire Bus Line
-	7500 5600 7500 5700
-Wire Bus Line
-	7500 5700 7500 5800
+	7500 1850 7500 5800
 Wire Wire Line
 	7900 1450 7700 1450
 Wire Wire Line
@@ -689,11 +646,7 @@ Wire Wire Line
 Wire Wire Line
 	8400 1450 8500 1450
 Wire Bus Line
-	7600 1550 7600 1650
-Wire Bus Line
-	7600 1650 7600 1750
-Wire Bus Line
-	7600 1750 7600 1850
+	7600 1550 7600 1850
 Wire Bus Line
 	8600 1850 7500 1850
 Wire Bus Line
@@ -723,11 +676,7 @@ Wire Wire Line
 Wire Wire Line
 	7900 3050 7900 3000
 Wire Wire Line
-	2400 3175 2400 3225
-Wire Wire Line
-	2400 3225 2400 3475
-Wire Wire Line
-	2400 3475 2400 3775
+	2400 3175 2400 3775
 Connection ~ 2400 3475
 Wire Wire Line
 	7600 2250 7950 2250
@@ -770,9 +719,7 @@ Wire Wire Line
 Wire Wire Line
 	5700 5600 5450 5600
 Wire Wire Line
-	5450 5600 5450 5900
-Wire Wire Line
-	5450 5900 5450 6025
+	5450 5600 5450 6025
 Wire Wire Line
 	5450 5900 5500 5900
 Connection ~ 5450 5900
@@ -795,9 +742,7 @@ Wire Wire Line
 Wire Wire Line
 	9700 1800 9700 1950
 Wire Wire Line
-	9400 1000 9500 1000
-Wire Wire Line
-	9500 1000 9600 1000
+	9400 1000 9600 1000
 Connection ~ 9500 1000
 Wire Wire Line
 	7100 3400 7400 3400
@@ -806,11 +751,7 @@ Wire Wire Line
 Wire Wire Line
 	7100 3600 7400 3600
 Wire Wire Line
-	2400 2125 2400 2175
-Wire Wire Line
-	2400 2175 2400 2325
-Wire Wire Line
-	2400 2325 2400 2375
+	2400 2125 2400 2375
 Connection ~ 2400 2325
 Connection ~ 2400 3225
 Wire Wire Line
@@ -830,17 +771,13 @@ Connection ~ 2400 2175
 Wire Wire Line
 	4500 2550 4600 2550
 Wire Wire Line
-	4600 2450 4600 2550
-Wire Wire Line
-	4600 2550 4600 3400
+	4600 2450 4600 3400
 Wire Wire Line
 	4600 3400 4500 3400
 Connection ~ 4600 3400
 Connection ~ 4600 2550
 Wire Wire Line
-	3725 2350 4000 2350
-Wire Wire Line
-	4000 2350 4100 2350
+	3725 2350 4100 2350
 Wire Wire Line
 	4100 2550 3950 2550
 Wire Wire Line
@@ -866,15 +803,11 @@ Wire Wire Line
 Wire Wire Line
 	3725 2450 3950 2450
 Wire Wire Line
-	3950 2450 3950 2550
-Wire Wire Line
-	3950 2550 3950 3400
+	3950 2450 3950 3400
 Wire Wire Line
 	3725 2550 3900 2550
 Wire Wire Line
-	3900 2550 3900 2750
-Wire Wire Line
-	3900 2750 3900 3600
+	3900 2550 3900 3600
 Connection ~ 3900 2750
 Connection ~ 3950 2550
 Wire Wire Line
@@ -962,7 +895,7 @@ P 9300 3250
 F 0 "RN3" V 9000 3250 50  0000 C CNN
 F 1 "220Ω" V 9500 3250 50  0000 C CNN
 F 2 "Resistors_SMD:R_Array_Convex_4x1206" V 9575 3250 50  0001 C CNN
-F 3 "" H 9300 3250 50  0001 C CNN
+F 3 "https://www.reichelt.de/4-Widerstaende-SMD-1206/BCN16-220/3/index.html?ACTION=3&LA=2&ARTICLE=42464&GROUPID=4495&artnr=BCN16+220&trstct=pol_0" H 9300 3250 50  0001 C CNN
 	1    9300 3250
 	0    1    1    0   
 $EndComp
@@ -1009,9 +942,7 @@ Wire Wire Line
 Wire Wire Line
 	10250 5900 9925 5900
 Wire Wire Line
-	10250 5550 10250 5575
-Wire Wire Line
-	10250 5575 10250 5600
+	10250 5550 10250 5600
 Wire Wire Line
 	10250 5575 9925 5575
 Connection ~ 10250 5575
