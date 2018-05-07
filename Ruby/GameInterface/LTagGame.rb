@@ -1,5 +1,5 @@
 
-require_relative '../Libs/MQTTSubscriber.rb'
+require 'mqtt/sub_handler'
 require_relative 'EventHook.rb'
 require_relative 'LTagPlayer.rb'
 require 'json'
@@ -21,30 +21,30 @@ class Game
 
 		@hooks   = Array.new();
 
-		@mqtt.subscribe_to "#{@mqttTopic}/Team" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Team" do |data, tList|
 			if @clients.key? tList[0] then
 				teamNumber = data.to_i;
 				@clients[tList[0]].instance_variable_set(:@team, teamNumber) if teamNumber;
 			end
 		end
-		@mqtt.subscribe_to "#{@mqttTopic}/Brightness" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Brightness" do |data, tList|
 			if @clients.key? tList[0] then
 				brightness = data.to_i;
 				@clients[tList[0]].instance_variable_set(:@brightness, brightness) if brightness;
 			end
 		end
-		@mqtt.subscribe_to "#{@mqttTopic}/Dead" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Dead" do |data, tList|
 			if @clients.key? tList[0] then
 				@clients[tList[0]].instance_variable_set(:@dead, data == "true");
 			end
 		end
-		@mqtt.subscribe_to "#{@mqttTopic}/Ammo" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Ammo" do |data, tList|
 			if @clients.key? tList[0] then
 				@clients[tList[0]].instance_variable_set(:@ammo, data.to_i);
 			end
 		end
 
-		@mqtt.subscribe_to "#{@mqttTopic}/System" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/System" do |data, tList|
 			if @clients.key? tList[0] then
 				sysInfo = JSON.parse(data);
 				c = @clients[tList[0]];
@@ -55,12 +55,12 @@ class Game
 		end
 
 		@delete_disconnected = delete_disconnected;
-		@mqtt.subscribe_to "#{@mqttTopic}/Connection" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Connection" do |data, tList|
 			pName = tList[0];
 			_handle_player_connection_update(pName, data);
 		end
 
-		@mqtt.subscribe_to "Lasertag/Game/Events" do |tList, data|
+		@mqtt.subscribe_to "Lasertag/Game/Events" do |data, tList|
 			begin
 				data = JSON.parse(data, symbolize_names: true);
 				case data[:type]
