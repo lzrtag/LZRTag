@@ -10,12 +10,6 @@ class RandomTeam < Lasertag::EventHook
 	end
 end
 
-class Zombies < Lasertag::EventHook
-	def onKill(hitPlayer, sourcePlayer)
-		hitPlayer.team = sourcePlayer.team;
-	end
-end
-
 class LifeBased_DM < Lasertag::EventHook
 	def initialize(life = 3, regRate = 0.2, teams: false)
 		@life = life;
@@ -38,6 +32,10 @@ class LifeBased_DM < Lasertag::EventHook
 		player.fireConfig = {shotLocked: false};
 
 		player.data[:hitpoints] = @life;
+	end
+	def onPlayerDisconnect(player)
+		player.fireConfig = nil;
+		player.heartbeat = false;
 	end
 
 	def processHit(hitPlayer, sourcePlayer, code)
@@ -73,12 +71,72 @@ class LifeBased_DM < Lasertag::EventHook
 	end
 end
 
-$game.add_hook(Lasertag::VerbooseDebugHook)
-$game.add_hook(RandomTeam);
+#$game.add_hook(Lasertag::VerbooseDebugHook)
 
-deathMatch = LifeBased_DM.new(4, 0.5, teams: true);
-$game.add_hook(deathMatch);
-$game.add_hook(Zombies);
+class Zombies < Lasertag::EventHook
+	def initialize()
+		@configHooks = [RandomTeam.new, LifeBased_DM.new(4, 0.5, teams: true)]
+	end
+
+	def onHookin(game)
+		super(game);
+
+		Thread.new do start(); end
+	end
+
+	def start()
+		@game.add_hook(@configHooks[0]);
+
+		sleep 1;
+		@game.each_connected do |pl| pl.brightness = 1; end
+
+		3.times do |i|
+			@game.each_connected do |pl|
+				pl.noise(duration: (i==2) ? 1 : 0.25, startF: (i==2) ? 600 : 440);
+				sleep 1;
+			end
+		end
+
+		@configHooks.each do |h| @game.add_hook(h); end
+	end
+
+
+	def _crown_winners(winnerTeam)
+		puts "Crowning winner team: #{winnerTeam}"
+		Thread.new do
+			@configHooks.each do |h| @game.remove_hook(h); end
+
+			@game.each_connected do |pl|
+				pl.brightness = (pl.team == winnerTeam) ? 5 : 2;
+			end
+
+			sleep 10;
+
+			start();
+		end.abort_on_exception = true;
+	end
+
+	def onKill(hitPlayer, sourcePlayer)
+		hitPlayer.team = sourcePlayer.team;
+
+		return if @game.num_connected <= 1;
+
+		teamNumbers = Hash.new(0);
+		@game.each_connected do |pl|
+			teamNumbers[pl.team] += 1;
+		end
+		puts "Teams after kill: #{teamNumbers}";
+
+		winnerTeam = nil;
+		teamNumbers.each do |key, val| winnerTeam = key if val == @game.num_connected; end
+
+		_crown_winners(winnerTeam) if winnerTeam;
+	end
+end
+
+$zombies = Zombies.new();
+$game.add_hook($zombies);
+
 
 if(__FILE__ == $0) then
 	print "Going into server mode ..."
