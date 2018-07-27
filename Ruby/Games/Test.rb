@@ -134,9 +134,53 @@ class Zombies < Lasertag::EventHook
 	end
 end
 
-$zombies = Zombies.new();
-$game.add_hook($zombies);
+# $zombies = Zombies.new();
+# $game.add_hook($zombies);
 
+loop do
+	loop do
+		sleep 0.1
+		nAlive = 0;
+		$game.each_connected do |pl|
+			nAlive += 1 unless pl.dead
+		end
+
+		break if nAlive == 1;
+	end
+
+	$game.each_connected do |pl|
+		pl.dead = false;
+		pl.brightness = 1;
+		pl.team = 7;
+
+		pl.hitConfig = {
+			hitFlashBrightness: 10,
+			hitFlashDuration: 180,
+			hitVibration: 100,
+
+			dieOnHit: true,
+		}
+		pl.fireConfig = nil;
+	end
+
+	rand(4..13).times do |i|
+		$game.each_connected do |pl|
+			pl.noise()
+		end
+		sleep 1;
+	end
+
+	$game.each_connected do |pl|
+		pl.noise(startF: 1000);
+		pl.vibrate(0.2);
+		pl.brightness = 7;
+		pl.fireConfig = {
+			shotLocked: false,
+			perShotDelay: 1000,
+		}
+		pl.ammo = 100;
+	end
+end
 
 if(__FILE__ == $0) then
 	print "Going into server mode ..."
