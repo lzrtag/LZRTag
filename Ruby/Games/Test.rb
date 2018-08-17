@@ -90,10 +90,9 @@ class Zombies < Lasertag::EventHook
 		sleep 1;
 		@game.each_connected do |pl| pl.brightness = 1; end
 
-		3.times do |i|
+		4.times do |i|
 			@game.each_connected do |pl|
-				pl.noise(duration: (i==2) ? 1 : 0.25, startF: (i==2) ? 600 : 440);
-				sleep 1;
+				pl.noise(duration: (i==2) ? 1 : 0.25, startF: (i==3) ? 600 : 440);
 			end
 		end
 
