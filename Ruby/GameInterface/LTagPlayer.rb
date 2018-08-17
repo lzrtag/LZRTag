@@ -141,6 +141,7 @@ class Client
 		game()._handle_player_kill(self, sourcePlayer);
 	end
 	def regenerate(amount)
+		return if @hitpoints >= 100;
 		@hitpoints = [@hitpoints + amount, 100].min;
 
 		send_message "#{@mqttTopic}/HP", @hitpoints.to_s, retain: true
