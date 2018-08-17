@@ -78,7 +78,7 @@ end
 
 class Zombies < Lasertag::EventHook
 	def initialize()
-		@configHooks = [RandomTeam.new, LifeBased_DM.new(4, 0.5, teams: true)]
+		@configHooks = [RandomTeam.new, LifeBased_DM.new(teams: true)]
 	end
 
 	def onHookin(game)
