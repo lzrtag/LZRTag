@@ -1,6 +1,6 @@
 require_relative '../GameInterface/LTagGame.rb'
 
-$mqtt = MQTT::SubHandler.new('xasin.hopto.org');
+$mqtt = MQTT::SubHandler.new('localhost');
 $game = Lasertag::Game.new($mqtt, clean_on_exit: true);
 
 class RandomTeam < Lasertag::EventHook
@@ -142,7 +142,7 @@ loop do
 		sleep 0.1
 		nAlive = 0;
 		$game.each_connected do |pl|
-			nAlive += 1 unless pl.dead
+			nAlive += 1 unless pl.dead?
 		end
 
 		break if nAlive == 1;
