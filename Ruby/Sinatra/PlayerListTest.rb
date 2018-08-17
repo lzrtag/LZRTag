@@ -30,7 +30,6 @@ class RandomTeam < Lasertag::EventHook
 	end
 
 	def onHit(player, shooter)
-		player = $game[data["target"]];
 		if(player.data[:hitpoints] -= 1) <= 0 then
 			player.data[:hitpoints] = 0;
 			player.dead = true;
@@ -41,7 +40,7 @@ class RandomTeam < Lasertag::EventHook
 	end
 
 	def onGameTick(dt)
-		$game.each_connected do |pName, player|
+		$game.each_connected do |player|
 			if(player.data[:hitpoints] < 1.5 and not player.dead?) then
 				player.data[:hitpoints] += 0.15*dt;
 			end
