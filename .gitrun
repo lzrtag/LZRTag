@@ -1,0 +1,8 @@
+
+$runner = GitRestart::Runner.new do |r|
+	r.name = "Lasertag Game GitRestarter";
+	r.repo = "XasWorks/LZRTag";
+
+	r.mqtt    = "mqtt://xasin.hopto.org";
+	r.octokit = Octokit::Client.new(netrc: true);
+end

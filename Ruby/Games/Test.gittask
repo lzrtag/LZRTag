@@ -1,0 +1,11 @@
+
+GitRestart::Task.new do |t|
+	t.name = "Test Lasertag game"
+
+	t.report_status = true;
+
+	t.active = true;
+	t.watch(/Test\.rb/);
+
+	t.targets << "ruby Test.rb"
+end
