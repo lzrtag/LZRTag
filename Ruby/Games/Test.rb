@@ -11,7 +11,7 @@ class RandomTeam < Lasertag::EventHook
 end
 
 class LifeBased_DM < Lasertag::EventHook
-	def initialize(regRate = 10/6.0, teams: false)
+	def initialize(regRate = 50/6.0, teams: false)
 		@regenerationRate = regRate;
 
 		@disableTeamfire = teams;
@@ -36,8 +36,6 @@ class LifeBased_DM < Lasertag::EventHook
 
 			perShotDelay: 200,
 		};
-
-		player.data[:hitpoints] = @life;
 	end
 	def onPlayerDisconnect(player)
 		player.fireConfig = nil;
@@ -52,7 +50,7 @@ class LifeBased_DM < Lasertag::EventHook
 	end
 
 	def onHit(hitPlayer, sourcePlayer)
-		unless(hitPlayer.damage_by(10/6.0, sourcePlayer));
+		unless(hitPlayer.damage_by(100/6.0, sourcePlayer));
 			hitPlayer.hit();
 			sourcePlayer.noise(duration: 0.02, startF: 2000);
 		end
@@ -64,8 +62,8 @@ class LifeBased_DM < Lasertag::EventHook
 
 	def onGameTick(dT)
 		@game.each_connected do |player|
-			player.heartbeat = ((player.data[:hitpoints] <= 2) and (not player.dead?));
-			player.brightness = (player.data[:hitpoints] <= 2) ? 6 : 7;
+			player.heartbeat = ((player.hitpoints <= 20) and (not player.dead?));
+			player.brightness = (player.hitpoints <= 20) ? 6 : 7;
 
 			next if player.dead?
 
