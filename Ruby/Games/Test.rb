@@ -134,10 +134,12 @@ class Zombies < Lasertag::EventHook
 	end
 end
 
-# $zombies = Zombies.new();
-# $game.add_hook($zombies);
+$zombies = Zombies.new();
+$game.add_hook($zombies);
 
 loop do
+	break;
+
 	loop do
 		sleep 0.1
 		nAlive = 0;
