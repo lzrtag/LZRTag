@@ -19,7 +19,7 @@ class LifeBased_DM < Lasertag::EventHook
 	end
 
 	def onPlayerConnect(player)
-		player.ammo = 100;
+		player.ammo = 6;
 
 		player.hitConfig = {
 			hitFlashBrightness: 10,
@@ -29,7 +29,14 @@ class LifeBased_DM < Lasertag::EventHook
 			deathDuration: 5000,
 		}
 
-		player.fireConfig = {shotLocked: false};
+		player.fireConfig = {
+			shotLocked: false,
+
+			ammoCap: 12,
+			perReloadAmmo: 6,
+						
+			perShotDelay: 100,
+		};
 
 		player.data[:hitpoints] = @life;
 	end
@@ -92,7 +99,7 @@ class Zombies < Lasertag::EventHook
 
 		4.times do |i|
 			@game.each_connected do |pl|
-				pl.noise(duration: (i==2) ? 1 : 0.25, startF: (i==3) ? 600 : 440);
+				pl.noise(duration: (i==3) ? 1 : 0.25, startF: (i==3) ? 600 : 440);
 			end
 			sleep 1;
 		end
