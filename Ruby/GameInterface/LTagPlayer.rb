@@ -25,6 +25,7 @@ class Client
 	attr_reader :ping
 	attr_reader :heap
 
+	attr_reader :hitpoints
 	attr_accessor :data
 
 	attr_accessor :hitIDTimetable
@@ -47,6 +48,7 @@ class Client
 		@ping = 10000;
 		@heap = 40000;
 
+		@hitpoints = 100;
 		@data = Hash.new();
 
 		@hitIDTimetable = Hash.new(Time.new(0));
@@ -137,6 +139,23 @@ class Client
 		send_message "Lasertag/Game/Events", {source: sourcePlayer.name, target: @name, type: "kill"}.to_json
 		game()._handle_player_kill(self, sourcePlayer);
 	end
+	def regenerate(amount)
+		@hitpoints = [amount, 100].min;
+
+		send_message "#{@mqttTopic}/HP", @hitpoints.to_s
+	end
+	def damage_by(amount, sourcePlayer)
+		if (@hitpoints -= amount) <= 0
+			@hitpoints = 0;
+
+			kill_by(sourcePlayer) if sourcePlayer;
+			send_message "#{@mqttTopic}/HP", @hitpoints.to_s
+			return true;
+		else
+			send_message "#{@mqttTopic}/HP", @hitpoints.to_s
+			return false;
+		end
+	end
 
 	def ammo=(a)
 		unless (a.is_a?(Integer) and (a >= 0)) then
@@ -146,6 +165,9 @@ class Client
 		@ammo = a;
 
 		send_message "#{@mqttTopic}/AmmoSet", a
+	end
+	def ammo_percentage()
+		return @ammo / (@fireConfig[:ammoCap] or 5).to_f;
 	end
 
 	def hitConfig
