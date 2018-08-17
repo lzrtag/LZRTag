@@ -16,6 +16,7 @@ class Game
 		@clientClass.instance_variable_set(:@mqtt, mqtt);
 		@clientClass.instance_variable_set(:@game, self);
 
+		@clients_mutex = Mutex.new();
 		@clients = Hash.new();
 		@idTable = Hash.new();
 
@@ -100,7 +101,9 @@ class Game
 		# Check if the player is on record.
 		# If not, generate one and call the callbacks
 		if(not @clients.key? pName) then
-			@clients[pName] = @clientClass.new(pName);
+			@clients_mutex.synchronize {
+				@clients[pName] = @clientClass.new(pName);
+			}
 			@hooks.each do |h|
 				h.onPlayerRegistration(@clients[pName]);
 			end
@@ -213,25 +216,31 @@ class Game
 	end
 
 	def each()
-		@clients.each do |k, v|
-			yield(v);
-		end
+		@clients_mutex.synchronize {
+			@clients.each do |k, v|
+				yield(v);
+			end
+		}
 
 		return;
 	end
 
 	def each_connected()
-		@clients.each do |k, v|
-			yield(v) if v.connected?
-		end
+		@clients_mutex.synchronize {
+			@clients.each do |k, v|
+				yield(v) if v.connected?
+			end
+		}
 
 		return;
 	end
 
 	def delete_disconnected!()
-		@clients.each do |k, v|
-			remove_player k unless v.connected?
-		end
+		@clients_mutex.synchronize {
+			@clients.each do |k, v|
+				remove_player k unless v.connected?
+			end
+		}
 	end
 	def delete_disconnected=(val)
 		@delete_disconnected = val;
@@ -253,8 +262,8 @@ class Game
 
 	def player_hash()
 		outputHash = Hash.new();
-		@clients.each do |k, v|
-			outputHash[k] = v.to_hash;
+		self.each do |v|
+			outputHash[v.name] = v.to_hash;
 		end
 
 		return outputHash;
@@ -262,7 +271,7 @@ class Game
 
 	def num_connected()
 		n = 0;
-		self.each_connected do |k, v|
+		self.each_connected do
 			n += 1;
 		end
 		return n;
