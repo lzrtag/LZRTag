@@ -48,6 +48,7 @@ class Client
 		@ping = 10000;
 		@heap = 40000;
 
+		@hitpoints = 0;
 		self.regenerate(100);
 		@data = Hash.new();
 
