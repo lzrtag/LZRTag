@@ -94,6 +94,7 @@ class Zombies < Lasertag::EventHook
 			@game.each_connected do |pl|
 				pl.noise(duration: (i==2) ? 1 : 0.25, startF: (i==3) ? 600 : 440);
 			end
+			sleep 1;
 		end
 
 		@configHooks.each do |h| @game.add_hook(h); end
