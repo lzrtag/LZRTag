@@ -6,5 +6,5 @@ $runner = GitRestart::Runner.new do |r|
 	r.mqtt    = "mqtt://xasin.hopto.org";
 	r.octokit = Octokit::Client.new(netrc: true);
 
-	r.start_on = current_branch();
+	r.start_on = r.current_branch();
 end
