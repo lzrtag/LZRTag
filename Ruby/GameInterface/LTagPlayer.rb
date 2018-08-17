@@ -48,7 +48,7 @@ class Client
 		@ping = 10000;
 		@heap = 40000;
 
-		@hitpoints = 100;
+		self.regenerate(100);
 		@data = Hash.new();
 
 		@hitIDTimetable = Hash.new(Time.new(0));
@@ -140,19 +140,19 @@ class Client
 		game()._handle_player_kill(self, sourcePlayer);
 	end
 	def regenerate(amount)
-		@hitpoints = [amount, 100].min;
+		@hitpoints = [@hitpoints + amount, 100].min;
 
-		send_message "#{@mqttTopic}/HP", @hitpoints.to_s
+		send_message "#{@mqttTopic}/HP", @hitpoints.to_s, retain: true
 	end
 	def damage_by(amount, sourcePlayer)
 		if (@hitpoints -= amount) <= 0
 			@hitpoints = 0;
 
 			kill_by(sourcePlayer) if sourcePlayer;
-			send_message "#{@mqttTopic}/HP", @hitpoints.to_s
+			send_message "#{@mqttTopic}/HP", @hitpoints.to_s, retain: true
 			return true;
 		else
-			send_message "#{@mqttTopic}/HP", @hitpoints.to_s
+			send_message "#{@mqttTopic}/HP", @hitpoints.to_s, retain: true
 			return false;
 		end
 	end
@@ -210,6 +210,7 @@ class Client
 		mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
 		mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
 		mqtt.publish_to "#{@mqttTopic}/Heartbeat", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/HP", "", retain: true;
 
 		self.hitConfig = nil;
 		self.fireConfig = nil;
