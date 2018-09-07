@@ -102,7 +102,7 @@ class Client
 	end
 	def brightness=(n)
 		n = n.to_i;
-		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
+		raise ArgumentError, "Brightness out of range (must be between 0 and 7 or nil)" unless n != nil and n <= 7 and n >= 0;
 		return if @brightness == n;
 
 		@brightness = n;
@@ -289,7 +289,9 @@ class Client
 
 			team: @team,
 			brightness: @brightness,
-			ammo: @ammo,
+			ammo: ammo_percentage(),
+
+			hp:   @hitpoints,
 
 			dead: dead?,
 
