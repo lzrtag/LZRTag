@@ -25,6 +25,7 @@ class Client
 	attr_reader :ping
 	attr_reader :heap
 
+	attr_reader :hitpoints
 	attr_accessor :data
 
 	attr_accessor :hitIDTimetable
@@ -47,6 +48,8 @@ class Client
 		@ping = 10000;
 		@heap = 40000;
 
+		@hitpoints = 0;
+		self.regenerate(100);
 		@data = Hash.new();
 
 		@hitIDTimetable = Hash.new(Time.new(0));
@@ -83,9 +86,23 @@ class Client
 		send_message "#{@mqttTopic}/Team", @team, retain: true;
 		return true;
 	end
+	def team_color()
+		colors = {
+			0 => "#050505",
+			1 => "#aa0505",
+			2 => "#05aa05",
+			3 => "#aaaa05",
+			4 => "#0505aa",
+			5 => "#aa05aa",
+			6 => "#05aaaa",
+			7 => "#aaaaaa"
+		}
+
+		return colors[@team];
+	end
 	def brightness=(n)
 		n = n.to_i;
-		raise ArgumentError, "Brightness out of range (must be between 0 and 5)" unless n != nil and n <= 7 and n >= 0;
+		raise ArgumentError, "Brightness out of range (must be between 0 and 7 or nil)" unless n != nil and n <= 7 and n >= 0;
 		return if @brightness == n;
 
 		@brightness = n;
@@ -123,6 +140,24 @@ class Client
 		send_message "Lasertag/Game/Events", {source: sourcePlayer.name, target: @name, type: "kill"}.to_json
 		game()._handle_player_kill(self, sourcePlayer);
 	end
+	def regenerate(amount)
+		return if @hitpoints >= 100;
+		@hitpoints = [@hitpoints + amount, 100].min;
+
+		send_message "#{@mqttTopic}/HP", @hitpoints.to_s, retain: true
+	end
+	def damage_by(amount, sourcePlayer)
+		if (@hitpoints -= amount) <= 0
+			@hitpoints = 0;
+
+			kill_by(sourcePlayer) if sourcePlayer;
+			send_message "#{@mqttTopic}/HP", @hitpoints.to_s, retain: true
+			return true;
+		else
+			send_message "#{@mqttTopic}/HP", @hitpoints.to_s, retain: true
+			return false;
+		end
+	end
 
 	def ammo=(a)
 		unless (a.is_a?(Integer) and (a >= 0)) then
@@ -132,6 +167,9 @@ class Client
 		@ammo = a;
 
 		send_message "#{@mqttTopic}/AmmoSet", a
+	end
+	def ammo_percentage()
+		return @ammo / (@fireConfig[:ammoCap] or 5).to_f;
 	end
 
 	def hitConfig
@@ -174,6 +212,7 @@ class Client
 		mqtt.publish_to "#{@mqttTopic}/ID", "", retain: true;
 		mqtt.publish_to "#{@mqttTopic}/Dead", "", retain: true;
 		mqtt.publish_to "#{@mqttTopic}/Heartbeat", "", retain: true;
+		mqtt.publish_to "#{@mqttTopic}/HP", "", retain: true;
 
 		self.hitConfig = nil;
 		self.fireConfig = nil;
@@ -239,6 +278,32 @@ class Client
 		iString += ", Battery=#{@battery.round(2)}"
 		iString += ", Heap=#{@heap}" if @heap < 10000;
 		iString +=  ", Ping=#{@ping.ceil}ms>";
+	end
+	alias to_s inspect
+
+	def to_hash()
+		return {
+			data: @data,
+
+			id: @id,
+
+			team: @team,
+			brightness: @brightness,
+			ammo: ammo_percentage(),
+
+			hp:   @hitpoints,
+
+			dead: dead?,
+
+			battery: @battery,
+			ping: @ping,
+			heap: @heap
+		}
+	end
+	alias to_h to_hash
+
+	def to_json()
+		return self.to_hash.to_json
 	end
 end
 end

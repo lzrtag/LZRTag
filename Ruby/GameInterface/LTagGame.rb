@@ -1,5 +1,5 @@
 
-require_relative '../Libs/MQTTSubscriber.rb'
+require 'mqtt/sub_handler'
 require_relative 'EventHook.rb'
 require_relative 'LTagPlayer.rb'
 require 'json'
@@ -16,35 +16,36 @@ class Game
 		@clientClass.instance_variable_set(:@mqtt, mqtt);
 		@clientClass.instance_variable_set(:@game, self);
 
+		@clients_mutex = Mutex.new();
 		@clients = Hash.new();
 		@idTable = Hash.new();
 
 		@hooks   = Array.new();
 
-		@mqtt.subscribe_to "#{@mqttTopic}/Team" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Team" do |data, tList|
 			if @clients.key? tList[0] then
 				teamNumber = data.to_i;
 				@clients[tList[0]].instance_variable_set(:@team, teamNumber) if teamNumber;
 			end
 		end
-		@mqtt.subscribe_to "#{@mqttTopic}/Brightness" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Brightness" do |data, tList|
 			if @clients.key? tList[0] then
 				brightness = data.to_i;
 				@clients[tList[0]].instance_variable_set(:@brightness, brightness) if brightness;
 			end
 		end
-		@mqtt.subscribe_to "#{@mqttTopic}/Dead" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Dead" do |data, tList|
 			if @clients.key? tList[0] then
 				@clients[tList[0]].instance_variable_set(:@dead, data == "true");
 			end
 		end
-		@mqtt.subscribe_to "#{@mqttTopic}/Ammo" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Ammo" do |data, tList|
 			if @clients.key? tList[0] then
 				@clients[tList[0]].instance_variable_set(:@ammo, data.to_i);
 			end
 		end
 
-		@mqtt.subscribe_to "#{@mqttTopic}/System" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/System" do |data, tList|
 			if @clients.key? tList[0] then
 				sysInfo = JSON.parse(data);
 				c = @clients[tList[0]];
@@ -55,12 +56,12 @@ class Game
 		end
 
 		@delete_disconnected = delete_disconnected;
-		@mqtt.subscribe_to "#{@mqttTopic}/Connection" do |tList, data|
+		@mqtt.subscribe_to "#{@mqttTopic}/Connection" do |data, tList|
 			pName = tList[0];
 			_handle_player_connection_update(pName, data);
 		end
 
-		@mqtt.subscribe_to "Lasertag/Game/Events" do |tList, data|
+		@mqtt.subscribe_to "Lasertag/Game/Events" do |data, tList|
 			begin
 				data = JSON.parse(data, symbolize_names: true);
 				case data[:type]
@@ -100,7 +101,9 @@ class Game
 		# Check if the player is on record.
 		# If not, generate one and call the callbacks
 		if(not @clients.key? pName) then
-			@clients[pName] = @clientClass.new(pName);
+			@clients_mutex.synchronize {
+				@clients[pName] = @clientClass.new(pName);
+			}
 			@hooks.each do |h|
 				h.onPlayerRegistration(@clients[pName]);
 			end
@@ -213,25 +216,31 @@ class Game
 	end
 
 	def each()
-		@clients.each do |k, v|
-			yield(v);
-		end
+		@clients_mutex.synchronize {
+			@clients.each do |k, v|
+				yield(v);
+			end
+		}
 
 		return;
 	end
 
 	def each_connected()
-		@clients.each do |k, v|
-			yield(v) if v.connected?
-		end
+		@clients_mutex.synchronize {
+			@clients.each do |k, v|
+				yield(v) if v.connected?
+			end
+		}
 
 		return;
 	end
 
 	def delete_disconnected!()
-		@clients.each do |k, v|
-			remove_player k unless v.connected?
-		end
+		@clients_mutex.synchronize {
+			@clients.each do |k, v|
+				remove_player k unless v.connected?
+			end
+		}
 	end
 	def delete_disconnected=(val)
 		@delete_disconnected = val;
@@ -251,13 +260,34 @@ class Game
 		return outputHash;
 	end
 
+	def player_hash()
+		outputHash = Hash.new();
+		self.each do |v|
+			outputHash[v.name] = v.to_hash;
+		end
+
+		return outputHash;
+	end
+
 	def num_connected()
 		n = 0;
-		self.each_connected do |k, v|
+		self.each_connected do
 			n += 1;
 		end
 		return n;
 	end
 
+	def to_hash()
+		return {
+			idtable: 	@idTable,
+			registered: @clients.length,
+			connected:	num_connected,
+			players:		player_hash,
+		};
+	end
+
+	def to_json()
+		return self.to_hash.to_json();
+	end
 end
 end

@@ -77,14 +77,17 @@ void IRRXCB(IR::ShotPacket data) {
 }
 
 int main() {
+	DDRD 	|= 0b11;
+	PORTD 	|= 0b11;
+
+	Connector::init();
+
 	_delay_ms(1500);
 	ESPComs::init();
 	ESPComs::onReset(Board::reset);
 
-	Board::Vest::mode = 3;
-	Board::Vest::team = 1;
-
-	Connector::init();
+	Board::Vest::mode = 2;
+	Board::Vest::team = 5;
 
 	IR::RX::setCallback(IRRXCB);
 

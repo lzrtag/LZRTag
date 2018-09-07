@@ -1,0 +1,126 @@
+* {
+	box-sizing: border-box;
+
+	margin: 0px;
+	padding: 0px;
+}
+
+html {
+	height: 100%;
+}
+body {
+	background-color: #000000;
+
+	height: 100%;
+}
+
+@keyframes unfold {
+	from { height: 0px; }
+	to { height: 100%; }
+}
+.content-div {
+	background-color: #0f0f0f;
+	color: #cccccc;
+
+	margin: auto;
+	padding: 0px;
+
+	max-width: 1000px;
+
+	animation-name: unfold;
+	animation-duration: 1500ms;
+	animation-delay: 150ms;
+	animation-fill-mode: both;
+
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+@keyframes brightness-6-frames {
+	0% 	{ opacity: 0; }
+	50%	{ opacity: 0.5; }
+	100%	{ opacity: 0; }
+}
+
+.brightness-general {
+	position: absolute;
+
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+
+	animation-duration: 1080ms;
+	animation-iteration-count: infinite;
+	animation-delay: 0s;
+}
+
+.brightness-6 {
+	@extend .brightness-general;
+	animation-name: brightness-6-frames;
+}
+.brightness-wrapper {
+	position: relative;
+	margin: auto;
+}
+.brightness-content {
+	position: relative;
+}
+
+.centered {
+	text-align: center;
+}
+
+#playerList {
+	list-style-type: none;
+	padding-right: 40px;
+	padding-left:  40px;
+
+	margin-left: auto;
+	margin-right: auto;
+
+	display: grid;
+	justify-content: space-around;
+	align-items: start;
+	justify-items: center;
+
+	grid-auto-flow: row;
+
+	grid-template-columns: 1fr 1fr;
+}
+@media screen and (max-width: 750px) {
+	#playerList {
+		grid-template-columns: 1fr;
+	}
+}
+
+.playerInfoBox {
+	margin: 10px;
+
+	background-color: #202020;
+	border-width: 3px;
+	border-style: solid;
+
+	border-radius: 2px 18px;
+
+	width: 350px;
+}
+.playerInfoBox h3 {
+	margin: 0;
+	padding: 10px 0px 10px 15px;
+}
+.playerInfoBox ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 2px 0px 2px 0px;
+
+	display: none;
+}
+.playerInfoBox ul li {
+	padding: 3px 0px 3px 15px;
+
+	border-top: black solid 1px;
+}
+.playerInfoBox ul li:first-child {
+	border-top: black solid 3px;
+}

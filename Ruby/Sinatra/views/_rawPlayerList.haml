@@ -1,0 +1,8 @@
+- settings.game.each do |player|
+	%li.playerInfoBox{id: player.name, style: "border-color: #{player.team_color}"}
+		%h3{style: player.connected? ? "" : "color: #606060"}
+			&= player.name
+		%ul
+			%li&= "Battery level: #{player.battery.round(2)}V"
+			%li&= "Ping: #{player.ping.round}ms"
+			%li&= "ID:   #{player.connected? ? player.id : "Offline"}"
