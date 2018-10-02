@@ -37,7 +37,3 @@ HEADERS += \
     lib/Lasertag/ltplayer.h \
     lib/Lasertag/lt_mqtthandler.h \
     lib/Lasertag/lt_mqttplayer.h
-
-DISTFILES += \
-    StatusBox.qml \
-    BetterPopup.qml

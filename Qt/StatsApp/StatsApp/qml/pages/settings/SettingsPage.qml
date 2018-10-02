@@ -24,7 +24,7 @@ Item {
 				anchors.fill: parent;
 
 				ToolButton {
-					icon.source: "pics/octicons/chevron-left.svg"
+					icon.source: "qrc:/pics/octicons/chevron-left.svg"
 					icon.width: 16
 					icon.height: 23
 					onClicked: mainViewStack.pop();

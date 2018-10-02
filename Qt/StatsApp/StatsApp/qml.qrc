@@ -1,15 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>InfoLabel.qml</file>
-        <file>StatusBox.qml</file>
-        <file>BetterPopup.qml</file>
-        <file>PlayerOverview.qml</file>
-        <file>SettingsPage.qml</file>
-        <file>SettingsHeading.qml</file>
-        <file>SettingsOutput.qml</file>
-        <file>GameHandle.qml</file>
-        <file>SettingsInputText.qml</file>
         <file>lib/Lasertag/lt_mqtthandler.cpp</file>
         <file>lib/Lasertag/lt_mqtthandler.h</file>
         <file>lib/Lasertag/lt_mqttplayer.cpp</file>
@@ -198,5 +189,14 @@
         <file>pics/octicons/x.svg</file>
         <file>pics/octicons/zap.svg</file>
         <file>main.cpp</file>
+        <file>qml/pages/settings/SettingsHeading.qml</file>
+        <file>qml/pages/settings/SettingsInputText.qml</file>
+        <file>qml/pages/settings/SettingsOutput.qml</file>
+        <file>qml/pages/settings/SettingsPage.qml</file>
+        <file>qml/pages/hud/BetterPopup.qml</file>
+        <file>qml/pages/hud/InfoLabel.qml</file>
+        <file>qml/pages/hud/PlayerOverview.qml</file>
+        <file>qml/GameHandle.qml</file>
+        <file>qml/pages/hud/StatusBox.qml</file>
     </qresource>
 </RCC>

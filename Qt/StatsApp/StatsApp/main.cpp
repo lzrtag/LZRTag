@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 
 	LT_MQTTHandler game(nullptr);
 
-	qmlRegisterSingletonType(QUrl("qrc:/GameHandle.qml"), "xasin.lasertag.gamehandle", 1, 0, "GameHandle");
+	qmlRegisterSingletonType(QUrl("qrc:/qml/GameHandle.qml"), "xasin.lasertag.gamehandle", 1, 0, "GameHandle");
 
 	qmlRegisterType<LTPlayer>();
 	engine.rootContext()->setContextProperty("gameHandler", &game);

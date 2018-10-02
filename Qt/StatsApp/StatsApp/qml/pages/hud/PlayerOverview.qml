@@ -5,6 +5,8 @@ import QtQuick.Layouts 1.3
 
 import QtQuick.Controls.Material 2.3
 
+import "."
+
 Item {
 	property var player: currentPlayer;
 
@@ -28,10 +30,10 @@ Item {
 				Layout.fillWidth: true
 			}
 			ToolButton {
-				icon.source: "pics/octicons/gear.svg"
+				icon.source: "qrc:/pics/octicons/gear.svg"
 				icon.width: 25
 				icon.height: 28
-				onClicked: mainViewStack.push("SettingsPage.qml");
+				onClicked: mainViewStack.push("qrc:/qml/pages/settings/SettingsPage.qml");
 			}
 		}
 	}

@@ -30,7 +30,7 @@ ApplicationWindow {
 
 	StackView {
 		id: mainViewStack
-		initialItem: "PlayerOverview.qml"
+		initialItem: "qrc:/qml/pages/hud/PlayerOverview.qml"
 
 		anchors.fill: parent;
 	}
