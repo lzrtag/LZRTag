@@ -1,5 +1,14 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>InfoLabel.qml</file>
+        <file>StatusBox.qml</file>
+        <file>BetterPopup.qml</file>
+        <file>PlayerOverview.qml</file>
+        <file>SettingsPage.qml</file>
+        <file>SettingsHeading.qml</file>
+        <file>SettingsOutput.qml</file>
+        <file>GameHandle.qml</file>
+        <file>SettingsInputText.qml</file>
     </qresource>
 </RCC>

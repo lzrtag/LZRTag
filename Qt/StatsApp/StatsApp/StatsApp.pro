@@ -15,7 +15,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     lib/Lasertag/lthandler.cpp \
-    lib/Lasertag/ltplayer.cpp
+    lib/Lasertag/ltplayer.cpp \
+    lib/Lasertag/lt_mqtthandler.cpp \
+    lib/Lasertag/lt_mqttplayer.cpp
 
 RESOURCES += qml.qrc
 
@@ -32,4 +34,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     lib/Lasertag/lthandler.h \
-    lib/Lasertag/ltplayer.h
+    lib/Lasertag/ltplayer.h \
+    lib/Lasertag/lt_mqtthandler.h \
+    lib/Lasertag/lt_mqttplayer.h
+
+DISTFILES += \
+    StatusBox.qml \
+    BetterPopup.qml

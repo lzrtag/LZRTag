@@ -8,19 +8,16 @@
 
 class LTHandler : public QObject
 {
-    Q_OBJECT
-
-
-private:
-    QMqttClient * mqtt_client;
-    QVariantMap   player_map;
-
-    LTPlayer * current_player;
+	Q_OBJECT
 
 public:
-    explicit LTHandler(QObject *parent = nullptr);
+	explicit LTHandler(QObject *parent = nullptr);
+
+	Q_INVOKABLE virtual LTPlayer * getPlayer(QString name);
 
 signals:
+	void playerAdded(LTPlayer * newPlayer);
+	void playerListChanged();
 
 public slots:
 };
