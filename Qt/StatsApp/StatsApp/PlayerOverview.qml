@@ -28,7 +28,9 @@ Item {
 				Layout.fillWidth: true
 			}
 			ToolButton {
-				text: "⋮"
+				icon.source: "pics/octicons/gear"
+				icon.width: 20
+				icon.height: 22
 				onClicked: mainViewStack.push("SettingsPage.qml");
 			}
 		}
