@@ -28,9 +28,9 @@ Item {
 				Layout.fillWidth: true
 			}
 			ToolButton {
-				icon.source: "pics/octicons/gear"
-				icon.width: 20
-				icon.height: 22
+				icon.source: "pics/octicons/gear.svg"
+				icon.width: 25
+				icon.height: 28
 				onClicked: mainViewStack.push("SettingsPage.qml");
 			}
 		}
