@@ -1,6 +1,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
+#include <QTextToSpeech>
+
 #include <QQuickStyle>
 #include <QQmlContext>
 
@@ -16,12 +18,15 @@ int main(int argc, char *argv[])
 
 	QQmlApplicationEngine engine;
 
+	QTextToSpeech  tts(nullptr);
 	LT_MQTTHandler game(nullptr);
 
-	qmlRegisterSingletonType(QUrl("qrc:/qml/GameHandle.qml"), "xasin.lasertag.gamehandle", 1, 0, "GameHandle");
+	engine.rootContext()->setContextProperty("ttsEngine", &tts);
 
 	qmlRegisterType<LTPlayer>();
 	engine.rootContext()->setContextProperty("gameHandler", &game);
+
+	qmlRegisterSingletonType(QUrl("qrc:/qml/GameHandle.qml"), "xasin.lasertag.gamehandle", 1, 0, "GameHandle");
 
 	engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 	if (engine.rootObjects().isEmpty())

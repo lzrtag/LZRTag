@@ -20,6 +20,8 @@ public:
 	void setName(QString newName);
 	void setIconURL(QString newIcon);
 
+	void updatePosition(QVariantMap newPosition);
+
 public slots:
 	void mqtt_processData(QMqttMessage msg);
 	void mqtt_onReconnected();

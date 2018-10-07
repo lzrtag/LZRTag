@@ -1,4 +1,4 @@
-QT += quick quickcontrols2 mqtt svg
+QT += quick quickcontrols2 mqtt svg texttospeech
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -37,3 +37,10 @@ HEADERS += \
     lib/Lasertag/ltplayer.h \
     lib/Lasertag/lt_mqtthandler.h \
     lib/Lasertag/lt_mqttplayer.h
+
+DISTFILES += \
+    qml/pages/hud/SmolPlayerBar.qml \
+    qml/pages/hud/SmolPlayerBar.qml \
+    qml/widgets/StatusIcon.qml \
+    qml/BackgroundTasks.qml \
+    qml/BackgroundTasks.qml

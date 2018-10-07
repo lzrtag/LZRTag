@@ -6,6 +6,7 @@ LTPlayer::LTPlayer(QString deviceID, QObject *parent) : 	QObject(parent),
 	battery(0), ping(0),
 	team(0),
 	life(0), ammo(0),
+	position(),
 	deviceID(deviceID)
 {
 }
@@ -17,6 +18,8 @@ QString LTPlayer::getStatus() {
 }
 
 QString LTPlayer::getName() {
+	if(name == "")
+		return deviceID;
 	return name;
 }
 void LTPlayer::setName(QString newName) {
@@ -69,4 +72,9 @@ int LTPlayer::getMaxAmmo() {
 	if(fireConfig.contains("ammoCap"))
 		return fireConfig["ammoCap"].toInt();
 	return 5;
+}
+
+void LTPlayer::updatePosition(QVariantMap newPosition) {
+	this->position = newPosition;
+	emit positionChanged();
 }

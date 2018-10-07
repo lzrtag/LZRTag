@@ -14,6 +14,8 @@ class LT_MQTTHandler : public LTHandler
 	Q_PROPERTY(QMqttClient *mqtt READ getMQTT)
 	Q_PROPERTY(QVariantList playerIDs READ getPlayerIDs NOTIFY playerListChanged)
 
+	Q_PROPERTY(bool			connected READ isConnected	 NOTIFY connectionStatusChanged)
+
 private:
 	QMap<QString, LT_MQTTPlayer *>player_map;
 
@@ -31,8 +33,13 @@ public:
 
 	QVariantList getPlayerIDs();
 
+	bool isConnected();
+
 	Q_INVOKABLE LTPlayer * getPlayer(QString name);
 	Q_INVOKABLE void setHostname(QString name);
+
+signals:
+	void connectionStatusChanged();
 
 public slots:
 	void mqtt_onDisconnect();

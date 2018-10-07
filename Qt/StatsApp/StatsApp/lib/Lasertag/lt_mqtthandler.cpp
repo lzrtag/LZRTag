@@ -37,6 +37,9 @@ QVariantList LT_MQTTHandler::getPlayerIDs() {
 	return outList;
 }
 
+bool LT_MQTTHandler::isConnected() {
+	return mqtt_client.state() == QMqttClient::Connected;
+}
 
 LTPlayer * LT_MQTTHandler::getPlayer(QString name) {
 	initNewPlayer(name);
@@ -56,6 +59,7 @@ void LT_MQTTHandler::setHostname(QString name) {
 void LT_MQTTHandler::mqtt_onDisconnect() {
 	qDebug()<<"MQTT disconnected!";
 
+	emit connectionStatusChanged();
 	mqtt_reconnectTimer.start(2000);
 }
 void LT_MQTTHandler::mqtt_tryReconnect() {
@@ -74,6 +78,8 @@ void LT_MQTTHandler::mqtt_onReconnect() {
 
 	mqtt_subscription = mqtt_client.subscribe(QString("Lasertag/#"));
 	connect(mqtt_subscription, &QMqttSubscription::messageReceived, this, &LT_MQTTHandler::mqtt_processData);
+
+	emit connectionStatusChanged();
 
 	for(auto k : player_map.values())
 		k->mqtt_onReconnected();

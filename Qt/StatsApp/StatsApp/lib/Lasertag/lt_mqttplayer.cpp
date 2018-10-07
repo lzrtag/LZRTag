@@ -15,6 +15,13 @@ void LT_MQTTPlayer::setIconURL(QString newIcon) {
 	mqtt_client->publish(QString("Lasertag/Players/%1/Icon").arg(deviceID), newIcon.toUtf8(), 1, true);
 }
 
+void LT_MQTTPlayer::updatePosition(QVariantMap newPosition) {
+	auto jsonObj = QJsonObject::fromVariantMap(newPosition);
+	auto jsonDoc = QJsonDocument(jsonObj);
+
+	mqtt_client->publish(QString("Lasertag/Players/%1/Position").arg(deviceID), jsonDoc.toJson(), 1);
+}
+
 void LT_MQTTPlayer::mqtt_processData(QMqttMessage msg) {
 	auto parameter = msg.topic().levels()[3];
 
@@ -34,7 +41,7 @@ void LT_MQTTPlayer::mqtt_processData(QMqttMessage msg) {
 		name = newName;
 		emit nameChanged();
 	}
-	else if (parameter == "icon") {
+	else if (parameter == "Icon") {
 		QString newIcon = msg.payload();
 		if(newIcon == icon)
 			return;
@@ -58,20 +65,28 @@ void LT_MQTTPlayer::mqtt_processData(QMqttMessage msg) {
 		auto newTeam = msg.payload().toInt();
 		if(newTeam != team) {
 			team = newTeam;
-			emit teamChanged(team);
+			emit teamChanged();
 		}
 	}
 	else if(parameter == "HP") {
+		auto oldLife = life;
 		life = msg.payload().toFloat();
-		emit lifeChanged(life);
+		emit lifeChanged(life, oldLife);
 	}
 	else if(parameter == "Ammo") {
+		auto oldAmmo = ammo;
 		ammo = msg.payload().toInt();
-		emit ammoChanged(ammo);
+		emit ammoChanged(ammo, oldAmmo);
+	}
+	else if(parameter == "Position") {
+		position = QJsonDocument::fromJson(msg.payload()).object().toVariantMap();
+		emit positionChanged();
 	}
 }
 
 void LT_MQTTPlayer::mqtt_onReconnected() {
-	mqtt_client->publish(QString("Lasertag/Players/%1/Name").arg(deviceID), name.toUtf8(), 1, true);
-	mqtt_client->publish(QString("Lasertag/Players/%1/Icon").arg(deviceID), icon.toUtf8(), 1, true);
+	if(name != "")
+		mqtt_client->publish(QString("Lasertag/Players/%1/Name").arg(deviceID), name.toUtf8(), 1, true);
+	if(icon != "")
+		mqtt_client->publish(QString("Lasertag/Players/%1/Icon").arg(deviceID), icon.toUtf8(), 1, true);
 }

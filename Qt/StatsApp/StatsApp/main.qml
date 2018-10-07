@@ -8,6 +8,8 @@ import QtQuick.Controls.Material 2.3
 
 import xasin.lasertag.gamehandle 1.0
 
+import "qml"
+
 ApplicationWindow {
 	id: rootWindow
 
@@ -27,6 +29,10 @@ ApplicationWindow {
 	Material.theme:   Material.Dark
 	Material.accent:  teamColor
 	Material.primary: teamColor
+
+	BackgroundTasks {
+		player: GameHandle.currentPlayer
+	}
 
 	StackView {
 		id: mainViewStack
