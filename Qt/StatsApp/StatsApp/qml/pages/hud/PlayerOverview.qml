@@ -13,30 +13,26 @@ Item {
 	id: rootItem
 	property var player: currentPlayer;
 
-	Column {
-		anchors.fill: parent;
+	Drawer {
+		width: rootItem.width * 0.66
+		height: rootItem.height - topBar.height
+		y: topBar.height
 
-		spacing: 4
+		Overlay.modal: Rectangle {
+			color: "#A0000000"
+		}
+	}
+
+	ColumnLayout {
+		anchors.fill: parent;
 
 		ToolBar {
 			id: topBar
 
-			anchors.left: parent.left;
-			anchors.right: parent.right;
+			Layout.fillWidth: true
 
 			RowLayout {
 				anchors.fill: parent;
-
-				/*Label {
-					text: "Lasertag HUD"
-					font.family: "Impact"
-					horizontalAlignment: Text.AlignHCenter
-					fontSizeMode: Text.Fit
-					font.pixelSize: 25
-
-					Layout.fillWidth: true
-				}*/
-
 
 				PlayerIcon {
 					player: rootItem.player;
@@ -72,10 +68,7 @@ Item {
 		}
 
 		Pane {
-			anchors.left: parent.left;
-			anchors.right: parent.right;
-
-			anchors.margins: 10
+			Layout.fillWidth: true
 
 			Material.elevation: 5;
 			Material.background: Material.color(Material.Red);
@@ -95,56 +88,18 @@ Item {
 				horizontalAlignment: Text.AlignHCenter
 			}
 
-			height: (GameHandle.game.connected && player.status === "OK") ? 0 : 30
-			Behavior on height {
+			Layout.preferredHeight: (GameHandle.game.connected && player.status === "OK") ? 0 : 25
+			Behavior on Layout.preferredHeight {
 				NumberAnimation {duration: 500}
 			}
 		}
 
-		GridLayout {
-			anchors.left:  parent.left;
-			anchors.right: parent.right;
-			anchors.margins: 5;
+		StackView {
+			id: playerHUDStack
+			initialItem: "qrc:/qml/pages/hud/views/hud.qml"
 
-			columns: 2
-
-			InfoLabel {
-				Layout.preferredHeight: 100
-				Layout.fillWidth:	 true
-				Layout.margins:  3;
-				Layout.columnSpan: 1
-
-				title: "Ammo"
-				text: qsTr("%1/%2").arg(player.ammo).arg(player.maxAmmo);
-
-				fillPercent: player.ammo / player.maxAmmo;
-
-				boxColor: Material.color((fillPercent > 0.5) ? Material.Green : (fillPercent < 0.1) ? Material.Red : Material.Yellow);
-
-				blink: fillPercent === 0;
-			}
-
-			InfoLabel {
-				Layout.preferredHeight: 100
-				Layout.fillWidth:	 true
-
-				Layout.margins:  3;
-				Layout.columnSpan: 1
-
-				title: "HP"
-				text: qsTr("%1%").arg(player.life.toFixed(1));
-
-				fillPercent: player.life/100;
-
-				boxColor: Material.color((player.life > 60) ? Material.Green : (player.life < 40) ? Material.Red : Material.Yellow);
-
-				blink: player.life < 40;
-			}
-
-			Item {
-				Layout.columnSpan: 2
-				Layout.fillHeight: true
-			}
+			Layout.fillHeight: true
+			Layout.fillWidth:  true
 		}
 	}
 }

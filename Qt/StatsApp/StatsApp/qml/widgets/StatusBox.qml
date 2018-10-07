@@ -38,14 +38,6 @@ Pane {
 	}
 
 	Rectangle {
-		id: background
-		color: Material.background
-		radius: rootFrame.radius
-
-		anchors.fill: parent;
-	}
-
-	Rectangle {
 		id: rootFrame
 
 		anchors.fill: parent;

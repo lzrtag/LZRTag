@@ -203,5 +203,8 @@
         <file>pics/diverse_icons/low-battery.svg</file>
         <file>qml/widgets/PlayerIcon.qml</file>
         <file>qml/BackgroundTasks.qml</file>
+        <file>qml/widgets/InfoLabel.qml</file>
+        <file>qml/widgets/StatusBox.qml</file>
+        <file>qml/pages/hud/views/hud.qml</file>
     </qresource>
 </RCC>
