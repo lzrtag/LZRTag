@@ -1,7 +1,13 @@
-import QtQuick 2.0
+import QtQuick 2.11
+
+import QtQuick.Controls 2.4
 import QtQuick.Controls.Material 2.3
 
-Item {
+Pane {
+	padding: 0
+
+	Material.elevation: 2
+
 	property color boxColor  : Material.highlight
 	property bool  blink: false
 
