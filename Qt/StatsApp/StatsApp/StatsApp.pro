@@ -44,4 +44,9 @@ DISTFILES += \
     qml/widgets/StatusIcon.qml \
     qml/BackgroundTasks.qml \
     qml/BackgroundTasks.qml \
-    qml/pages/hud/views/hud.qml
+    qml/pages/hud/views/hud.qml \
+    qml/widgets/InfoLabel.qml \
+    qml/widgets/PlayerIcon.qml \
+    qml/widgets/SmolPlayerBar.qml \
+    qml/widgets/StatusBox.qml \
+    qml/widgets/StatusIcon.qml

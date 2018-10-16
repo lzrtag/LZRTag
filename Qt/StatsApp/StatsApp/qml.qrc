@@ -194,10 +194,8 @@
         <file>qml/pages/settings/SettingsOutput.qml</file>
         <file>qml/pages/settings/SettingsPage.qml</file>
         <file>qml/pages/hud/BetterPopup.qml</file>
-        <file>qml/pages/hud/InfoLabel.qml</file>
         <file>qml/pages/hud/PlayerOverview.qml</file>
         <file>qml/GameHandle.qml</file>
-        <file>qml/pages/hud/StatusBox.qml</file>
         <file>qml/widgets/SmolPlayerBar.qml</file>
         <file>qml/widgets/StatusIcon.qml</file>
         <file>pics/diverse_icons/low-battery.svg</file>
