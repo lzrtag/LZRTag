@@ -3,6 +3,8 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 
+import QtGraphicalEffects 1.0
+
 import QtQuick.Controls.Material 2.3
 
 import xasin.lasertag.gamehandle 1.0
@@ -30,13 +32,13 @@ Item {
 			id: topBar
 
 			Layout.fillWidth: true
+			Layout.preferredHeight: 55
 
 			RowLayout {
 				anchors.fill: parent;
 
 				PlayerIcon {
-					player: rootItem.player;
-
+					icon: playerHUDStack.currentItem.icon || rootItem.player.iconURL;
 					border.color: "transparent"
 
 					Layout.preferredHeight: 50;
@@ -48,11 +50,13 @@ Item {
 				Label {
 					Layout.fillHeight: true;
 					Layout.fillWidth:  true
+					Layout.margins: 3
 
-					text: player.name;
+					text: playerHUDStack.currentItem.title || player.name;
 
 					fontSizeMode:   Text.Fit
 					horizontalAlignment: Text.AlignHCenter
+					verticalAlignment:   Text.AlignBottom
 
 					font.pixelSize: 50
 					font.family: "Impact"
@@ -68,27 +72,51 @@ Item {
 		}
 
 		Pane {
+			id: connectionIndicator
+
+			property bool allConnected: (GameHandle.game.connected && player.status === "OK")
+
 			Layout.fillWidth: true
+			Layout.leftMargin: 5
+			Layout.rightMargin: Layout.leftMargin
 
 			Material.elevation: 5;
 			Material.background: Material.color(Material.Red);
 
-			padding: 2;
+			leftPadding: 0;
+			rightPadding: 0;
+			topPadding:  0;
+			bottomPadding: 0;
 
-			Label {
-				clip: true
-
+			RowLayout {
 				anchors.fill: parent;
 
-				text: "Reconnecting..."
-				fontSizeMode: Text.Fit
-				font.pixelSize: 300
-				font.family: "Impact"
+				BusyIndicator {
+					padding: 3;
+					leftPadding: 3;
 
-				horizontalAlignment: Text.AlignHCenter
+					Layout.fillHeight: true;
+
+					running: !connectionIndicator.allConnected
+				}
+
+				Label {
+					clip: true
+
+					Layout.fillHeight: true
+					Layout.fillWidth:  true
+
+					text: "%1 connecting...".arg(GameHandle.game.connected ? "Device" : "Server");
+
+					fontSizeMode: Text.Fit
+					font.pixelSize: 300
+					font.family: "Impact"
+				}
 			}
 
-			Layout.preferredHeight: (GameHandle.game.connected && player.status === "OK") ? 0 : 25
+
+
+			Layout.preferredHeight: allConnected ? 0 : 25
 			Behavior on Layout.preferredHeight {
 				NumberAnimation {duration: 500}
 			}
