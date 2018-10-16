@@ -5,6 +5,8 @@ import QtGraphicalEffects 1.0
 Rectangle {
 	property var player;
 
+	property string icon: player.iconURL;
+
 	color: "transparent"
 
 	radius: height/2;
@@ -19,8 +21,10 @@ Rectangle {
 
 		antialiasing: true;
 
-		source: player.iconURL;
-		sourceSize: Qt.size(100, 100);
+		source: icon;
+		sourceSize.width: 200;
+		mipmap: true;
+
 		fillMode: Image.PreserveAspectFit
 
 		visible: false;

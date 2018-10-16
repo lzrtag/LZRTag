@@ -8,9 +8,11 @@ StatusBox {
 	property alias title  : titleText.text
 	property alias text   : messageText.text
 
-	ColumnLayout {
+	GridLayout {
 		anchors.fill:		  parent;
-		anchors.margins:	  10;
+		anchors.margins:	  3;
+
+		columns: (width/height) > 3 ? 2 : 1;
 
 		Text {
 			id: titleText
@@ -18,10 +20,12 @@ StatusBox {
 			Layout.fillHeight: true
 			Layout.fillWidth:  true
 			Layout.preferredHeight: 3
-			//Layout.maximumHeight:  45
+			Layout.preferredWidth:  4
 
 			font.family: "Impact"
 			horizontalAlignment: Text.AlignHCenter
+			verticalAlignment:   Text.AlignVCenter
+
 			fontSizeMode:   Text.Fit
 			font.pixelSize: 300
 
@@ -34,6 +38,7 @@ StatusBox {
 			Layout.fillHeight: true
 			Layout.fillWidth:  true
 			Layout.preferredHeight: 10
+			Layout.preferredWidth:  10
 
 			font.family: "Impact"
 			fontSizeMode: Text.Fit

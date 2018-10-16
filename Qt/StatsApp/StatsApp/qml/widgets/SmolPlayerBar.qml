@@ -43,7 +43,7 @@ Rectangle {
 		anchors.fill: parent;
 
 		PlayerIcon {
-			player: player;
+			player: rootRect.player;
 
 			Layout.preferredWidth: height;
 			Layout.fillHeight: true;

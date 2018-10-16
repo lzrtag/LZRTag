@@ -44,7 +44,7 @@ Pane {
 
 		color: "transparent"
 		radius: 1
-		border.width: 3
+		border.width: 1
 		border.color: boxColor
 
 		clip: true
