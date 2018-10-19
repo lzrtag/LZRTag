@@ -14,8 +14,6 @@ module LZRTag
 			attr_reader   :id
 			attr_accessor :hitIDTimetable
 
-			attr_reader :battery, :ping, :data
-
 			def initialize(deviceID, handler)
 				@handler = handler;
 				@mqtt = handler.mqtt;
@@ -48,14 +46,6 @@ module LZRTag
 					elsif(oldStatus == "OK")
 						@handler.send_event(:playerDisconnected, self);
 					end
-				when "System"
-					begin
-						info = JSON.parse(data);
-						@heap = info["heap"].to_i;
-						@battery = info["battery"].to_f
-						@ping = info["ping"].to_f/1000
-					rescue
-					end
 				when "Name"
 					@name = data;
 				end
@@ -71,7 +61,7 @@ module LZRTag
 			def id=(n)
 				return if @id == n;
 
-				if(@id != nil)
+				if(n != nil)
 					raise ArgumentError, "ID must be integer or nil!" unless n.is_a? Integer;
 					raise ArgumentError, "ID out of range (0<ID<256)" unless n < 256 and n > 0;
 
@@ -89,8 +79,15 @@ module LZRTag
 			end
 
 			def inspect()
-				return "#<Player #{@DeviceID} (#{@status})| VBat: #{@battery} | Ping: #{@ping}ms>";
+				iString =  "#<Player:#{@name}##{@id ? @id : "OFFLINE"}, Team=#{@team}";
+				iString += ", DEAD" if @dead
+				iString += ", Battery=#{@battery.round(2)}"
+				iString += ", Heap=#{@heap}" if @heap < 10000;
+				iString += ", Ping=#{@ping.ceil}ms>";
+
+				return iString;
 			end
+			alias to_s inspect
 		end
 	end
 end
