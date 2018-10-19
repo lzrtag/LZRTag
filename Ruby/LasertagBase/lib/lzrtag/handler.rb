@@ -35,6 +35,7 @@ module LZRTag
 			end.abort_on_exception = true;
 
 			@mqtt.subscribe_to "Lasertag/Players/#" do |data, topic|
+				puts("MQTT: Topic: #{topic} \nData #{data}")
 
 				dID = topic[0];
 				if(not @players.key? dID and topic[1] == "Connection")
