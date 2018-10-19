@@ -17,6 +17,7 @@ module LZRTag
 			@idTable = Hash.new();
 
 			@hooks = [self];
+			@evtCallbacks = Hash.new();
 			@eventQueue = Queue.new();
 
 			@eventThread = Thread.new do
@@ -25,13 +26,15 @@ module LZRTag
 					@hooks.each do |h|
 						h.consume_event(nextData[0], nextData[1]);
 					end
+					if(cbList = @evtCallbacks[nextData[0]])
+						cbList.each do |cb|
+							cb.call(*nextData[1]);
+						end
+					end
 				end
-			end
+			end.abort_on_exception = true;
 
 			@mqtt.subscribe_to "Lasertag/Players/#" do |data, topic|
-				dID = topic[2];
-				if(not @players.key? dID)
-					@players[dID] = playerClass.new(dID, self);
 
 				dID = topic[0];
 				if(not @players.key? dID and topic[1] == "Connection")
@@ -45,6 +48,7 @@ module LZRTag
 		end
 
 		def send_event(evtName, *data)
+			raise ArgumentError, "Event needs to be a symbol!" unless evtName.is_a? Symbol;
 			@eventQueue << [evtName, data];
 		end
 
@@ -61,6 +65,23 @@ module LZRTag
 				@idTable[player.id] = nil;
 				player.id = nil;
 			end
+		end
+
+		def on(evtName, &callback)
+			raise ArgumentError, "Block needs to be given!" unless block_given?
+			raise ArgumentError, "Event needs to be a symbol!" unless evtName.is_a? Symbol;
+
+			@evtCallbacks[evtName] ||= Array.new();
+			@evtCallbacks[evtName] << callback;
+		end
+		def add_hook(hook)
+			if(hook.is_a? Class)
+				hook = hook.new();
+			end
+
+			@hooks << hook;
+
+			return hook;
 		end
 	end
 end
