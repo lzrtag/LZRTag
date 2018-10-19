@@ -7,6 +7,8 @@ module LZRTag
 			attr_reader :handler
 			attr_reader :DeviceID
 
+			attr_reader :name
+
 			attr_reader :status
 
 			attr_reader   :id
@@ -21,6 +23,7 @@ module LZRTag
 				@DeviceID = deviceID;
 
 				@status = "";
+				@name   = "";
 
 				@hitIDTimetable = Hash.new(Time.new(0));
 			end
@@ -53,6 +56,8 @@ module LZRTag
 						@ping = info["ping"].to_f
 					rescue
 					end
+				when "Name"
+					@name = data;
 				end
 			end
 
