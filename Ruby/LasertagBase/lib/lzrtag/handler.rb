@@ -2,7 +2,7 @@
 require 'mqtt/sub_handler'
 
 puts("TODO - Remove base player call");
-require_relative 'player/base_player.rb'
+require_relative 'player/effects_player.rb'
 
 module LZRTag
 	class Handler
@@ -11,7 +11,7 @@ module LZRTag
 		def initialize(mqtt)
 			@mqtt = mqtt;
 
-			@playerClass = Player::Base;
+			@playerClass = Player::Effects;
 
 			@players = Hash.new();
 			@idTable = Hash.new();
