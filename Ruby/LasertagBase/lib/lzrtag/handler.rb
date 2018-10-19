@@ -1,8 +1,13 @@
 
+puts("TODO - Remove base player call");
+require_relative 'player/base_player.rb'
+
 module LZRTag
 	class Handler
 		def initialize(mqtt)
 			@mqtt = mqtt;
+
+			@playerClass = Player::Base;
 
 			@players = Hash.new();
 			@idTable = Hash.new();
@@ -23,8 +28,13 @@ module LZRTag
 				dID = topic[2];
 				if(not @players.key? dID)
 					@players[dID] = playerClass.new(dID, self);
+
+				dID = topic[0];
+				if(not @players.key? dID and topic[1] == "Connection")
+					@players[dID] = @playerClass.new(dID, self);
 					send_event(:playerRegistered, @players[dID]);
 				end
+				next unless @players[dID];
 
 				@players[dID].on_mqtt_data(data, topic);
 			end
