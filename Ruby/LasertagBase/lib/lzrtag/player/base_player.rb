@@ -82,6 +82,10 @@ module LZRTag
 				self.id = nil;
 				_pub_to("Connection", "", retain: true);
 			end
+
+			def inspect()
+				return "#<Player #{@DeviceID} (#{@status})| VBat: #{@battery} | Ping: #{@ping}ms>";
+			end
 		end
 	end
 end
