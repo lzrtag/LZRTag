@@ -29,7 +29,7 @@ module LZRTag
 			end
 
 			def _pub_to(key, data, retain: false)
-				mqtt.publish_to("Lasertag/Players/#{@DeviceID}/#{key}", data, retain: retain);
+				@mqtt.publish_to("Lasertag/Players/#{@DeviceID}/#{key}", data, retain: retain);
 			end
 			private :_pub_to
 			def _console(cmd)
@@ -38,7 +38,7 @@ module LZRTag
 			private :_console
 
 			def on_mqtt_data(data, topic)
-				case topic[3]
+				case topic[1..topic.length].join("/")
 				when "Connection"
 					return if @status == data;
 					oldStatus = @status;
@@ -53,7 +53,7 @@ module LZRTag
 						info = JSON.parse(data);
 						@heap = info["heap"].to_i;
 						@battery = info["battery"].to_f
-						@ping = info["ping"].to_f
+						@ping = info["ping"].to_f/1000
 					rescue
 					end
 				when "Name"
@@ -80,7 +80,7 @@ module LZRTag
 					@id = nil;
 				end
 
-				_pub_to("ID", @id);
+				_pub_to("ID", @id, retain: true);
 			end
 
 			def clear_all_topics()
