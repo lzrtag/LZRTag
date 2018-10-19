@@ -1,9 +1,13 @@
 
+require 'mqtt/sub_handler'
+
 puts("TODO - Remove base player call");
 require_relative 'player/base_player.rb'
 
 module LZRTag
 	class Handler
+		attr_reader :mqtt
+
 		def initialize(mqtt)
 			@mqtt = mqtt;
 
