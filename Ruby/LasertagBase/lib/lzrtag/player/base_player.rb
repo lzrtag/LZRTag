@@ -75,7 +75,6 @@ module LZRTag
 
 			def clear_all_topics()
 				self.id = nil;
-				_pub_to("Connection", "", retain: true);
 			end
 
 			def inspect()

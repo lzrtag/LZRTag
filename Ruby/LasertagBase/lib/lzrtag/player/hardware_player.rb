@@ -16,13 +16,16 @@ module LZRTag
 
 			attr_reader :battery, :ping, :heap
 
-			attr_reader :fireConfing, :hitConfig
+			attr_reader :fireConfig, :hitConfig
 
 			def initialize(*data)
 				super(*data);
 
 				@team = 0;
 				@brightness = 0;
+
+				@dead = false;
+				@lifeChangeTime = Time.now();
 
 				@ammo = 0;
 
@@ -95,7 +98,7 @@ module LZRTag
 			end
 
 			def ammo=(n)
-				unless (a.is_a?(Integer) and (a >= 0)) then
+				unless (n.is_a?(Integer) and (n >= 0)) then
 					raise ArgumentError, "Ammo amount needs to be a positive number!"
 				end
 
