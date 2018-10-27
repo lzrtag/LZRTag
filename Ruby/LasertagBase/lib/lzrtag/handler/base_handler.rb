@@ -3,7 +3,7 @@ require 'mqtt/sub_handler'
 
 require_relative '../hooks/base_hook.rb'
 
-require_relative '../player/effects_player.rb'
+require_relative '../player/life_player.rb'
 
 module LZRTag
 	module Handler
@@ -12,7 +12,7 @@ module LZRTag
 
 			attr_reader :idTable
 
-			def initialize(mqtt, playerClass = Player::Effects, clean_on_exit: true)
+			def initialize(mqtt, playerClass = Player::Life, clean_on_exit: true)
 				@mqtt = mqtt;
 
 				@playerClass = playerClass;
