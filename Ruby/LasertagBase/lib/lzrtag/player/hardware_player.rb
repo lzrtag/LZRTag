@@ -65,9 +65,12 @@ module LZRTag
 				raise ArgumentError, "Team out of range (must be between 0 and 255)" unless n != nil and n <= 255 and n >= 0;
 
 				return if @team == n;
+				oldT = @team;
 				@team = n;
+
 				_pub_to "Team", @team, retain: true;
-				return true;
+				@handler.send_event :playerTeamChanged, self, oldT;
+				@team;
 			end
 			def brightness=(n)
 				n = n.to_i;
@@ -76,7 +79,8 @@ module LZRTag
 
 				@brightness = n;
 				_pub_to "Brightness", @brightness, retain: true;
-				return true;
+
+				@brightness;
 			end
 
 			def _set_dead(d, player = nil)
