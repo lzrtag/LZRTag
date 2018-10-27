@@ -1,30 +1,31 @@
 
 
+require_relative 'handler/hitArb_handler.rb'
 
-module Lasertag
-	class EventHook
-		def initialize()
-		end
+class DebugHook < LZRTag::Hook::Base
+	def initialize()
+		super();
+	end
 
-		def on_hookin()
-		end
+	def processRawHit(*args)
+		return true;
+	end
 
-		def processRawHit(*args)
-			return true;
-		end
+	def consume_event(evtName, data)
+		puts "Caught event: #{evtName} with data: #{data}";
 
-		def consume_event(evtName, data)
-			puts "Caught event: #{evtName} with data: #{data}";
-		end
+		super(evtName, data);
 	end
 end
 
-require_relative 'handler/hitArb_handler.rb'
+DebugHook.on :playerDisconnected do |player|
+	puts "Yay, player #{player.DeviceID} disconnected!"
+end
 
 $mqtt = MQTT::SubHandler.new("192.168.251.1");
 $handler = LZRTag::Handler::HitArb.new($mqtt);
 
-$handler.add_hook(Lasertag::EventHook);
+$handler.add_hook(DebugHook);
 
 sleep 1;
 
