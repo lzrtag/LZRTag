@@ -4,8 +4,16 @@ Gem::Specification.new do |s|
 	s.date        = '2018-10-16'
 	s.summary     = "Base classes for Xasin's LZRTag system"
 	s.authors     = ["Xasin"]
-	s.files       = [ "lib/lzrtag/player/base_player.rb",
-							"lib/lzrtag/handler.rb"]
+	s.files       = [ 	"lib/lzrtag.rb",
+								"lib/lzrtag/handler/base_handler.rb",
+								"lib/lzrtag/handler/hitArb_handler.rb",
+								"lib/lzrtag/handler/count_handler.rb",
+								"lib/lzrtag/player/base_player.rb",
+								"lib/lzrtag/player/hardware_player.rb",
+								"lib/lzrtag/player/effects_player.rb",
+								"lib/lzrtag/player/life_player.rb",
+								"lib/lzrtag/hooks/base_hook.rb",
+								"lib/lzrtag/hooks/standard_hooks.rb"];
 	s.homepage    =
 	'https://github.com/XasWorks/LZRTag/'
 	s.license     = 'GPL-3.0'
