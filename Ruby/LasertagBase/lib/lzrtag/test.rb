@@ -1,14 +1,12 @@
 
 
-require_relative 'handler/hitArb_handler.rb'
+require_relative 'handler/count_handler.rb'
+
+require_relative 'hooks/standard_hooks.rb'
 
 class DebugHook < LZRTag::Hook::Base
 	def initialize()
 		super();
-	end
-
-	def processRawHit(*args)
-		return true;
 	end
 
 	def consume_event(evtName, data)
@@ -33,24 +31,11 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 end
 
 $mqtt = MQTT::SubHandler.new("192.168.251.1");
-$handler = LZRTag::Handler::HitArb.new($mqtt);
+$handler = LZRTag::Handler::Count.new($mqtt);
 
 $handler.add_hook(DebugHook);
+$handler.add_hook(LZRTag::Hook::RandomTeam);
 
-sleep 1;
-
-w = $handler["White"];
-w.team = 5;
-w.brightness = 7;
-
-until(w.dead)
-	$handler["White"].damage_by(10);
-	sleep 1;
+while(true) do
+	sleep 0.5;
 end
-
-while(w.dead)
-	w.regenerate(20);
-	sleep 1;
-end
-
-sleep 3;
