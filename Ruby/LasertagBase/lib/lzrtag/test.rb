@@ -1,8 +1,6 @@
 
 
-require_relative 'handler/count_handler.rb'
-
-require_relative 'hooks/standard_hooks.rb'
+require_relative '../lzrtag.rb'
 
 class DebugHook < LZRTag::Hook::Base
 	def initialize()
@@ -31,7 +29,7 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 end
 
 $mqtt = MQTT::SubHandler.new("192.168.251.1");
-$handler = LZRTag::Handler::Count.new($mqtt);
+$handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
 $handler.add_hook(LZRTag::Hook::RandomTeam);
