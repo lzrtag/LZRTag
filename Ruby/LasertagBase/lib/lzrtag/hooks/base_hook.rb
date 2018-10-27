@@ -2,7 +2,10 @@
 module LZRTag
 	module Hook
 		class Base
-			@@globalCBList = Hash.new();
+			def self.getCBs()
+				@globalCBList ||= Hash.new();
+				return @globalCBList;
+			end
 
 			def initialize()
 				@localCBList = Hash.new();
@@ -16,8 +19,8 @@ module LZRTag
 					unless (evt.is_a? Symbol)
 						raise ArgumentError, "Event needs to be a symbol or array of symbols!"
 					end
-					@@globalCBList[evt] ||= Array.new();
-					@@globalCBList[evt] << block;
+					getCBs()[evt] ||= Array.new();
+					getCBs()[evt] << block;
 				end
 			end
 
@@ -35,11 +38,7 @@ module LZRTag
 			end
 
 			def consume_event(evtName, data)
-				puts "Got EVENT #{evtName} : #{data}";
-
-				puts "Global CB for this event is: #{@@globalCBList[evtName]}";
-
-				if(cbList = @@globalCBList[evtName]) then
+				if(cbList = self.class.getCBs()[evtName]) then
 					cbList.each do |cb|
 						instance_exec(*data, &cb);
 					end
