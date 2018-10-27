@@ -10,18 +10,28 @@ module LZRTag
 
 			def self.on(evtName, &block)
 				raise ArgumentError, "Block needs to be given!" unless block_given?
-				raise ArgumentError, "Event needs to be a symbol!" unless evtName.is_a? Symbol;
 
-				@@globalCBList[evtName] ||= Array.new();
-				@@globalCBList[evtName] << block;
+				evtName = [evtName].flatten
+				evtName.each do |evt|
+					unless (evt.is_a? Symbol)
+						raise ArgumentError, "Event needs to be a symbol or array of symbols!"
+					end
+					@@globalCBList[evt] ||= Array.new();
+					@@globalCBList[evt] << block;
+				end
 			end
 
 			def on(evtName, &block)
 				raise ArgumentError, "Block needs to be given!" unless block_given?
-				raise ArgumentError, "Event needs to be a symbol!" unless evtName.is_a? Symbol;
 
-				@localCBList[evtName] ||= Array.new();
-				@localCBList[evtName] << block;
+				evtName = [evtName].flatten
+				evtName.each do |evt|
+					unless (evt.is_a? Symbol)
+						raise ArgumentError, "Event needs to be a symbol or array of symbols!"
+					end
+					@localCBList[evt] ||= Array.new();
+					@localCBList[evt] << block;
+				end
 			end
 
 			def consume_event(evtName, data)
