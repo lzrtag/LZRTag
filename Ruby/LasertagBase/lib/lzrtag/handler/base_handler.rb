@@ -105,7 +105,7 @@ module LZRTag
 				end
 
 				return if(@hooks.include? hook);
-				#hook.on_hookin(self);
+				hook.on_hookin(self);
 				@hooks << hook;
 
 				return hook;
@@ -116,7 +116,7 @@ module LZRTag
 				end
 
 				return unless @hooks.include? hook
-				hook.onHookout();
+				hook.on_hookout();
 				@hooks.delete(hook);
 			end
 

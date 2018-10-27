@@ -52,13 +52,13 @@ module LZRTag
 				end
 			end
 
-			def onHookin(game)
-				@game = game;
+			def on_hookin(handler)
+				@handler = handler;
 			end
-			def onHookout()
+			def on_hookout()
 			end
 
-			def processHit(hitPlayer, sourcePLayer)
+			def process_raw_hit(hitPlayer, sourcePLayer)
 				return true;
 			end
 		end

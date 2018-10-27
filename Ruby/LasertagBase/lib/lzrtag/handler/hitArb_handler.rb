@@ -20,7 +20,7 @@ module LZRTag
 				end
 			end
 
-			def processRawHit(hitPlayer, sourcePlayer)
+			def process_raw_hit(*data)
 				return true;
 			end
 
@@ -35,7 +35,7 @@ module LZRTag
 
 				veto = false;
 				@hooks.each do |h|
-					veto |= !(h.processRawHit(hitPlayer, sourcePlayer));
+					veto |= !(h.process_raw_hit(hitPlayer, sourcePlayer));
 				end
 				return if veto;
 
