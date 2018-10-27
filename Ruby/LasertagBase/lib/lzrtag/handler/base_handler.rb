@@ -1,6 +1,8 @@
 
 require 'mqtt/sub_handler'
 
+require_relative '../hooks/base_hook.rb'
+
 require_relative '../player/effects_player.rb'
 
 module LZRTag
@@ -96,9 +98,9 @@ module LZRTag
 				@evtCallbacks[cb[0]].delete cb[1];
 			end
 			def add_hook(hook)
-				hook = hook.new() if hook.is_a? Class and hook <= Lasertag::EventHook;
+				hook = hook.new() if hook.is_a? Class and hook <= LZRTag::Hook::Base;
 
-				unless(hook.is_a? Lasertag::EventHook) then
+				unless(hook.is_a? LZRTag::Hook::Base) then
 					raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
 				end
 
