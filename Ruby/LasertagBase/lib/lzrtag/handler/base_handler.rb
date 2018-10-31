@@ -58,6 +58,7 @@ module LZRTag
 						@playerSynchMutex.synchronize {
 							@players.each do |id, player|
 								player.clear_all_topics();
+								sleep 0.1;
 							end
 						}
 						sleep 0.5;
