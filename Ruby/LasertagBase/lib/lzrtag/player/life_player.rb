@@ -8,11 +8,15 @@ module LZRTag
 			attr_reader :life
 			attr_reader :maxLife
 
+			attr_reader :lastDamageTime
+
 			def initialize(*data)
 				super(*data);
 
-				@life    = 100;
+				@life    = 0;
 				@maxLife = 100;
+
+				@lastDamageTime = Time.at(0);
 
 				regenerate(@maxLife);
 			end
@@ -46,6 +50,8 @@ module LZRTag
 					raise ArgumentError, "sourcePlayer needs to be a Player::Base!"
 				end
 
+				@lastDamageTime = Time.now();
+
 				oLife = @life;
 				nLife = @life - amount;
 				nLife = [0, nLife].max;
@@ -54,9 +60,9 @@ module LZRTag
 					@life = nLife;
 
 					@handler.send_event :playerHurt, self, sourcePlayer, oLife - @life;
-					kill_by(sourcePlayer) if(nLife <= 0);
-
 					_pub_to("HP", @life.to_s, retain: true);
+
+					kill_by(sourcePlayer) if(nLife <= 0);
 				end
 
 				return oLife - nLife;

@@ -25,7 +25,7 @@ module LZRTag
 				@brightness = 0;
 
 				@dead = false;
-				@lifeChangeTime = Time.now();
+				@deathChangeTime = Time.now();
 
 				@ammo = 0;
 
@@ -50,7 +50,7 @@ module LZRTag
 					return if @dead == dead;
 					@dead = dead;
 
-					@lifeChangeTime = Time.now();
+					@deathChangeTime = Time.now();
 
 					@handler.send_event(@dead ? :playerKilled : :playerRevived, self);
 				when "Ammo"
@@ -88,7 +88,7 @@ module LZRTag
 				return if @dead == dead;
 				@dead = dead;
 
-				@lifeChangeTime = Time.now();
+				@deathChangeTime = Time.now();
 
 				_pub_to "Dead", @dead ? "true" : "", retain: true;
 				@handler.send_event(@dead ? :playerKilled : :playerRevived, self, player);
