@@ -8,6 +8,7 @@ class DebugHook < LZRTag::Hook::Base
 	end
 
 	def consume_event(evtName, data)
+		return if [:gameTick, :playerRegenerated].include? evtName
 		puts "Caught event: #{evtName} with data: #{data}";
 
 		super(evtName, data);
@@ -33,6 +34,24 @@ $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
 $handler.add_hook(LZRTag::Hook::RandomTeam);
+$handler.add_hook(LZRTag::Hook::Damager);
+$handler.add_hook(LZRTag::Hook::Regenerator);
+
+cfg = LZRTag::Hook::Configurator.new();
+cfg.fireConfig = {
+	shotLocked: false
+}
+
+$handler.add_hook(cfg);
+
+sleep 4
+
+$handler.start_game(LZRTag::Game::Base.new($handler));
+
+$handler.each do |pl|
+	pl.fireConfig[:shotLocked] = false;
+	pl.ammo = 100;
+end
 
 while(true) do
 	sleep 0.5;
