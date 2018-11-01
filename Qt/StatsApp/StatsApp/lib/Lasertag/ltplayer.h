@@ -66,6 +66,7 @@ public:
 	int	getAmmo();
 	int	getMaxAmmo();
 
+	QPointF getMapPosition();
 	virtual void updatePosition(QVariantMap posData);
 
 signals:

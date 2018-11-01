@@ -17,7 +17,9 @@ SOURCES += \
     lib/Lasertag/lthandler.cpp \
     lib/Lasertag/ltplayer.cpp \
     lib/Lasertag/lt_mqtthandler.cpp \
-    lib/Lasertag/lt_mqttplayer.cpp
+    lib/Lasertag/lt_mqttplayer.cpp \
+    lib/Lasertag/ltmap.cpp \
+    lib/Lasertag/ltmapzone.cpp
 
 RESOURCES += qml.qrc
 
@@ -36,7 +38,9 @@ HEADERS += \
     lib/Lasertag/lthandler.h \
     lib/Lasertag/ltplayer.h \
     lib/Lasertag/lt_mqtthandler.h \
-    lib/Lasertag/lt_mqttplayer.h
+    lib/Lasertag/lt_mqttplayer.h \
+    lib/Lasertag/ltmap.h \
+    lib/Lasertag/ltmapzone.h
 
 DISTFILES += \
     qml/pages/hud/SmolPlayerBar.qml \

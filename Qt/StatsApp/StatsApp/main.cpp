@@ -8,6 +8,8 @@
 
 #include "lib/Lasertag/lt_mqtthandler.h"
 
+#include "lib/Lasertag/ltmap.h"
+
 int main(int argc, char *argv[])
 {
 	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -20,6 +22,9 @@ int main(int argc, char *argv[])
 
 	QTextToSpeech  tts(nullptr);
 	LT_MQTTHandler game(nullptr);
+
+	LTMap testMap(nullptr);
+	qDebug()<<"Testing zone conversion:"<<testMap.latLonToXY(QPointF(9.717405, 52.387669));
 
 	engine.rootContext()->setContextProperty("ttsEngine", &tts);
 
