@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QVariantMap>
 
+#include <QPointF>
+
 #include <QColor>
 
 class LTPlayer : public QObject
@@ -66,7 +68,7 @@ public:
 	int	getAmmo();
 	int	getMaxAmmo();
 
-	QPointF getMapPosition();
+    Q_INVOKABLE QPointF getMapPosition();
 	virtual void updatePosition(QVariantMap posData);
 
 signals:

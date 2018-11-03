@@ -7,10 +7,15 @@
 
 #include "ltplayer.h"
 
+class LTMap;
+
 class LTMapZone : public QObject
 {
 	Q_OBJECT
-private:
+
+friend LTMap;
+
+protected:
 	QPointF centerPoint;
 	double  radius;
 	QPolygonF mapPolygon;

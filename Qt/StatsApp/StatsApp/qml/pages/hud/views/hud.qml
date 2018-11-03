@@ -29,6 +29,12 @@ GridLayout {
 
 		Layout.row: 1
 		Layout.column: 1
+
+        Label {
+            anchors.fill: parent;
+
+            text: "Zones: " + GameHandle.currentZones
+        }
 	}
 
 	Frame {

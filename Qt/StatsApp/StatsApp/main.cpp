@@ -24,12 +24,13 @@ int main(int argc, char *argv[])
 	LT_MQTTHandler game(nullptr);
 
 	LTMap testMap(nullptr);
-	qDebug()<<"Testing zone conversion:"<<testMap.latLonToXY(QPointF(9.717405, 52.387669));
 
 	engine.rootContext()->setContextProperty("ttsEngine", &tts);
 
 	qmlRegisterType<LTPlayer>();
 	engine.rootContext()->setContextProperty("gameHandler", &game);
+
+    engine.rootContext()->setContextProperty("gameMap", &testMap);
 
 	qmlRegisterSingletonType(QUrl("qrc:/qml/GameHandle.qml"), "xasin.lasertag.gamehandle", 1, 0, "GameHandle");
 

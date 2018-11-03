@@ -3,6 +3,9 @@
 #include <math.h>
 
 LTMapZone::LTMapZone(QString tag, QObject *parent) : QObject(parent),
+    centerPoint(0, 0), radius(0),
+    mapPolygon(),
+    teamMask(255),
 	zoneTag(tag)
 {
 }
@@ -29,5 +32,5 @@ bool LTMapZone::playerInsideZone(LTPlayer *player) {
 	if(!appliesToPlayer(player))
 		return false;
 
-	return pointInsideZone(QPointF(player->position["x"].toFloat(), player->position["y"].toFloat()));
+    return pointInsideZone(player->getMapPosition());
 }

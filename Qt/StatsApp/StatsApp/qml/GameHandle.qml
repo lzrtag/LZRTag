@@ -12,6 +12,8 @@ Item {
 	property var game: gameHandler
 	property var currentPlayer: gameHandler.getPlayer(playerDID);
 
+    property var currentZones: []
+
 	onHostnameChanged:  game.setHostname(hostname);
 	onPlayerDIDChanged: setupPlayer();
 

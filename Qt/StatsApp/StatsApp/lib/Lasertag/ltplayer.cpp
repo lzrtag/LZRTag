@@ -1,4 +1,6 @@
+
 #include "ltplayer.h"
+#include <QDebug>
 
 LTPlayer::LTPlayer(QString deviceID, QObject *parent) : 	QObject(parent),
 	status(""),
@@ -74,6 +76,11 @@ int LTPlayer::getMaxAmmo() {
 	return 5;
 }
 
+QPointF LTPlayer::getMapPosition() {
+    qDebug()<<"Getting position from coords:"<<position["x"]<<position["y"];
+
+    return QPointF(position["x"].toDouble(), position["y"].toDouble());
+}
 void LTPlayer::updatePosition(QVariantMap newPosition) {
 	this->position = newPosition;
 	emit positionChanged();

@@ -3,20 +3,23 @@
 #include <math.h>
 
 LTMap::LTMap(QObject *parent) : QObject(parent),
-	mapCenter(9.7168621, 52.3840558), mapRotation(0),
+    mapCenter(9.717041, 52.384172), mapRotation(0),
 	zones()
 {
+    auto circZone = new LTMapZone("CircTest");
+    circZone->radius = 50;
 
+    zones << circZone;
 }
 
 QPointF LTMap::latLonToXY(QPointF latLong) {
-	auto yFact = 6378100 * M_2_PI;
-	auto xFact = yFact * cos(latLong.y()/M_2_PI);
+    double yFact = 6371000 * M_PI / 180;
+    double xFact = yFact * cos(latLong.y()*M_PI / 180);
 
-	auto centeredCoords = latLong - mapCenter;
+    QPointF centeredCoords = latLong - mapCenter;
 
-	auto xUnr = centeredCoords.x() * xFact;
-	auto yUnr = centeredCoords.y() * yFact;
+    double xUnr = centeredCoords.x() * xFact;
+    double yUnr = centeredCoords.y() * yFact;
 
 	return QPointF(cos(mapRotation)*xUnr + sin(mapRotation)*yUnr,
 						cos(mapRotation)*yUnr - sin(mapRotation)*xUnr);

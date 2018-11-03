@@ -3,6 +3,8 @@ import QtQuick 2.11
 
 import QtPositioning 5.8
 
+import xasin.lasertag.gamehandle 1.0
+
 Item {
 	property var player
 
@@ -40,12 +42,21 @@ Item {
 			var positionData = {}
 
 			var coord = gpsSource.position.coordinate;
-			positionData.latitude  = coord.latitude;
-			positionData.longitude = coord.longitude;
+            positionData.latitude  = coord.latitude  || 0;
+            positionData.longitude = coord.longitude || 0;
 
-			positionData.speed = gpsSource.position.speed;
+            positionData.speed = gpsSource.position.speed || 0;
 
+            var mapPos = gameMap.latLonToXY(Qt.point(positionData.longitude, positionData.latitude));
+
+            positionData.x = mapPos.x;
+            positionData.y = mapPos.y;
 			player.position = positionData;
+
+            GameHandle.currentZones = gameMap.getZonesForPlayer(player);
+
+            console.log("Position of player is:", player.getMapPosition());
+            console.log("Zones for player are:", GameHandle.currentZones);
 		}
 	}
 }

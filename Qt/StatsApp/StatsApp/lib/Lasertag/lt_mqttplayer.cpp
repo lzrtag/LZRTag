@@ -16,6 +16,9 @@ void LT_MQTTPlayer::setIconURL(QString newIcon) {
 }
 
 void LT_MQTTPlayer::updatePosition(QVariantMap newPosition) {
+    position = newPosition;
+    emit positionChanged();
+
 	auto jsonObj = QJsonObject::fromVariantMap(newPosition);
 	auto jsonDoc = QJsonDocument(jsonObj);
 
