@@ -4,6 +4,23 @@ LT_MQTTPlayer::LT_MQTTPlayer(QString deviceID, QMqttClient *client, QObject *par
  mqtt_client(client)
 {
 	qDebug()<<"New player"<<deviceID<<"created!";
+
+	connect(this, &LTPlayer::zonesChanged, this,
+			  [this](QList<QString> &entered, QList<QString> &exited) {
+		if(mqtt_client->state() != QMqttClient::Connected)
+			return;
+
+		QVariantMap data;
+		data["type"]	 = QString("zoneUpdate");
+		data["entered"] = QVariant(entered);
+		data["exited"]	 = QVariant(exited);
+		data["zones"]   = QVariant(this->currentZones);
+
+		auto jsonObj = QJsonObject::fromVariantMap(data);
+		auto jsonDoc = QJsonDocument(jsonObj);
+
+		mqtt_client->publish(QString("Lasertag/Game/Events"), jsonDoc.toJson(), 1, 0);
+	});
 }
 
 void LT_MQTTPlayer::setName(QString newName) {
