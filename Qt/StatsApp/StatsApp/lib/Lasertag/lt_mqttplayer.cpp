@@ -11,15 +11,14 @@ LT_MQTTPlayer::LT_MQTTPlayer(QString deviceID, QMqttClient *client, QObject *par
 			return;
 
 		QVariantMap data;
-		data["type"]	 = QString("zoneUpdate");
 		data["entered"] = QVariant(entered);
 		data["exited"]	 = QVariant(exited);
-		data["zones"]   = QVariant(this->currentZones);
+		data["current"] = QVariant(this->currentZones);
 
 		auto jsonObj = QJsonObject::fromVariantMap(data);
 		auto jsonDoc = QJsonDocument(jsonObj);
 
-		mqtt_client->publish(QString("Lasertag/Game/Events"), jsonDoc.toJson(), 1, 0);
+		mqtt_client->publish(QString("Lasertag/Players/%1/ZoneUpdate").arg(this->deviceID), jsonDoc.toJson(), 1, 0);
 	});
 }
 
