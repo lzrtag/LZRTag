@@ -14,6 +14,9 @@ module LZRTag
 
 			attr_reader :ammo
 
+			attr_reader :position
+			attr_reader :zoneIDs
+
 			attr_reader :battery, :ping, :heap
 
 			attr_reader :fireConfig, :hitConfig
@@ -28,6 +31,9 @@ module LZRTag
 				@deathChangeTime = Time.now();
 
 				@ammo = 0;
+
+				@position = {x: 0, y: 0}
+				@zoneIDs  = Array.new();
 
 				@battery = 0; @ping = 0; @heap = 0;
 
@@ -55,6 +61,25 @@ module LZRTag
 					@handler.send_event(@dead ? :playerKilled : :playerRevived, self);
 				when "Ammo"
 					@ammo = data.to_i;
+				when "Position"
+					begin
+						@position = JSON.parse(data, symbolize_names: true);
+					rescue
+					end
+				when "ZoneUpdate"
+					begin
+						data = JSON.parse(data, symbolize_names: true);
+					rescue
+						return;
+					end
+
+					@zoneIDs = data[:current];
+					if(data[:entered])
+						@handler.send_event(:playerEnteredZone, self, data[:entered])
+					end
+					if(data[:exited])
+						@handler.send_event(:playerExitedZone, self, data[:exited])
+					end
 				else
 					super(data, topic);
 				end
