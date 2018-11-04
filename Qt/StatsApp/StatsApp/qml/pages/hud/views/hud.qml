@@ -33,7 +33,7 @@ GridLayout {
         Label {
             anchors.fill: parent;
 
-            text: "Zones: " + GameHandle.currentZones
+				text: GameHandle.currentPosition + "\nZones: " + GameHandle.currentZones
         }
 	}
 

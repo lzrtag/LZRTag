@@ -35,7 +35,7 @@ Item {
 	PositionSource {
 		id: gpsSource
 
-		updateInterval: 3000
+		updateInterval: 1000
 		active: true
 
 		onPositionChanged: {
@@ -53,7 +53,9 @@ Item {
             positionData.y = mapPos.y;
 			player.position = positionData;
 
-            GameHandle.currentZones = gameMap.getZonesForPlayer(player);
+			gameMap.updateZonesForPlayer(player);
+				GameHandle.currentZones = player.zones;
+			GameHandle.currentPosition = player.getMapPosition();
 
             console.log("Position of player is:", player.getMapPosition());
             console.log("Zones for player are:", GameHandle.currentZones);

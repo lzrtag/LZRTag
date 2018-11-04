@@ -12,7 +12,8 @@ Item {
 	property var game: gameHandler
 	property var currentPlayer: gameHandler.getPlayer(playerDID);
 
-    property var currentZones: []
+	 property var  currentZones: []
+	property point currentPosition: Qt.point(0, 0);
 
 	onHostnameChanged:  game.setHostname(hostname);
 	onPlayerDIDChanged: setupPlayer();
