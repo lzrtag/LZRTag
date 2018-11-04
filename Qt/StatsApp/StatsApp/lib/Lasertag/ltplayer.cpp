@@ -8,7 +8,7 @@ LTPlayer::LTPlayer(QString deviceID, QObject *parent) : 	QObject(parent),
 	battery(0), ping(0),
 	team(0),
 	life(0), ammo(0),
-	position(),
+	position(), currentZones(),
 	deviceID(deviceID)
 {
 }
@@ -77,11 +77,28 @@ int LTPlayer::getMaxAmmo() {
 }
 
 QPointF LTPlayer::getMapPosition() {
-    qDebug()<<"Getting position from coords:"<<position["x"]<<position["y"];
-
     return QPointF(position["x"].toDouble(), position["y"].toDouble());
 }
 void LTPlayer::updatePosition(QVariantMap newPosition) {
 	this->position = newPosition;
 	emit positionChanged();
+}
+void LTPlayer::updateZones(QList<QString> newZones) {
+	QList<QString> enteredZones(newZones);
+	QList<QString> leftZones(currentZones);
+
+	for(auto z : newZones) {
+		leftZones.removeAll(z);
+	}
+	for(auto z : currentZones) {
+		enteredZones.removeAll(z);
+	}
+
+	if(!leftZones.empty() || !enteredZones.empty()) {
+		currentZones = newZones;
+		emit zonesChanged(enteredZones, leftZones);
+	}
+}
+QList<QString> LTPlayer::getZones() {
+	return currentZones;
 }

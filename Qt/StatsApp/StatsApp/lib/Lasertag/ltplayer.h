@@ -28,6 +28,7 @@ class LTPlayer : public QObject
 	Q_PROPERTY(float	maxAmmo READ getMaxAmmo NOTIFY fireConfigChanged)
 
 	Q_PROPERTY(QVariantMap position MEMBER position WRITE updatePosition NOTIFY positionChanged)
+	Q_PROPERTY(QList<QString> zones READ getZones NOTIFY zonesChanged)
 
 protected:
 	QString status;
@@ -44,9 +45,10 @@ protected:
 
 	float life;
 	int	ammo;
-public:
-	QVariantMap position;
 
+	QVariantMap position;
+	QList<QString> currentZones;
+public:
 	explicit LTPlayer(QString deviceID, QObject *parent = nullptr);
 
 	const QString deviceID;
@@ -70,6 +72,8 @@ public:
 
     Q_INVOKABLE QPointF getMapPosition();
 	virtual void updatePosition(QVariantMap posData);
+	Q_INVOKABLE void updateZones(QList<QString> newZones);
+	QList<QString> getZones();
 
 signals:
 	void statusChanged(QString status);
@@ -86,6 +90,7 @@ signals:
 	void ammoChanged(int newAmmo, int oldAmmo);
 
 	void positionChanged();
+	void zonesChanged(QList<QString> &entered, QList<QString> &left);
 
 public slots:
 };
