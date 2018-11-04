@@ -16,11 +16,17 @@ private:
 
 	QList<LTMapZone*> zones;
 
+	LTMapZone *currentZone;
+
+	void addGPSDot(double lat, double lon);
+
 public:
 	explicit LTMap(QObject *parent = nullptr);
 
 	Q_INVOKABLE QPointF latLonToXY(QPointF latLong);
 	Q_INVOKABLE QList<QString> getZonesForPlayer(LTPlayer *player);
+
+	Q_INVOKABLE void updateZonesForPlayer(LTPlayer *player);
 
 signals:
 
