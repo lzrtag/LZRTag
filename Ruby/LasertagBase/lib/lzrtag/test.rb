@@ -29,6 +29,18 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
+DebugHook.on [:playerEnteredZone, :playerExitedZone]do |player|
+	player.team = 1;
+	player.zoneIDs.each do |z|
+		case(z)
+		when "LeftGarden"
+			player.team = 2;
+		when "Pond"
+			player.team = 4;
+		end
+	end
+end
+
 $mqtt = MQTT::SubHandler.new("192.168.251.1");
 $handler = LZRTag.Handler.new($mqtt);
 
