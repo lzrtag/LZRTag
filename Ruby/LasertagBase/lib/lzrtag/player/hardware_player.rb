@@ -33,7 +33,7 @@ module LZRTag
 				@ammo = 0;
 
 				@position = {x: 0, y: 0}
-				@zoneIDs  = Array.new();
+				@zoneIDs  = Hash.new();
 
 				@battery = 0; @ping = 0; @heap = 0;
 

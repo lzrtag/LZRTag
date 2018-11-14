@@ -15,7 +15,10 @@ Gem::Specification.new do |s|
 								"lib/lzrtag/player/life_player.rb",
 								"lib/lzrtag/hooks/base_hook.rb",
 								"lib/lzrtag/hooks/standard_hooks.rb",
-								"lib/lzrtag/game/base_game.rb"];
+								"lib/lzrtag/game/base_game.rb",
+								"lib/lzrtag/map/map_set.rb",
+								"lib/lzrtag/map/map_zone.rb",
+								"lib/lzrtag/map/myMaps_parser.rb"];
 	s.homepage    =
 	'https://github.com/XasWorks/LZRTag/'
 	s.license     = 'GPL-3.0'
