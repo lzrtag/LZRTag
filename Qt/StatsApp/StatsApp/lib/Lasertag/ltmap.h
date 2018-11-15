@@ -31,6 +31,7 @@ public:
 signals:
 
 public slots:
+	void update_from_list(QVariantList data);
 };
 
 #endif // LTMAP_H
