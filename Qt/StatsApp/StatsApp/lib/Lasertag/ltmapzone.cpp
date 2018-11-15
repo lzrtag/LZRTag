@@ -6,7 +6,7 @@ LTMapZone::LTMapZone(QString tag, QObject *parent) : QObject(parent),
     centerPoint(0, 0), radius(0),
     mapPolygon(),
     teamMask(255),
-	zoneTag(tag)
+	 zoneData(), zoneTag(tag)
 {
 }
 LTMapZone::LTMapZone(const LTMapZone &source) : LTMapZone(source.zoneTag) {
@@ -18,8 +18,24 @@ LTMapZone::LTMapZone(const LTMapZone &source) : LTMapZone(source.zoneTag) {
 	teamMask = source.teamMask;
 }
 
+LTMapZone& LTMapZone::operator=(const LTMapZone &source) {
+	centerPoint = source.centerPoint;
+	radius = source.radius;
+	mapPolygon = source.mapPolygon;
+
+	teamMask = source.teamMask;
+
+	zoneData = source.zoneData;
+	zoneTag  = source.zoneTag;
+
+	return *this;
+}
+
 QString LTMapZone::getZoneTag() {
 	return zoneTag;
+}
+QVariantMap LTMapZone::getZoneData() {
+	return zoneData;
 }
 
 bool LTMapZone::pointInsideZone(QPointF point) {

@@ -43,18 +43,30 @@ QPointF LTMap::latLonToXY(QPointF latLong) {
 						cos(mapRotation)*yUnr - sin(mapRotation)*xUnr);
 }
 
-QList<QString> LTMap::getZonesForPlayer(LTPlayer *player) {
-	QList<QString> output;
+QList<LTMapZone *> LTMap::getZonesForPlayer(LTPlayer *player) {
+	QList<LTMapZone *> output;
+
 	for(LTMapZone& z : zones) {
-		if(z.playerInsideZone(player) && !output.contains(z.getZoneTag()))
-			output << z.getZoneTag();
+		if(z.playerInsideZone(player))
+			output << &z;
 	}
 
 	return output;
 }
 
 void LTMap::updateZonesForPlayer(LTPlayer *player) {
-	player->updateZones(getZonesForPlayer(player));
+	QList<LTMapZone *> playerZones = getZonesForPlayer(player);
+
+	QList<QString> zoneTags;
+	QVariantMap    zoneData;
+
+	for(auto z : playerZones) {
+		if(!zoneTags.contains(z->getZoneTag()))
+				zoneTags << z->getZoneTag();
+		zoneData[z->getZoneTag()] = z->getZoneData();
+	}
+
+	player->updateZones(zoneTags, zoneData);
 }
 
 void LTMap::update_from_map(QVariantMap data) {
@@ -66,11 +78,14 @@ void LTMap::update_from_map(QVariantMap data) {
 	qDebug()<<"Decoding map: "<<data;
 
 	QVariantList cPoint = data.value("centerpoint").toList();
-	mapCenter = QPointF(cPoint[0].toReal(), cPoint[1].toReal());
-	mapRotation = cPoint[2].toReal();
+	qDebug()<<"Center point is:"<<cPoint;
+	mapCenter = QPointF(cPoint[0].toDouble(), cPoint[1].toDouble());
+	mapRotation = cPoint[2].toDouble();
+	qDebug()<<"New center and rotation:"<<mapCenter<<","<<mapRotation;
 
 	for(QVariant &map: data.value("zones").toList()) {
-		auto hash = map.toHash();
+		auto hash = map.toMap();
+		qDebug()<<"Parsing zone: "<< hash;
 
 		if(hash.contains("tag")) {
 			LTMapZone outZone(hash.value("tag").toString());
@@ -82,7 +97,7 @@ void LTMap::update_from_map(QVariantMap data) {
 			if(hash.contains("polygon")) {
 				for(QVariant &pointVariant : hash.value("polygon").toList()) {
 					QList<QVariant> point = pointVariant.toList();
-					QPointF outPoint(point[0].toReal(), point[1].toReal());
+					QPointF outPoint(point[0].toDouble(), point[1].toDouble());
 
 					if(convertFromGPS)
 						outPoint = latLonToXY(outPoint);
@@ -93,13 +108,13 @@ void LTMap::update_from_map(QVariantMap data) {
 				outZone.radius = hash.value("radius").toDouble();
 
 				QList<QVariant> point = hash.value("centerPoint").toList();
-				outZone.centerPoint = QPointF(point[0].toReal(), point[1].toReal());
+				outZone.centerPoint = QPointF(point[0].toDouble(), point[1].toDouble());
 				if(convertFromGPS)
 					outZone.centerPoint = latLonToXY(outZone.centerPoint);
 			}
 
 			if(hash.contains("data"))
-				outZone.data = hash.value("data").toMap();
+				outZone.zoneData = hash.value("data").toMap();
 
 			zones << outZone;
 		}

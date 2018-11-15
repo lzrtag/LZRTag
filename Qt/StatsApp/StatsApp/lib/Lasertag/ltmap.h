@@ -21,7 +21,7 @@ public:
 	explicit LTMap(QObject *parent = nullptr);
 
 	Q_INVOKABLE QPointF latLonToXY(QPointF latLong);
-	Q_INVOKABLE QList<QString> getZonesForPlayer(LTPlayer *player);
+	Q_INVOKABLE QList<LTMapZone *> getZonesForPlayer(LTPlayer *player);
 
 	Q_INVOKABLE void updateZonesForPlayer(LTPlayer *player);
 

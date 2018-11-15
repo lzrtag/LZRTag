@@ -22,15 +22,18 @@ protected:
 
 	uint8_t teamMask;
 
-	QVariantMap data;
+	QVariantMap zoneData;
+
+	QString zoneTag;
 
 public:
-	const QString zoneTag;
 
 	explicit LTMapZone(QString tag, QObject *parent = nullptr);
 	LTMapZone(const LTMapZone &source);
+	LTMapZone& operator=(const LTMapZone &source);
 
 	QString getZoneTag();
+	QVariantMap getZoneData();
 
 	bool pointInsideZone(QPointF point);
 
