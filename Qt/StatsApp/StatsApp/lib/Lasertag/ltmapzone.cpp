@@ -9,6 +9,14 @@ LTMapZone::LTMapZone(QString tag, QObject *parent) : QObject(parent),
 	zoneTag(tag)
 {
 }
+LTMapZone::LTMapZone(const LTMapZone &source) : LTMapZone(source.zoneTag) {
+	centerPoint = source.centerPoint;
+	radius = source.radius;
+
+	mapPolygon = source.mapPolygon;
+
+	teamMask = source.teamMask;
+}
 
 QString LTMapZone::getZoneTag() {
 	return zoneTag;

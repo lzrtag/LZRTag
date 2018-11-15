@@ -4,8 +4,12 @@
 #include <QTimer>
 #include <QtMqtt/QtMqtt>
 
+#include <QJsonDocument>
+
 #include "lthandler.h"
 #include "lt_mqttplayer.h"
+
+#include "ltmap.h"
 
 class LT_MQTTHandler : public LTHandler
 {
@@ -16,12 +20,16 @@ class LT_MQTTHandler : public LTHandler
 
 	Q_PROPERTY(bool			connected READ isConnected	 NOTIFY connectionStatusChanged)
 
+	Q_PROPERTY(LTMap* map READ getMap)
+
 private:
 	QMap<QString, LT_MQTTPlayer *>player_map;
 
 	QTimer		mqtt_reconnectTimer;
 	QMqttClient mqtt_client;
 	QMqttSubscription	*mqtt_subscription;
+
+	LTMap map;
 
 protected:
 	void initNewPlayer(QString name);
@@ -34,6 +42,8 @@ public:
 	QVariantList getPlayerIDs();
 
 	bool isConnected();
+
+	LTMap* getMap();
 
 	Q_INVOKABLE LTPlayer * getPlayer(QString name);
 	Q_INVOKABLE void setHostname(QString name);

@@ -23,14 +23,12 @@ int main(int argc, char *argv[])
 	QTextToSpeech  tts(nullptr);
 	LT_MQTTHandler game(nullptr);
 
-	LTMap testMap(nullptr);
-
 	engine.rootContext()->setContextProperty("ttsEngine", &tts);
 
 	qmlRegisterType<LTPlayer>();
 	engine.rootContext()->setContextProperty("gameHandler", &game);
 
-    engine.rootContext()->setContextProperty("gameMap", &testMap);
+	 engine.rootContext()->setContextProperty("gameMap", game.getMap());
 
 	qmlRegisterSingletonType(QUrl("qrc:/qml/GameHandle.qml"), "xasin.lasertag.gamehandle", 1, 0, "GameHandle");
 

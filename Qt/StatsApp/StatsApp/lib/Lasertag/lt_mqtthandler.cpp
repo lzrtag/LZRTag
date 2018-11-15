@@ -1,7 +1,8 @@
 #include "lt_mqtthandler.h"
 
 LT_MQTTHandler::LT_MQTTHandler(QObject *parent) : LTHandler(parent),
-	mqtt_reconnectTimer(this), mqtt_client(this), mqtt_subscription(nullptr)
+	mqtt_reconnectTimer(this), mqtt_client(this), mqtt_subscription(nullptr),
+	map(this)
 {
 	mqtt_reconnectTimer.setSingleShot(true);
 	mqtt_reconnectTimer.setInterval(2000);
@@ -39,6 +40,9 @@ QVariantList LT_MQTTHandler::getPlayerIDs() {
 
 bool LT_MQTTHandler::isConnected() {
 	return mqtt_client.state() == QMqttClient::Connected;
+}
+LTMap* LT_MQTTHandler::getMap() {
+	return &map;
 }
 
 LTPlayer * LT_MQTTHandler::getPlayer(QString name) {
@@ -94,5 +98,9 @@ void LT_MQTTHandler::mqtt_processData(QMqttMessage msg) {
 
 		initNewPlayer(player);
 		player_map[player]->mqtt_processData(msg);
+	}
+	else if(category == "Zones") {
+		QJsonDocument document = QJsonDocument::fromJson(msg.payload());
+		map.update_from_list(document.array().toVariantList());
 	}
 }

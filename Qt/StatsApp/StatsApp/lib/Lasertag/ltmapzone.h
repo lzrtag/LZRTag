@@ -22,10 +22,13 @@ protected:
 
 	uint8_t teamMask;
 
+	QVariantMap data;
+
 public:
 	const QString zoneTag;
 
 	explicit LTMapZone(QString tag, QObject *parent = nullptr);
+	LTMapZone(const LTMapZone &source);
 
 	QString getZoneTag();
 
@@ -35,6 +38,7 @@ public:
 	bool playerInsideZone(LTPlayer *player);
 
 signals:
+	void zonesRecalculated();
 
 public slots:
 };

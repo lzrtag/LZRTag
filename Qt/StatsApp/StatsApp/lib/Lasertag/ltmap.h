@@ -14,11 +14,7 @@ private:
 	QPointF mapCenter;
 	double  mapRotation;
 
-	QList<LTMapZone*> zones;
-
-	LTMapZone *currentZone;
-
-	void addGPSDot(double lat, double lon);
+	QList<LTMapZone> zones;
 
 public:
 	explicit LTMap(QObject *parent = nullptr);
