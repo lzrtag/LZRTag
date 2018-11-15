@@ -57,10 +57,19 @@ void LTMap::updateZonesForPlayer(LTPlayer *player) {
 	player->updateZones(getZonesForPlayer(player));
 }
 
-void LTMap::update_from_list(QVariantList data) {
+void LTMap::update_from_map(QVariantMap data) {
 	zones.clear();
 
-	for(QVariant &map: data) {
+	if(!data.contains("centerpoint"))
+		return;
+
+	qDebug()<<"Decoding map: "<<data;
+
+	QVariantList cPoint = data.value("centerpoint").toList();
+	mapCenter = QPointF(cPoint[0].toReal(), cPoint[1].toReal());
+	mapRotation = cPoint[2].toReal();
+
+	for(QVariant &map: data.value("zones").toList()) {
 		auto hash = map.toHash();
 
 		if(hash.contains("tag")) {
@@ -95,4 +104,6 @@ void LTMap::update_from_list(QVariantList data) {
 			zones << outZone;
 		}
 	}
+
+	qDebug()<<"Created"<<zones.size()<<"zones!";
 }

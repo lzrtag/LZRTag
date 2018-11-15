@@ -2,6 +2,7 @@
 #define LTMAP_H
 
 #include <QObject>
+#include <QtDebug>
 
 #include <QPointF>
 
@@ -27,7 +28,7 @@ public:
 signals:
 
 public slots:
-	void update_from_list(QVariantList data);
+	void update_from_map(QVariantMap data);
 };
 
 #endif // LTMAP_H

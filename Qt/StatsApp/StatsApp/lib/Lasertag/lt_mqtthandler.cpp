@@ -101,6 +101,6 @@ void LT_MQTTHandler::mqtt_processData(QMqttMessage msg) {
 	}
 	else if(category == "Zones") {
 		QJsonDocument document = QJsonDocument::fromJson(msg.payload());
-		map.update_from_list(document.array().toVariantList());
+		map.update_from_map(document.object().toVariantMap());
 	}
 }
