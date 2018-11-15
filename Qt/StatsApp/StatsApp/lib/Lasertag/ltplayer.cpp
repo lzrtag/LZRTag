@@ -8,7 +8,7 @@ LTPlayer::LTPlayer(QString deviceID, QObject *parent) : 	QObject(parent),
 	battery(0), ping(0),
 	team(0),
 	life(0), ammo(0),
-	position(), currentZones(),
+	position(), currentZones(), zoneData(),
 	deviceID(deviceID)
 {
 }
@@ -83,7 +83,7 @@ void LTPlayer::updatePosition(QVariantMap newPosition) {
 	this->position = newPosition;
 	emit positionChanged();
 }
-void LTPlayer::updateZones(QList<QString> newZones) {
+void LTPlayer::updateZones(QList<QString> newZones, QVariantMap zoneData) {
 	QList<QString> enteredZones(newZones);
 	QList<QString> leftZones(currentZones);
 
@@ -96,9 +96,13 @@ void LTPlayer::updateZones(QList<QString> newZones) {
 
 	if(!leftZones.empty() || !enteredZones.empty()) {
 		currentZones = newZones;
+		this->zoneData = zoneData;
 		emit zonesChanged(enteredZones, leftZones);
 	}
 }
-QList<QString> LTPlayer::getZones() {
+const QList<QString>& LTPlayer::getZones() {
 	return currentZones;
+}
+const QVariantMap& LTPlayer::getZoneData() {
+	return zoneData;
 }

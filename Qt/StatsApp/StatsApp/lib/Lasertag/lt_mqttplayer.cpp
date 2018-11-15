@@ -14,6 +14,7 @@ LT_MQTTPlayer::LT_MQTTPlayer(QString deviceID, QMqttClient *client, QObject *par
 		data["entered"] = QVariant(entered);
 		data["exited"]	 = QVariant(exited);
 		data["current"] = QVariant(this->currentZones);
+		data["data"]    = QVariant(zoneData);
 
 		auto jsonObj = QJsonObject::fromVariantMap(data);
 		auto jsonDoc = QJsonDocument(jsonObj);
