@@ -87,40 +87,56 @@ void LTMap::update_from_map(QVariantMap data) {
 	for(QVariant &map: data.value("zones").toList()) {
 		auto hash = map.toMap();
 
-		if(hash.contains("tag")) {
-			qDebug()<<"Parsing zone"<<hash.value("tag");
+		if(!hash.contains("tag"))
+			continue;
 
-			LTMapZone outZone(hash.value("tag").toString());
+		qDebug()<<"Parsing zone"<<hash.value("tag");
 
-			outZone.teamMask = uint8_t(hash.value("teamMask").toInt());
+		LTMapZone outZone(hash.value("tag").toString());
 
-			bool convertFromGPS = hash.value("coordinatesAsGPS").toBool();
+		outZone.teamMask = uint8_t(hash.value("teamMask").toInt());
 
-			if(hash.contains("polygon")) {
-				for(QVariant &pointVariant : hash.value("polygon").toList()) {
-					QList<QVariant> point = pointVariant.toList();
-					QPointF outPoint(point[0].toDouble(), point[1].toDouble());
-
-					if(convertFromGPS)
-						outPoint = latLonToXY(outPoint);
-					outZone.mapPolygon << outPoint;
-				}
-			}
-			else {
-				outZone.radius = hash.value("radius").toDouble();
-
-				QList<QVariant> point = hash.value("centerPoint").toList();
-				outZone.centerPoint = QPointF(point[0].toDouble(), point[1].toDouble());
-				if(convertFromGPS)
-					outZone.centerPoint = latLonToXY(outZone.centerPoint);
-			}
-
-			if(hash.contains("data")) {
-				outZone.zoneData = hash.value("data").toMap();
-			}
-
-			zones << outZone;
+		bool convertFromGPS = true;
+		if(hash.contains("coordinatesAsGPS")) {
+			convertFromGPS = hash.value("coordinatesAsGPS").toBool();
 		}
+
+		if(hash.contains("polygon")) {
+			bool polygonParseFailed = false;
+
+			for(QVariant &pointVariant : hash.value("polygon").toList()) {
+				QList<QVariant> point = pointVariant.toList();
+				if(point.size() != 2) {
+					polygonParseFailed = true;
+					break;
+				}
+
+				QPointF outPoint(point[0].toDouble(), point[1].toDouble());
+
+				if(convertFromGPS)
+					outPoint = latLonToXY(outPoint);
+				outZone.mapPolygon << outPoint;
+			}
+
+			if(polygonParseFailed)
+				continue;
+		}
+		else if(hash.contains("radius") && hash.contains("centerpoint")){
+			outZone.radius = hash.value("radius").toDouble();
+
+			QList<QVariant> point = hash.value("centerpoint").toList();
+			outZone.centerPoint = QPointF(point[0].toDouble(), point[1].toDouble());
+			if(convertFromGPS)
+				outZone.centerPoint = latLonToXY(outZone.centerPoint);
+		}
+		else
+			continue;
+
+		if(hash.contains("data")) {
+			outZone.zoneData = hash.value("data").toMap();
+		}
+
+		zones << outZone;
 	}
 
 	qDebug()<<"Created"<<zones.size()<<"zones!";
