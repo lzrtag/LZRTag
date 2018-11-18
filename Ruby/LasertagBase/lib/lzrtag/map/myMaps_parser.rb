@@ -80,7 +80,7 @@ module LZRTag
 					rawPolyArray.each do |point|
 						point = point.split(",");
 						next if point.empty?
-						outZone[:polygon] << point[0..1];
+						outZone[:polygon] = [point[0].to_f, point[1].to_f];
 					end
 
 					outZones << outZone;
@@ -117,7 +117,11 @@ module LZRTag
 				return outPoints
 			end
 
-			def generate_zones(zoneSet)
+			def generate_zones(zoneSet = "")
+				if(zoneSet.is_a? String)
+					zoneSet = @polygons[zoneSet];
+				end
+
 				zoneSet = [zoneSet].flatten;
 
 				outZones = Array.new();
