@@ -1,4 +1,7 @@
 
+require_relative 'map_zone.rb'
+require_relative 'myMaps_parser.rb'
+
 module LZRTag
 	module Map
 		class Set
@@ -6,15 +9,17 @@ module LZRTag
 
 			attr_accessor :centerpoint
 
-			def initialize(mqtt)
+			def initialize(mqtt, zones = Array.new())
 				@mqtt = mqtt;
-				@zones = Array.new();
+				@zones = zones;
+
+				@centerpoint = Array.new();
 			end
 
 			def to_h()
 				outData = Hash.new();
 
-				if(@centerpoint.nil? or @centerpoint.length != 3)
+				if(@centerpoint.length != 3)
 					raise ArgumentError, "Center point needs to be set!"
 				end
 
@@ -25,7 +30,7 @@ module LZRTag
 					outData[:zones] << z.to_h;
 				end
 
-				return outZones;
+				return outData;
 			end
 
 			def to_json()
