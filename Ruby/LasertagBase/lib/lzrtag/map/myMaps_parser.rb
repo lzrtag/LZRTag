@@ -80,7 +80,7 @@ module LZRTag
 					rawPolyArray.each do |point|
 						point = point.split(",");
 						next if point.empty?
-						outZone[:polygon] = [point[0].to_f, point[1].to_f];
+						outZone[:polygon] << [point[0].to_f, point[1].to_f];
 					end
 
 					outZones << outZone;

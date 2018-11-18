@@ -78,7 +78,7 @@ module LZRTag
 				else
 					outHash[:polygon] = @polygon;
 				end
-				outHash[:corrdinatesAsGPS] = @coordinatesAsGPS
+				outHash[:coordinatesAsGPS] = @coordinatesAsGPS
 
 				outHash[:style] = @style;
 
