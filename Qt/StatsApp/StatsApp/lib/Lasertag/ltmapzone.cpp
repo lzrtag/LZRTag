@@ -10,12 +10,7 @@ LTMapZone::LTMapZone(QString tag, QObject *parent) : QObject(parent),
 {
 }
 LTMapZone::LTMapZone(const LTMapZone &source) : LTMapZone(source.zoneTag) {
-	centerPoint = source.centerPoint;
-	radius = source.radius;
-
-	mapPolygon = source.mapPolygon;
-
-	teamMask = source.teamMask;
+	this->operator=(source);
 }
 
 LTMapZone& LTMapZone::operator=(const LTMapZone &source) {

@@ -61,9 +61,10 @@ void LTMap::updateZonesForPlayer(LTPlayer *player) {
 	QVariantMap    zoneData;
 
 	for(auto z : playerZones) {
-		if(!zoneTags.contains(z->getZoneTag()))
-				zoneTags << z->getZoneTag();
-		zoneData[z->getZoneTag()] = z->getZoneData();
+		if(!zoneTags.contains(z->getZoneTag())) {
+			zoneTags << z->getZoneTag();
+			zoneData[z->getZoneTag()] = z->getZoneData();
+		}
 	}
 
 	player->updateZones(zoneTags, zoneData);
@@ -75,7 +76,7 @@ void LTMap::update_from_map(QVariantMap data) {
 	if(!data.contains("centerpoint"))
 		return;
 
-	qDebug()<<"Decoding map: "<<data;
+	qDebug()<<"Regenerating map!";
 
 	QVariantList cPoint = data.value("centerpoint").toList();
 	qDebug()<<"Center point is:"<<cPoint;
@@ -85,9 +86,10 @@ void LTMap::update_from_map(QVariantMap data) {
 
 	for(QVariant &map: data.value("zones").toList()) {
 		auto hash = map.toMap();
-		qDebug()<<"Parsing zone: "<< hash;
 
 		if(hash.contains("tag")) {
+			qDebug()<<"Parsing zone"<<hash.value("tag");
+
 			LTMapZone outZone(hash.value("tag").toString());
 
 			outZone.teamMask = uint8_t(hash.value("teamMask").toInt());
@@ -113,8 +115,9 @@ void LTMap::update_from_map(QVariantMap data) {
 					outZone.centerPoint = latLonToXY(outZone.centerPoint);
 			}
 
-			if(hash.contains("data"))
+			if(hash.contains("data")) {
 				outZone.zoneData = hash.value("data").toMap();
+			}
 
 			zones << outZone;
 		}
