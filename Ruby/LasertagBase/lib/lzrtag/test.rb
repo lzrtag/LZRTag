@@ -29,19 +29,20 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-DebugHook.on [:playerEnteredZone, :playerExitedZone]do |player|
-	player.team = 1;
-	player.zoneIDs.each do |z|
-		case(z)
-		when "LeftGarden"
-			player.team = 2;
-		when "Pond"
-			player.team = 4;
-		end
+DebugHook.on :playerEnteredZone do |player, entered|
+	if(entered.include? "teamSetter") then
+		player.team = player.zoneIDs["teamSetter"]["team"];
 	end
 end
 
 $mqtt = MQTT::SubHandler.new("192.168.251.1");
+
+$myMapsData    = LZRTag::Map::MyMapsParser.new("Rainbow Road.kml");
+$rainbowMapSet = LZRTag::Map::Set.new($mqtt, $myMapsData.generate_zones());
+$rainbowMapSet.centerpoint = [9.716822475785307, 52.38715890804035, 0];
+
+$rainbowMapSet.publish();
+
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
