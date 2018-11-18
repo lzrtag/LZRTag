@@ -120,6 +120,8 @@ void LTMap::update_from_map(QVariantMap data) {
 
 			if(polygonParseFailed)
 				continue;
+
+			qDebug()<<"New zone polygon is:"<<outZone.mapPolygon;
 		}
 		else if(hash.contains("radius") && hash.contains("centerpoint")){
 			outZone.radius = hash.value("radius").toDouble();
