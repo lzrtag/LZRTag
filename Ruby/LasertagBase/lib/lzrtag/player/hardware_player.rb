@@ -73,7 +73,7 @@ module LZRTag
 						return;
 					end
 
-					@zoneIDs = data[:current];
+					@zoneIDs = data[:data];
 					if(data[:entered])
 						@handler.send_event(:playerEnteredZone, self, data[:entered])
 					end

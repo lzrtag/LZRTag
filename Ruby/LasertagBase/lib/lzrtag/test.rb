@@ -31,11 +31,11 @@ end
 
 DebugHook.on :playerEnteredZone do |player, entered|
 	if(entered.include? "teamSetter") then
-		player.team = player.zoneIDs["teamSetter"]["team"];
+		player.team = (player.zoneIDs[:teamSetter][:team]).to_i;
 	end
 end
 
-$mqtt = MQTT::SubHandler.new("192.168.251.1");
+$mqtt = MQTT::SubHandler.new("iot.eclipse.org");
 
 $myMapsData    = LZRTag::Map::MyMapsParser.new("Rainbow Road.kml");
 $rainbowMapSet = LZRTag::Map::Set.new($mqtt, $myMapsData.generate_zones());
@@ -46,7 +46,7 @@ $rainbowMapSet.publish();
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
-$handler.add_hook(LZRTag::Hook::RandomTeam);
+#$handler.add_hook(LZRTag::Hook::RandomTeam);
 $handler.add_hook(LZRTag::Hook::Damager);
 $handler.add_hook(LZRTag::Hook::Regenerator);
 
