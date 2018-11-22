@@ -53,4 +53,5 @@ DISTFILES += \
     qml/widgets/PlayerIcon.qml \
     qml/widgets/SmolPlayerBar.qml \
     qml/widgets/StatusBox.qml \
-    qml/widgets/StatusIcon.qml
+    qml/widgets/StatusIcon.qml \
+    qml/widgets/MapView.qml

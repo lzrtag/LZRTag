@@ -204,5 +204,6 @@
         <file>qml/widgets/InfoLabel.qml</file>
         <file>qml/widgets/StatusBox.qml</file>
         <file>qml/pages/hud/views/hud.qml</file>
+        <file>qml/widgets/MapView.qml</file>
     </qresource>
 </RCC>

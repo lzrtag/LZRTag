@@ -11,6 +11,9 @@
 class LTMap : public QObject
 {
 	Q_OBJECT
+
+	Q_PROPERTY(int zoneCount READ getZoneNum NOTIFY zonesChanged)
+
 private:
 	QPointF mapCenter;
 	double  mapRotation;
@@ -21,11 +24,15 @@ public:
 	explicit LTMap(QObject *parent = nullptr);
 
 	Q_INVOKABLE QPointF latLonToXY(QPointF latLong);
-	Q_INVOKABLE QList<LTMapZone *> getZonesForPlayer(LTPlayer *player);
+	QList<LTMapZone *> getZonesForPlayer(LTPlayer *player);
 
 	Q_INVOKABLE void updateZonesForPlayer(LTPlayer *player);
 
+	Q_INVOKABLE int		  getZoneNum();
+	Q_INVOKABLE LTMapZone* getZone(int i);
+
 signals:
+	void zonesChanged();
 
 public slots:
 	void update_from_map(QVariantMap data);

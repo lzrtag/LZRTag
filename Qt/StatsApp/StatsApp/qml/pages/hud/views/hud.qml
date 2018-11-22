@@ -149,6 +149,25 @@ GridLayout {
 			}
 		}
 	}
+
+	Frame {
+		id: mapFrame
+
+		clip: true
+
+		Layout.fillHeight: true
+		Layout.fillWidth: true
+		Layout.preferredHeight: 1
+		Layout.preferredWidth:  1
+
+		Layout.rowSpan: 2
+
+		Material.elevation: 3;
+
+		MapView {
+			displayMap: gameMap;
+		}
+	}
 }
 
 /*##^## Designer {

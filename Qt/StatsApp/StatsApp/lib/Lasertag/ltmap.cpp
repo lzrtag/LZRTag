@@ -70,6 +70,13 @@ void LTMap::updateZonesForPlayer(LTPlayer *player) {
 	player->updateZones(zoneTags, zoneData);
 }
 
+int LTMap::getZoneNum() {
+	return zones.size();
+}
+LTMapZone* LTMap::getZone(int i) {
+	return &zones[i];
+}
+
 void LTMap::update_from_map(QVariantMap data) {
 	zones.clear();
 
@@ -141,5 +148,6 @@ void LTMap::update_from_map(QVariantMap data) {
 		zones << outZone;
 	}
 
+	emit zonesChanged();
 	qDebug()<<"Created"<<zones.size()<<"zones!";
 }

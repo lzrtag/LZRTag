@@ -26,9 +26,13 @@ int main(int argc, char *argv[])
 	engine.rootContext()->setContextProperty("ttsEngine", &tts);
 
 	qmlRegisterType<LTPlayer>();
+
+	qmlRegisterUncreatableType<LTMapZone>("xasin.lasertag.map", 1, 0, "LTMapZone", "");
+	qmlRegisterUncreatableType<LTMap>("xasin.lasertag.map", 1, 0, "LTMap", "");
+
 	engine.rootContext()->setContextProperty("gameHandler", &game);
 
-	 engine.rootContext()->setContextProperty("gameMap", game.getMap());
+	engine.rootContext()->setContextProperty("gameMap", game.getMap());
 
 	qmlRegisterSingletonType(QUrl("qrc:/qml/GameHandle.qml"), "xasin.lasertag.gamehandle", 1, 0, "GameHandle");
 
