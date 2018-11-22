@@ -166,6 +166,8 @@ GridLayout {
 
 		MapView {
 			displayMap: gameMap;
+
+			anchors.fill: parent;
 		}
 	}
 }

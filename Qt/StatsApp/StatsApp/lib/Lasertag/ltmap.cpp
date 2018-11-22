@@ -144,6 +144,11 @@ void LTMap::update_from_map(QVariantMap data) {
 		if(hash.contains("data")) {
 			outZone.zoneData = hash.value("data").toMap();
 		}
+		if(hash.contains("style")) {
+			auto style = hash.value("style").toMap();
+			auto colorCode = style.value("color").toString();
+			outZone.color = "#" + colorCode.remove(0, 2);
+		}
 
 		zones << outZone;
 	}

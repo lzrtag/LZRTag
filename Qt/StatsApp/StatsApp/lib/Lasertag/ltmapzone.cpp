@@ -55,14 +55,11 @@ QPolygonF LTMapZone::getPolygon() {
 	return mapPolygon;
 }
 
-QVariantList LTMapZone::getPolygonPoints() {
-	QVariantList outList;
-
-	for(auto p : mapPolygon) {
-		outList << p;
-	}
-
-	return outList;
+int LTMapZone::getPolygonPointCount() {
+	return mapPolygon.size();
+}
+QPointF LTMapZone::getPolygonPoint(int i) {
+	return mapPolygon[i];
 }
 
 QColor LTMapZone::getColor() {

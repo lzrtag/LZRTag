@@ -8,13 +8,27 @@ import xasin.lasertag.map 1.0
 Item {
 	property LTMap displayMap;
 
+	Connections {
+		target: displayMap
+
+		onZonesChanged: {
+			var outZones = [];
+
+			for(var i=0; i < displayMap.zoneCount; i++) {
+				outZones.push(displayMap.getZone(i));
+			}
+
+			zoneDrawer.model = outZones;
+		}
+	}
+
 	Repeater {
 		id: zoneDrawer
 
-		model: displayMap.zoneCount;
+		anchors.fill: parent;
 
 		delegate: Item {
-			property LTMapZone map: displayMap.getZone(index);
+			property LTMapZone map: modelData;
 
 			Component.onCompleted: {
 				console.log("Makin' a polygon from: ", index, map);
@@ -33,23 +47,40 @@ Item {
 				radius: width/2;
 			}
 
-			ShapePath {
-				fillColor: map.color;
+			Component {
+				id: pathElement
+				PathLine {
+					property point xyPoint;
 
-				property var points: map.polygon;
-
-				Component.onCompleted: {
-					console.log("Polygon points are:", points);
+					x: xyPoint.x;
+					y: xyPoint.y;
 				}
+			}
 
-//				Repeater {
-//					model: parent.map.getPolygonPoints();
+			Shape {
+				id: mapPolygonShape
+				anchors.centerIn: parent;
 
-//					delegate: PathLine {
-//						x: modelData.x
-//						y: modelData.y
-//					}
-//				}
+				anchors.fill: parent;
+
+				ShapePath {
+					id: mapPolygonPath
+
+					fillColor: map.color
+
+					Component.onCompleted:  {
+						console.log("Map has", map.getPolygonPointCount(), " points!");
+
+						for(var i=0; i<map.getPolygonPointCount(); i++) {
+							mapPolygonPath.pathElements.push(pathElement.createObject(mapPolygonPath, {"xyPoint": map.getPolygonPoint(i)}));
+						}
+
+						mapPolygonPath.startX = map.getPolygonPoint(0).x;
+						mapPolygonPath.startY = map.getPolygonPoint(0).y;
+
+						mapPolygonShape.update()
+					}
+				}
 			}
 		}
 	}

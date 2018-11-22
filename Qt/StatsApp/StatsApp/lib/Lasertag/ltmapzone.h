@@ -51,7 +51,8 @@ public:
 	double  getRadius();
 	QPolygonF getPolygon();
 
-	Q_INVOKABLE QVariantList getPolygonPoints();
+	Q_INVOKABLE int		getPolygonPointCount();
+	Q_INVOKABLE QPointF	getPolygonPoint(int i);
 
 	QColor  getColor();
 
