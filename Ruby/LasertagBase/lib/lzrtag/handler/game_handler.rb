@@ -7,13 +7,14 @@ module LZRTag
 			attr_reader :currentGame
 			attr_reader :gameRunning
 
-			def initialize(*data)
-				super(*data)
+			def initialize(*data, **argHash)
+				super(*data, **argHash)
 
 				@lastTick = Time.now();
 
 				@lastGame    = nil;
 				@currentGame = nil;
+				@nextGame 	 = nil;
 
 				@gameRunning = false;
 

@@ -5,10 +5,10 @@ require_relative 'base_handler.rb'
 module LZRTag
 	module Handler
 		class HitArb < Base
-			def initialize(mqtt, **args)
-				super(mqtt, **args);
+			def initialize(*dataList, **args)
+				super(*dataList, **args);
 
-				mqtt.subscribe_to "Lasertag/Game/Events" do |data|
+				@mqtt.subscribe_to "Lasertag/Game/Events" do |data|
 					begin
 						data = JSON.parse(data, symbolize_names: true);
 

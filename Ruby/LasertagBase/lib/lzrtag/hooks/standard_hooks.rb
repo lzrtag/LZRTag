@@ -160,6 +160,8 @@ module LZRTag
 			end
 
 			on :playerConnected do |pl|
+				pl.hitConfig = @hitConfig;
+
 				if(@handler.gameRunning)
 					pl.fireConfig = @fireConfig;
 					pl.ammo = @fireConfig[:ammoCap] || 5;

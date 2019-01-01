@@ -6,8 +6,8 @@ module LZRTag
 		class Count < HitArb
 			attr_reader :teamCount
 
-			def initialize(*args)
-				super(*args);
+			def initialize(*args, **argHash)
+				super(*args, **argHash);
 
 				@teamCount = Hash.new();
 				7.times do |i|

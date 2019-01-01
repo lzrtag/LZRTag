@@ -10,7 +10,7 @@ module LZRTag
 			attr_reader :team
 			attr_reader :brightness
 
-			attr_reader :dead, :lifeChangeTime
+			attr_reader :dead, :deathChangeTime
 
 			attr_reader :ammo
 

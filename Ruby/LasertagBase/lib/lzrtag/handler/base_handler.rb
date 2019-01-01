@@ -38,17 +38,17 @@ module LZRTag
 							end
 						end
 					end
-				end.abort_on_exception = true;
+				end
+				@eventThread.abort_on_exception = true;
 
 				@mqtt.subscribe_to "Lasertag/Players/#" do |data, topic|
 					dID = topic[0];
-					if(not @players.key? dID and topic[1] == "Connection")
+					if(not @players.key? dID)
 						@playerSynchMutex.synchronize {
 							@players[dID] = @playerClass.new(dID, self);
 						}
 						send_event(:playerRegistered, @players[dID]);
 					end
-					next unless @players[dID];
 
 					@players[dID].on_mqtt_data(data, topic);
 				end

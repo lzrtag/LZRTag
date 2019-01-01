@@ -56,7 +56,7 @@ module LZRTag
 				end
 
 				if(tMask = rawZone[:arguments]["teamMask"])
-					outZone.teamMask = tMask;
+					outZone.teamMask = tMask.to_i;
 					rawZone[:arguments].delete "teamMask"
 				end
 
