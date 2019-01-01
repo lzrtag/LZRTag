@@ -3,8 +3,8 @@
 #include <math.h>
 
 LTMap::LTMap(QObject *parent) : QObject(parent),
-	 mapCenter(8.209523, 52.581728), mapRotation(0),
-	zones()
+	mapCenter(8.209523, 52.581728), mapRotation(0),
+	zones(), zoneBoundingRect()
 {
 	 LTMapZone circZone("CircTest");
 	 circZone.radius = 50;
@@ -75,6 +75,10 @@ int LTMap::getZoneNum() {
 }
 LTMapZone* LTMap::getZone(int i) {
 	return &zones[i];
+}
+
+QRectF LTMap::boundingRect() {
+	return zoneBoundingRect;
 }
 
 void LTMap::update_from_map(QVariantMap data) {
@@ -150,7 +154,17 @@ void LTMap::update_from_map(QVariantMap data) {
 			outZone.color = "#" + colorCode.remove(0, 2);
 		}
 
+
 		zones << outZone;
+	}
+
+	if(zones.empty())
+		zoneBoundingRect = QRectF(0, 0, 0, 0);
+	else {
+		zoneBoundingRect = zones[0].boundingRect();
+		for(LTMapZone& z : zones) {
+			zoneBoundingRect = zoneBoundingRect.united(z.boundingRect());
+		}
 	}
 
 	emit zonesChanged();

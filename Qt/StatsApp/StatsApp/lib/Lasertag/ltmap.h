@@ -13,12 +13,15 @@ class LTMap : public QObject
 	Q_OBJECT
 
 	Q_PROPERTY(int zoneCount READ getZoneNum NOTIFY zonesChanged)
+	Q_PROPERTY(QRectF boundingRect READ boundingRect NOTIFY zonesChanged)
 
 private:
 	QPointF mapCenter;
 	double  mapRotation;
 
 	QList<LTMapZone> zones;
+
+	QRectF zoneBoundingRect;
 
 public:
 	explicit LTMap(QObject *parent = nullptr);
@@ -30,6 +33,8 @@ public:
 
 	Q_INVOKABLE int		  getZoneNum();
 	Q_INVOKABLE LTMapZone* getZone(int i);
+
+	QRectF boundingRect();
 
 signals:
 	void zonesChanged();

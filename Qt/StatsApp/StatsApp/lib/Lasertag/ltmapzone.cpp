@@ -62,6 +62,14 @@ QPointF LTMapZone::getPolygonPoint(int i) {
 	return mapPolygon[i];
 }
 
+QRectF LTMapZone::boundingRect() {
+	if(mapPolygon.empty()) {
+		return QRectF(centerPoint - QPointF(radius, radius), centerPoint + QPointF(radius, radius));
+	}
+	else
+		return mapPolygon.boundingRect();
+}
+
 QColor LTMapZone::getColor() {
 	return color;
 }

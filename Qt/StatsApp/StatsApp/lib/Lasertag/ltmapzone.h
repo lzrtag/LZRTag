@@ -54,6 +54,8 @@ public:
 	Q_INVOKABLE int		getPolygonPointCount();
 	Q_INVOKABLE QPointF	getPolygonPoint(int i);
 
+	QRectF boundingRect();
+
 	QColor  getColor();
 
 	QVariantMap getZoneData();
