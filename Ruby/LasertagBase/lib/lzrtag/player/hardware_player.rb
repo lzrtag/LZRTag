@@ -69,7 +69,7 @@ module LZRTag
 				when "ZoneUpdate"
 					begin
 						data = JSON.parse(data, symbolize_names: true);
-					rescue
+					rescue JSON::ParserError
 						return;
 					end
 
@@ -87,7 +87,7 @@ module LZRTag
 
 			def team=(n)
 				n = n.to_i;
-				raise ArgumentError, "Team out of range (must be between 0 and 255)" unless n != nil and n <= 255 and n >= 0;
+				raise ArgumentError, "Team out of range (must be between 0 and 255)" unless !n.nil? and n <= 255 and n >= 0;
 
 				return if @team == n;
 				oldT = @team;
@@ -99,7 +99,7 @@ module LZRTag
 			end
 			def brightness=(n)
 				n = n.to_i;
-				raise ArgumentError, "Brightness out of range (must be between 0 and 7 or nil)" unless n != nil and n <= 7 and n >= 0;
+				raise ArgumentError, "Brightness out of range (must be between 0 and 7 or nil)" unless !n.nil? and n <= 7 and n >= 0;
 				return if @brightness == n;
 
 				@brightness = n;
@@ -127,7 +127,7 @@ module LZRTag
 			end
 
 			def ammo=(n)
-				unless (n.is_a?(Integer) and (n >= 0)) then
+				unless (n.is_a?(Integer) and (n >= 0))
 					raise ArgumentError, "Ammo amount needs to be a positive number!"
 				end
 

@@ -61,7 +61,7 @@ module LZRTag
 			def id=(n)
 				return if @id == n;
 
-				if(n != nil)
+				if(!n.nil?)
 					raise ArgumentError, "ID must be integer or nil!" unless n.is_a? Integer;
 					raise ArgumentError, "ID out of range (0<ID<256)" unless n < 256 and n > 0;
 

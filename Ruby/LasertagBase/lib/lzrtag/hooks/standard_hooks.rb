@@ -132,7 +132,7 @@ module LZRTag
 					end
 				end
 			end
-			def hitConfig(hC)
+			def hitConfig=(hC)
 				@hitConfig = hC || Hash.new();
 				if(@handler)
 					@handler.each do |pl|

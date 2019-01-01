@@ -101,7 +101,7 @@ module LZRTag
 			def add_hook(hook)
 				hook = hook.new() if hook.is_a? Class and hook <= LZRTag::Hook::Base;
 
-				unless(hook.is_a? LZRTag::Hook::Base) then
+				unless(hook.is_a? LZRTag::Hook::Base)
 					raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
 				end
 
@@ -112,7 +112,7 @@ module LZRTag
 				return hook;
 			end
 			def remove_hook(hook)
-				unless(hook.is_a? Lasertag::EventHook) then
+				unless(hook.is_a? Lasertag::EventHook)
 					raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
 				end
 
@@ -131,7 +131,7 @@ module LZRTag
 
 			def each(connected: false)
 				@playerSynchMutex.synchronize {
-					@players.each do |id, player|
+					@players.each do |_, player|
 						yield(player) if(player.connected? | !connected);
 					end
 				}

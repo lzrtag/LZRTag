@@ -8,19 +8,19 @@ module LZRTag
 			def initialize(mqtt, **args)
 				super(mqtt, **args);
 
-				mqtt.subscribe_to "Lasertag/Game/Events" do |data, tList|
+				mqtt.subscribe_to "Lasertag/Game/Events" do |data|
 					begin
 						data = JSON.parse(data, symbolize_names: true);
 
 						if(data[:type] == "hit")
 							_handle_hitArb(data);
 						end
-					rescue
+					rescue JSON::ParserError
 					end
 				end
 			end
 
-			def process_raw_hit(*data)
+			def process_raw_hit(*)
 				return true;
 			end
 

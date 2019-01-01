@@ -30,7 +30,7 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 end
 
 DebugHook.on :playerEnteredZone do |player, entered|
-	if(entered.include? "teamSetter") then
+	if(entered.include? "teamSetter")
 		player.team = (player.zoneIDs[:teamSetter][:team]).to_i;
 	end
 end

@@ -38,12 +38,11 @@ module LZRTag
 			end
 
 			def consume_event(evtName, data)
-				if(cbList = self.class.getCBs()[evtName]) then
+				if(cbList = self.class.getCBs()[evtName])
 					cbList.each do |cb|
 						instance_exec(*data, &cb);
 					end
 				end
-				cbList = nil;
 				if(cbList = @localCBList[evtName]) then
 					cbList.each do |cb|
 						cb.call(*data);
@@ -57,7 +56,7 @@ module LZRTag
 			def on_hookout()
 			end
 
-			def process_raw_hit(hitPlayer, sourcePLayer)
+			def process_raw_hit(*)
 				return true;
 			end
 		end
