@@ -22,6 +22,7 @@ F 0 "D2" H 3300 3750 50  0000 L CNN
 F 1 "WS2812B" H 3650 3225 50  0000 L CNN
 F 2 "LED_SMD:LED_WS2812B_PLCC4_5.0x5.0mm_P3.2mm" H 3550 3200 50  0001 L TNN
 F 3 "https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf" H 3600 3125 50  0001 L TNN
+F 4 "1528-1104-ND" H 3500 3500 50  0001 C CNN "Digi-Key"
 	1    3500 3500
 	1    0    0    -1  
 $EndComp

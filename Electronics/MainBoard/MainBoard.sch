@@ -1,36 +1,6 @@
-EESchema Schematic File Version 2
-LIBS:MainBoard-rescue
-LIBS:power
-LIBS:device
-LIBS:transistors
-LIBS:conn
-LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
-LIBS:texas
-LIBS:intel
-LIBS:audio
-LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
-LIBS:contrib
-LIBS:valves
+EESchema Schematic File Version 4
 LIBS:MainBoard-cache
-EELAYER 25 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -45,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L Crystal_Small QRZ1
+L MainBoard-rescue:Crystal_Small QRZ1
 U 1 1 572B3734
 P 8100 3100
 F 0 "QRZ1" H 8100 3200 50  0000 C CNN
@@ -56,7 +26,7 @@ F 3 "" H 8100 3100 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L C_Small C1
+L MainBoard-rescue:C_Small C1
 U 1 1 572B3966
 P 8400 3000
 F 0 "C1" H 8410 3070 50  0000 L CNN
@@ -67,7 +37,7 @@ F 3 "" H 8400 3000 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L C_Small C2
+L MainBoard-rescue:C_Small C2
 U 1 1 572B3B38
 P 8400 3200
 F 0 "C2" H 8410 3270 50  0000 L CNN
@@ -78,7 +48,7 @@ F 3 "" H 8400 3200 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR01
+L power:GND #PWR01
 U 1 1 572B3BB9
 P 8550 3300
 F 0 "#PWR01" H 8550 3050 50  0001 C CNN
@@ -89,7 +59,7 @@ F 3 "" H 8550 3300 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR02
+L power:GND #PWR02
 U 1 1 572B3ED7
 P 5200 4800
 F 0 "#PWR02" H 5200 4550 50  0001 C CNN
@@ -100,7 +70,7 @@ F 3 "" H 5200 4800 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Battery-RESCUE-MainBoard BT1
+L MainBoard-rescue:Battery-RESCUE-MainBoard BT1
 U 1 1 572B5519
 P 10250 5750
 F 0 "BT1" H 10350 5800 50  0000 L CNN
@@ -112,7 +82,7 @@ F 4 "https://www.reichelt.de/JST-Vielfachsteckverbinder/JST-PH2P-ST/3/index.html
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR03
+L power:GND #PWR03
 U 1 1 572B59E3
 P 10250 5925
 F 0 "#PWR03" H 10250 5675 50  0001 C CNN
@@ -123,7 +93,7 @@ F 3 "" H 10250 5925 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CONN_02X03 SPI1
+L MainBoard-rescue:CONN_02X03 SPI1
 U 1 1 572B6544
 P 8150 1550
 F 0 "SPI1" H 8150 1750 50  0000 C CNN
@@ -175,7 +145,7 @@ Entry Wire Line
 	7400 2950 7500 3050
 NoConn ~ 7500 3100
 $Comp
-L LED-RESCUE-MainBoard D1
+L MainBoard-rescue:LED-RESCUE-MainBoard D1
 U 1 1 572B5B25
 P 2400 2575
 F 0 "D1" H 2400 2675 50  0000 C CNN
@@ -186,7 +156,7 @@ F 3 "" H 2400 2575 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L +3.3V #PWR04
+L power:+3.3V #PWR04
 U 1 1 572B6CF2
 P 8500 1450
 F 0 "#PWR04" H 8500 1300 50  0001 C CNN
@@ -197,7 +167,7 @@ F 3 "" H 8500 1450 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR05
+L power:+3.3V #PWR05
 U 1 1 572B6F24
 P 10250 4550
 F 0 "#PWR05" H 10250 4400 50  0001 C CNN
@@ -208,7 +178,7 @@ F 3 "" H 10250 4550 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR06
+L power:+3.3V #PWR06
 U 1 1 572B7083
 P 5200 2450
 F 0 "#PWR06" H 5200 2300 50  0001 C CNN
@@ -219,7 +189,7 @@ F 3 "" H 5200 2450 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L LED_RCBG-RESCUE-MainBoard D2
+L MainBoard-rescue:LED_RCBG-RESCUE-MainBoard D2
 U 1 1 572B7C1A
 P 2100 3475
 F 0 "D2" H 2100 3825 50  0000 C CNN
@@ -230,7 +200,7 @@ F 3 "" H 2100 3425 50  0000 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L R_Small R6
+L MainBoard-rescue:R_Small R6
 U 1 1 572DCB6A
 P 7950 2150
 F 0 "R6" H 7980 2170 50  0000 L CNN
@@ -241,7 +211,7 @@ F 3 "https://www.reichelt.de/SMD-0603-von-1-bis-910-kOhm/RND-0603-1-100K/3/index
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR07
+L power:+3.3V #PWR07
 U 1 1 572DCEA7
 P 7950 2050
 F 0 "#PWR07" H 7950 1900 50  0001 C CNN
@@ -278,7 +248,7 @@ SDA
 Text Label 7650 5600 0    60   ~ 0
 SCL
 $Comp
-L GND #PWR08
+L power:GND #PWR08
 U 1 1 572D931B
 P 8300 4750
 F 0 "#PWR08" H 8300 4500 50  0001 C CNN
@@ -289,7 +259,7 @@ F 3 "" H 8300 4750 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR09
+L power:+3.3V #PWR09
 U 1 1 572D98DD
 P 8100 5000
 F 0 "#PWR09" H 8100 4850 50  0001 C CNN
@@ -310,7 +280,7 @@ Entry Wire Line
 Text Label 7150 4550 0    60   ~ 0
 VBR
 $Comp
-L SPST SW2
+L MainBoard-rescue:SPST SW2
 U 1 1 572DFDFF
 P 10250 5050
 F 0 "SW2" H 10250 5150 50  0000 C CNN
@@ -321,7 +291,7 @@ F 3 "" H 10250 5050 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L SW_PUSH SW1
+L MainBoard-rescue:SW_PUSH SW1
 U 1 1 572E16B2
 P 5800 5900
 F 0 "SW1" H 5950 6010 50  0000 C CNN
@@ -332,7 +302,7 @@ F 3 "" H 5800 5900 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L SPEAKER SP1
+L MainBoard-rescue:SPEAKER SP1
 U 1 1 572E2A17
 P 5800 5300
 F 0 "SP1" H 5700 5550 50  0000 C CNN
@@ -343,7 +313,7 @@ F 3 "" H 5800 5300 50  0000 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Vibr_Motor M1
+L MainBoard-rescue:Vibr_Motor M1
 U 1 1 572E493F
 P 6100 6625
 F 0 "M1" H 6350 6575 60  0000 C CNN
@@ -354,7 +324,7 @@ F 3 "" H 6000 6625 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR010
+L power:GND #PWR010
 U 1 1 572E5080
 P 5450 6025
 F 0 "#PWR010" H 5450 5775 50  0001 C CNN
@@ -375,7 +345,7 @@ TRG
 Text Label 4875 6850 2    60   ~ 0
 VBR
 $Comp
-L GND #PWR011
+L power:GND #PWR011
 U 1 1 572EF82E
 P 8500 1650
 F 0 "#PWR011" H 8500 1400 50  0001 C CNN
@@ -388,7 +358,7 @@ $EndComp
 Text Label 7400 2450 2    60   ~ 0
 IR_IN
 $Comp
-L CONN_02X04 J1
+L MainBoard-rescue:CONN_02X04 J1
 U 1 1 595AE1AE
 P 9550 1550
 F 0 "J1" H 9550 1800 50  0000 C CNN
@@ -399,7 +369,7 @@ F 3 "" H 9550 350 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L +3.3V #PWR012
+L power:+3.3V #PWR012
 U 1 1 595AF7EE
 P 9400 1000
 F 0 "#PWR012" H 9400 850 50  0001 C CNN
@@ -410,7 +380,7 @@ F 3 "" H 9400 1000 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R9
+L MainBoard-rescue:R_Small R9
 U 1 1 595AF914
 P 9500 1100
 F 0 "R9" H 9530 1120 50  0001 L CNN
@@ -421,7 +391,7 @@ F 3 "https://www.reichelt.de/SMD-0603-von-1-bis-910-kOhm/RND-0603-1-100K/3/index
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR013
+L power:GND #PWR013
 U 1 1 595B47CF
 P 9700 1950
 F 0 "#PWR013" H 9700 1700 50  0001 C CNN
@@ -432,7 +402,7 @@ F 3 "" H 9700 1950 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R11
+L MainBoard-rescue:R_Small R11
 U 1 1 595B5E24
 P 9600 1100
 F 0 "R11" H 9630 1120 50  0001 L CNN
@@ -453,7 +423,7 @@ A>E
 Text Label 7400 4050 2    60   ~ 0
 E>A
 $Comp
-L +3.3V #PWR014
+L power:+3.3V #PWR014
 U 1 1 596FE8E8
 P 2400 2125
 F 0 "#PWR014" H 2400 1975 50  0001 C CNN
@@ -464,7 +434,7 @@ F 3 "" H 2400 2125 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP C4
+L MainBoard-rescue:CP C4
 U 1 1 596FED2A
 P 9925 5750
 F 0 "C4" H 9950 5850 50  0000 L CNN
@@ -476,7 +446,7 @@ F 4 "https://www.reichelt.de/Elkos-SMD-Low-ESR-105-C/SMD-ELKO-22-16/3/index.html
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR015
+L power:GND #PWR015
 U 1 1 59700916
 P 2400 3775
 F 0 "#PWR015" H 2400 3525 50  0001 C CNN
@@ -505,7 +475,7 @@ MISO
 Text Label 8850 3250 0    60   ~ 0
 SCK
 $Comp
-L ATMEGA168PA-AU U1
+L MainBoard-rescue:ATMEGA168PA-AU U1
 U 1 1 5A719FA4
 P 6100 3550
 F 0 "U1" H 5350 4800 50  0000 L BNN
@@ -516,7 +486,7 @@ F 3 "" H 6100 3550 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Q_NPN_BEC Q1
+L MainBoard-rescue:Q_NPN_BEC Q1
 U 1 1 5A738040
 P 2300 2975
 F 0 "Q1" H 2500 3025 50  0000 L CNN
@@ -527,7 +497,7 @@ F 3 "https://www.reichelt.de/2N-Transistoren/2N-2222A-SMD/3/index.html?ACTION=3&
 	1    0    0    -1  
 $EndComp
 $Comp
-L DB9_Female J2
+L MainBoard-rescue:DB9_Female J2
 U 1 1 5A738B46
 P 8700 5300
 F 0 "J2" H 8700 5850 50  0000 C CNN
@@ -539,7 +509,7 @@ F 4 "https://www.reichelt.de/SUB-D-gewinkelt/D-SUB-BU-09US/3/index.html?ACTION=3
 	1    0    0    -1  
 $EndComp
 $Comp
-L LED_RGBA D4
+L MainBoard-rescue:LED_RGBA D4
 U 1 1 5A73B31E
 P 4300 2550
 F 0 "D4" H 4300 2920 50  0000 C CNN
@@ -550,7 +520,7 @@ F 3 "" H 4300 2500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L LED_RGBA D5
+L MainBoard-rescue:LED_RGBA D5
 U 1 1 5A73B990
 P 4300 3400
 F 0 "D5" H 4300 3770 50  0000 C CNN
@@ -561,7 +531,7 @@ F 3 "" H 4300 3350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR016
+L power:+3.3V #PWR016
 U 1 1 5A73BC9B
 P 4600 2450
 F 0 "#PWR016" H 4600 2300 50  0001 C CNN
@@ -578,7 +548,7 @@ G_PWR
 Text Label 2900 2750 0    60   ~ 0
 B_PWR
 $Comp
-L Q_NPN_BEC Q3
+L MainBoard-rescue:Q_NPN_BEC Q3
 U 1 1 5A73F0F4
 P 10075 3050
 F 0 "Q3" H 10275 3100 50  0000 L CNN
@@ -589,7 +559,7 @@ F 3 "https://www.reichelt.de/2N-Transistoren/2N-2222A-SMD/3/index.html?ACTION=3&
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Pack04 RN2
+L MainBoard-rescue:R_Pack04 RN2
 U 1 1 5A74E9FD
 P 3525 2550
 F 0 "RN2" V 3225 2550 50  0000 C CNN
@@ -600,7 +570,7 @@ F 3 "https://www.reichelt.de/4-Widerstaende-SMD-1206/BCN16-220/3/index.html?ACTI
 	0    1    1    0   
 $EndComp
 $Comp
-L R_Pack04 RN1
+L MainBoard-rescue:R_Pack04 RN1
 U 1 1 5A752B3F
 P 1450 3325
 F 0 "RN1" V 1150 3325 50  0000 C CNN
@@ -611,9 +581,9 @@ F 3 "https://www.reichelt.de/4-Widerstaende-SMD-1206/BCN16-220/3/index.html?ACTI
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	7900 3200 8300 3200
+	7900 3200 8100 3200
 Wire Wire Line
-	7900 3000 8300 3000
+	7900 3000 8100 3000
 Wire Wire Line
 	8500 3000 8500 3200
 Wire Wire Line
@@ -627,12 +597,10 @@ Wire Wire Line
 	7900 3150 7900 3200
 Connection ~ 8100 3200
 Wire Wire Line
-	5200 4550 5200 4800
+	5200 4550 5200 4650
 Connection ~ 5200 4750
 Wire Wire Line
-	5200 2450 5200 2750
-Wire Bus Line
-	7500 1850 7500 5800
+	5200 2450 5200 2550
 Wire Wire Line
 	7900 1450 7700 1450
 Wire Wire Line
@@ -645,8 +613,6 @@ Wire Wire Line
 	8400 1550 8500 1550
 Wire Wire Line
 	8400 1450 8500 1450
-Wire Bus Line
-	7600 1550 7600 1850
 Wire Bus Line
 	8600 1850 7500 1850
 Wire Bus Line
@@ -675,8 +641,6 @@ Wire Wire Line
 	7550 3050 7900 3050
 Wire Wire Line
 	7900 3050 7900 3000
-Wire Wire Line
-	2400 3175 2400 3775
 Connection ~ 2400 3475
 Wire Wire Line
 	7600 2250 7950 2250
@@ -719,7 +683,7 @@ Wire Wire Line
 Wire Wire Line
 	5700 5600 5450 5600
 Wire Wire Line
-	5450 5600 5450 6025
+	5450 5600 5450 5900
 Wire Wire Line
 	5450 5900 5500 5900
 Connection ~ 5450 5900
@@ -734,15 +698,11 @@ Wire Wire Line
 Wire Wire Line
 	9700 1300 9700 1150
 Wire Wire Line
-	9400 1800 9400 1800
-Wire Wire Line
 	9500 1800 9500 1850
-Wire Wire Line
-	9600 1800 9600 1800
 Wire Wire Line
 	9700 1800 9700 1950
 Wire Wire Line
-	9400 1000 9600 1000
+	9400 1000 9500 1000
 Connection ~ 9500 1000
 Wire Wire Line
 	7100 3400 7400 3400
@@ -750,10 +710,6 @@ Wire Wire Line
 	7100 3500 7400 3500
 Wire Wire Line
 	7100 3600 7400 3600
-Wire Wire Line
-	2400 2125 2400 2375
-Connection ~ 2400 2325
-Connection ~ 2400 3225
 Wire Wire Line
 	1250 3125 1150 3125
 Wire Wire Line
@@ -765,19 +721,16 @@ Wire Wire Line
 Wire Wire Line
 	9100 3250 8850 3250
 Connection ~ 5200 4650
-Connection ~ 5200 4550
 Connection ~ 5200 2550
-Connection ~ 2400 2175
 Wire Wire Line
 	4500 2550 4600 2550
 Wire Wire Line
-	4600 2450 4600 3400
+	4600 2450 4600 2550
 Wire Wire Line
 	4600 3400 4500 3400
-Connection ~ 4600 3400
 Connection ~ 4600 2550
 Wire Wire Line
-	3725 2350 4100 2350
+	3725 2350 4000 2350
 Wire Wire Line
 	4100 2550 3950 2550
 Wire Wire Line
@@ -803,11 +756,11 @@ Wire Wire Line
 Wire Wire Line
 	3725 2450 3950 2450
 Wire Wire Line
-	3950 2450 3950 3400
+	3950 2450 3950 2550
 Wire Wire Line
 	3725 2550 3900 2550
 Wire Wire Line
-	3900 2550 3900 3600
+	3900 2550 3900 2750
 Connection ~ 3900 2750
 Connection ~ 3950 2550
 Wire Wire Line
@@ -834,7 +787,7 @@ Wire Wire Line
 Wire Wire Line
 	1750 3675 1800 3675
 $Comp
-L Q_NPN_BEC Q2
+L MainBoard-rescue:Q_NPN_BEC Q2
 U 1 1 5A7566CD
 P 9750 3450
 F 0 "Q2" H 9950 3500 50  0000 L CNN
@@ -845,7 +798,7 @@ F 3 "https://www.reichelt.de/2N-Transistoren/2N-2222A-SMD/3/index.html?ACTION=3&
 	1    0    0    -1  
 $EndComp
 $Comp
-L Q_NPN_BEC Q4
+L MainBoard-rescue:Q_NPN_BEC Q4
 U 1 1 5A756C08
 P 10400 2650
 F 0 "Q4" H 10600 2700 50  0000 L CNN
@@ -856,7 +809,7 @@ F 3 "https://www.reichelt.de/2N-Transistoren/2N-2222A-SMD/3/index.html?ACTION=3&
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR017
+L power:GND #PWR017
 U 1 1 5A757F7F
 P 10500 2850
 F 0 "#PWR017" H 10500 2600 50  0001 C CNN
@@ -867,7 +820,7 @@ F 3 "" H 10500 2850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR018
+L power:GND #PWR018
 U 1 1 5A758003
 P 10175 3250
 F 0 "#PWR018" H 10175 3000 50  0001 C CNN
@@ -878,7 +831,7 @@ F 3 "" H 10175 3250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR019
+L power:GND #PWR019
 U 1 1 5A75804B
 P 9850 3650
 F 0 "#PWR019" H 9850 3400 50  0001 C CNN
@@ -889,7 +842,7 @@ F 3 "" H 9850 3650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Pack04 RN3
+L MainBoard-rescue:R_Pack04 RN3
 U 1 1 5A7584A3
 P 9300 3250
 F 0 "RN3" V 9000 3250 50  0000 C CNN
@@ -942,14 +895,14 @@ Wire Wire Line
 Wire Wire Line
 	10250 5900 9925 5900
 Wire Wire Line
-	10250 5550 10250 5600
+	10250 5550 10250 5575
 Wire Wire Line
 	10250 5575 9925 5575
 Connection ~ 10250 5575
 Wire Wire Line
 	9925 5575 9925 5600
 $Comp
-L +3.3V #PWR020
+L power:+3.3V #PWR020
 U 1 1 5A7B9B52
 P 5450 6400
 F 0 "#PWR020" H 5450 6250 50  0001 C CNN
@@ -964,7 +917,7 @@ Wire Wire Line
 Wire Wire Line
 	5450 6425 5500 6425
 $Comp
-L Q_NPN_BEC Q5
+L MainBoard-rescue:Q_NPN_BEC Q5
 U 1 1 5A7BAD8E
 P 5350 6850
 F 0 "Q5" H 5550 6900 50  0000 L CNN
@@ -979,7 +932,7 @@ Wire Wire Line
 Wire Wire Line
 	5450 6575 5450 6650
 $Comp
-L GND #PWR021
+L power:GND #PWR021
 U 1 1 5A7BAFC7
 P 5450 7150
 F 0 "#PWR021" H 5450 6900 50  0001 C CNN
@@ -992,7 +945,7 @@ $EndComp
 Wire Wire Line
 	5450 7050 5450 7150
 $Comp
-L R_Small R1
+L MainBoard-rescue:R_Small R1
 U 1 1 5A7BBD4A
 P 5025 6850
 F 0 "R1" H 5055 6870 50  0000 L CNN
@@ -1016,4 +969,38 @@ Wire Wire Line
 	8400 5700 8050 5700
 Text Label 8050 5700 0    60   ~ 0
 V_VBR
+Wire Wire Line
+	8100 3000 8300 3000
+Wire Wire Line
+	8100 3200 8300 3200
+Wire Wire Line
+	5200 4750 5200 4800
+Wire Wire Line
+	2400 3475 2400 3775
+Wire Wire Line
+	5450 5900 5450 6025
+Wire Wire Line
+	9500 1000 9600 1000
+Wire Wire Line
+	5200 4650 5200 4750
+Wire Wire Line
+	5200 2550 5200 2750
+Wire Wire Line
+	4600 2550 4600 3400
+Wire Wire Line
+	3900 2750 3900 3600
+Wire Wire Line
+	3950 2550 3950 3400
+Wire Wire Line
+	4000 2350 4100 2350
+Wire Wire Line
+	10250 5575 10250 5600
+Wire Wire Line
+	2400 3175 2400 3475
+Wire Wire Line
+	2400 2125 2400 2375
+Wire Bus Line
+	7600 1550 7600 1850
+Wire Bus Line
+	7500 1850 7500 5800
 $EndSCHEMATC

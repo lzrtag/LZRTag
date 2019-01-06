@@ -187,8 +187,6 @@ $EndSheet
 Wire Wire Line
 	2800 3575 2600 3575
 Wire Wire Line
-	2600 3575 2600 4325
-Wire Wire Line
 	2600 4325 2800 4325
 $Comp
 L Connector:DB9_Female J2
@@ -599,4 +597,6 @@ Wire Wire Line
 	3900 4250 4300 4250
 Text Label 4300 4250 2    50   ~ 0
 CHG_STAT
+Wire Wire Line
+	2600 3575 2600 4325
 $EndSCHEMATC

@@ -594,7 +594,7 @@ U 1 1 5A74E9FD
 P 3525 2550
 F 0 "RN2" V 3225 2550 50  0000 C CNN
 F 1 "220Ω" V 3725 2550 50  0000 C CNN
-F 2 "Resistors_SMD:R_Array_Convex_4x1206" V 3800 2550 50  0001 C CNN
+F 2 "Resistors_SMD:R_Array_Convex_4x0603" V 3800 2550 50  0001 C CNN
 F 3 "https://www.reichelt.de/4-Widerstaende-SMD-1206/BCN16-220/3/index.html?ACTION=3&LA=2&ARTICLE=42464&GROUPID=4495&artnr=BCN16+220&trstct=pol_0" H 3525 2550 50  0001 C CNN
 	1    3525 2550
 	0    1    1    0   
@@ -605,7 +605,7 @@ U 1 1 5A752B3F
 P 1450 3325
 F 0 "RN1" V 1150 3325 50  0000 C CNN
 F 1 "220Ω" V 1650 3325 50  0000 C CNN
-F 2 "Resistors_SMD:R_Array_Convex_4x1206" V 1725 3325 50  0001 C CNN
+F 2 "Resistors_SMD:R_Array_Convex_4x0603" V 1725 3325 50  0001 C CNN
 F 3 "https://www.reichelt.de/4-Widerstaende-SMD-1206/BCN16-220/3/index.html?ACTION=3&LA=2&ARTICLE=42464&GROUPID=4495&artnr=BCN16+220&trstct=pol_0" H 1450 3325 50  0001 C CNN
 	1    1450 3325
 	0    1    1    0   
@@ -894,7 +894,7 @@ U 1 1 5A7584A3
 P 9300 3250
 F 0 "RN3" V 9000 3250 50  0000 C CNN
 F 1 "220Ω" V 9500 3250 50  0000 C CNN
-F 2 "Resistors_SMD:R_Array_Convex_4x1206" V 9575 3250 50  0001 C CNN
+F 2 "Resistors_SMD:R_Array_Convex_4x0603" V 9575 3250 50  0001 C CNN
 F 3 "https://www.reichelt.de/4-Widerstaende-SMD-1206/BCN16-220/3/index.html?ACTION=3&LA=2&ARTICLE=42464&GROUPID=4495&artnr=BCN16+220&trstct=pol_0" H 9300 3250 50  0001 C CNN
 	1    9300 3250
 	0    1    1    0   
