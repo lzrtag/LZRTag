@@ -12,6 +12,7 @@
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 
+#include "IODefs.h"
 
 extern "C"
 void app_main()
