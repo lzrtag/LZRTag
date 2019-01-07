@@ -4,12 +4,11 @@
 		<extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
 			<provider copy-of="extension" id="org.eclipse.cdt.ui.UserLanguageSettingsProvider"/>
 			<provider-reference id="org.eclipse.cdt.core.ReferencedProjectsLanguageSettingsProvider" ref="shared-provider"/>
-			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuildCommandParser" id="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser" keep-relative-paths="false" name="CDT GCC Build Output Parser" parameter="xtensa-esp32-elf-(gcc|g\+\+|c\+\+|cc|cpp|clang)" prefer-non-shared="true" store-entries-with-project="true">
+			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuildCommandParser" id="org.eclipse.cdt.managedbuilder.core.GCCBuildCommandParser" keep-relative-paths="false" name="CDT GCC Build Output Parser" parameter="xtensa-esp32-elf-(gcc|g\+\+|c\+\+|cc|cpp|clang)" prefer-non-shared="true" resource-scope="per-project" store-entries-with-project="true">
 				<language id="org.eclipse.cdt.core.g++">
-					<resource project-relative-path="main/main.cpp">
-						<entry kind="includePath" name="/${ProjName}/main/include">
-							<flag value="VALUE_WORKSPACE_PATH"/>
-						</entry>
+					<resource project-relative-path="">
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/wear_levelling/private_include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/wear_levelling/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/app_trace/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/app_update/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/asio/asio/asio/include"/>
@@ -29,6 +28,7 @@
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_http_client/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_http_server/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_https_ota/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_https_server/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_ringbuf/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/ethernet/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/expat/expat/expat/lib"/>
@@ -49,6 +49,9 @@
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/lwip/port/esp32/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/lwip/port/esp32/include/arch"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/lwip/include_compat"/>
+						<entry kind="includePath" name="/Main/main/include">
+							<flag value="VALUE_WORKSPACE_PATH|RESOLVED"/>
+						</entry>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/mbedtls/port/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/mbedtls/mbedtls/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/mdns/include"/>
@@ -74,14 +77,15 @@
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/tcp_transport/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/tcpip_adapter/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/ulp/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/unity/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/unity/unity/src"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/vfs/include"/>
-						<entry kind="includePath" name="/opt/ESP/esp-idf/components/wear_levelling/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/wifi_provisioning/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/wpa_supplicant/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/wpa_supplicant/port/include"/>
 						<entry kind="includePath" name="/opt/ESP/esp-idf/components/xtensa-debug-module/include"/>
-						<entry kind="includePath" name="/${ProjName}/build/include">
-							<flag value="VALUE_WORKSPACE_PATH"/>
+						<entry kind="includePath" name="/Main/build/include">
+							<flag value="VALUE_WORKSPACE_PATH|RESOLVED"/>
 						</entry>
 						<entry kind="includePath" name="/${ProjName}/">
 							<flag value="VALUE_WORKSPACE_PATH"/>
@@ -89,13 +93,122 @@
 						<entry kind="macro" name="ESP_PLATFORM" value="1"/>
 						<entry kind="macro" name="GCC_NOT_5_2_0" value="0"/>
 						<entry kind="macro" name="HAVE_CONFIG_H" value="1"/>
-						<entry kind="macro" name="IDF_VER" value="&quot;v3.2-beta1-34-gfb7ba1baa-dirty&quot;"/>
+						<entry kind="macro" name="IDF_VER" value="&quot;v3.3-beta1-44-gda2116f55&quot;"/>
 						<entry kind="macro" name="MBEDTLS_CONFIG_FILE" value="&quot;mbedtls/esp_config.h&quot;"/>
+						<entry kind="macro" name="UNITY_INCLUDE_CONFIG_H" value="1"/>
 						<entry kind="macro" name="WITH_POSIX" value="1"/>
 					</resource>
 				</language>
+				<language id="org.eclipse.cdt.core.gcc">
+					<resource project-relative-path="">
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/wpa_supplicant/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/wpa_supplicant/port/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/app_trace/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/app_update/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/asio/asio/asio/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/asio/port/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/bootloader_support/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/bt/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/coap/port/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/coap/port/include/coap"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/coap/libcoap/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/coap/libcoap/include/coap"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/console"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/driver/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp-tls"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp32/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_adc_cal/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_event/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_http_client/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_http_server/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_https_ota/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_https_server/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/esp_ringbuf/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/ethernet/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/expat/expat/expat/lib"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/expat/port/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/fatfs/src"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/freemodbus/modbus/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/freemodbus/modbus_controller"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/freertos/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/heap/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/idf_test/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/jsmn/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/json/cJSON"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/libsodium/libsodium/src/libsodium/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/libsodium/port_include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/log/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/lwip/include/apps"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/lwip/lwip/src/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/lwip/port/esp32/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/lwip/port/esp32/include/arch"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/lwip/include_compat"/>
+						<entry kind="includePath" name="/Main/main/include">
+							<flag value="VALUE_WORKSPACE_PATH|RESOLVED"/>
+						</entry>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/mbedtls/port/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/mbedtls/mbedtls/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/mdns/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/micro-ecc/micro-ecc"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/mqtt/esp-mqtt/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/newlib/platform_include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/newlib/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/nghttp/port/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/nghttp/nghttp2/lib/includes"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/nvs_flash/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/openssl/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/protobuf-c/protobuf-c"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/protocomm/include/common"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/protocomm/include/security"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/protocomm/include/transports"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/pthread/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/sdmmc/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/smartconfig_ack/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/soc/esp32/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/soc/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/spi_flash/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/spiffs/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/tcp_transport/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/tcpip_adapter/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/ulp/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/unity/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/unity/unity/src"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/vfs/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/wear_levelling/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/wifi_provisioning/include"/>
+						<entry kind="includePath" name="/opt/ESP/esp-idf/components/xtensa-debug-module/include"/>
+						<entry kind="includePath" name="/Main/build/include">
+							<flag value="VALUE_WORKSPACE_PATH|RESOLVED"/>
+						</entry>
+						<entry kind="includePath" name="/${ProjName}/build/wpa_supplicant/src/wps">
+							<flag value="VALUE_WORKSPACE_PATH"/>
+						</entry>
+						<entry kind="macro" name="CONFIG_ECC" value="1"/>
+						<entry kind="macro" name="CONFIG_WPS2" value="1"/>
+						<entry kind="macro" name="CONFIG_WPS_PIN" value="1"/>
+						<entry kind="macro" name="EAP_MSCHAPv2" value="1"/>
+						<entry kind="macro" name="EAP_PEAP" value="1"/>
+						<entry kind="macro" name="EAP_PEER_METHOD" value="1"/>
+						<entry kind="macro" name="EAP_TLS" value="1"/>
+						<entry kind="macro" name="EAP_TTLS" value="1"/>
+						<entry kind="macro" name="EMBEDDED_SUPP" value="1"/>
+						<entry kind="macro" name="ESP32_WORKAROUND" value="1"/>
+						<entry kind="macro" name="ESPRESSIF_USE" value="1"/>
+						<entry kind="macro" name="ESP_PLATFORM" value="1"/>
+						<entry kind="macro" name="GCC_NOT_5_2_0" value="0"/>
+						<entry kind="macro" name="HAVE_CONFIG_H" value="1"/>
+						<entry kind="macro" name="IDF_VER" value="&quot;v3.3-beta1-44-gda2116f55&quot;"/>
+						<entry kind="macro" name="IEEE8021X_EAPOL" value="1"/>
+						<entry kind="macro" name="MBEDTLS_CONFIG_FILE" value="&quot;mbedtls/esp_config.h&quot;"/>
+						<entry kind="macro" name="UNITY_INCLUDE_CONFIG_H" value="1"/>
+						<entry kind="macro" name="USE_WPA2_TASK" value="1"/>
+						<entry kind="macro" name="USE_WPS_TASK" value="1"/>
+						<entry kind="macro" name="WITH_POSIX" value="1"/>
+						<entry kind="macro" name="__ets__" value="1"/>
+					</resource>
+				</language>
 			</provider>
-			<provider class="org.eclipse.cdt.internal.build.crossgcc.CrossGCCBuiltinSpecsDetector" console="false" env-hash="1250651602778632751" id="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT Cross GCC Built-in Compiler Settings" parameter="xtensa-esp32-elf-gcc ${FLAGS} -std=c++11 -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="true">
+			<provider class="org.eclipse.cdt.internal.build.crossgcc.CrossGCCBuiltinSpecsDetector" console="false" env-hash="1328316950502530479" id="org.eclipse.cdt.build.crossgcc.CrossGCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT Cross GCC Built-in Compiler Settings" parameter="xtensa-esp32-elf-gcc ${FLAGS} -std=c++11 -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="true">
 				<language-scope id="org.eclipse.cdt.core.gcc"/>
 				<language-scope id="org.eclipse.cdt.core.g++"/>
 				<language id="org.eclipse.cdt.core.gcc">
