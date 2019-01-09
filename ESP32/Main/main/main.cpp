@@ -22,15 +22,17 @@
 
 #include "IODefs.h"
 
+#include "BatteryManager.h"
+
 #define TEST_PIN_R GPIO_NUM_0
 #define TEST_PIN_G GPIO_NUM_2
 
-void set_RG_Level(int8_t percentage) {
+void set_RG_Level(int8_t percentage, uint8_t bNess = 254) {
 	int gLevel = percentage *254 /100;
 	int rLevel = 254 - gLevel;
 
-	ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0, (rLevel*rLevel)/(254));
-	ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_1, (gLevel*gLevel)/(254));
+	ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0, rLevel*bNess / 254);
+	ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_1, gLevel*bNess / 254);
 
 	ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0);
 	ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_1);
@@ -42,13 +44,11 @@ void app_main()
     printf("Hello world!\n");
 
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
-    esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
-    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_ON);
-    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_ON);
+    //esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
 
     esp_pm_config_esp32_t pCFG;
     pCFG.max_freq_mhz = 160;
-    pCFG.min_freq_mhz = 80;
+    pCFG.min_freq_mhz = 160;
     pCFG.light_sleep_enable = true;
     esp_pm_configure(&pCFG);
 
@@ -100,7 +100,12 @@ void app_main()
     for (int i = 0; i >= 0; i++) {
         //printf("Setting timer to %d...\n", i);
         vTaskDelay(10);
-        set_RG_Level(i%100);
+        if(i%300 < 100)
+        	set_RG_Level(i/300, (i%300)*2.5);
+        else if(i%300 < 150)
+        	set_RG_Level(i/300, (150 - i%300)*5);
+        else
+        	set_RG_Level(0, 0);
     }
     printf("Restarting now.\n");
     fflush(stdout);
