@@ -12,12 +12,77 @@
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 
+#include "esp_sleep.h"
+#include "esp_pm.h"
+#include "esp32/pm.h"
+
+#include "driver/gpio.h"
+#include "driver/rtc_io.h"
+#include "driver/ledc.h"
+
 #include "IODefs.h"
+
+#define TEST_PIN_R GPIO_NUM_0
+#define TEST_PIN_G GPIO_NUM_2
+
+void set_RG_Level(int8_t percentage) {
+	int gLevel = percentage *254 /100;
+	int rLevel = 254 - gLevel;
+
+	ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0, (rLevel*rLevel)/(254));
+	ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_1, (gLevel*gLevel)/(254));
+
+	ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_0);
+	ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_1);
+}
 
 extern "C"
 void app_main()
 {
     printf("Hello world!\n");
+
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_ON);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_ON);
+
+    esp_pm_config_esp32_t pCFG;
+    pCFG.max_freq_mhz = 160;
+    pCFG.min_freq_mhz = 80;
+    pCFG.light_sleep_enable = true;
+    esp_pm_configure(&pCFG);
+
+    rtc_gpio_init(GPIO_NUM_4);
+    rtc_gpio_set_direction(GPIO_NUM_4, RTC_GPIO_MODE_OUTPUT_ONLY);
+
+    //rtc_gpio_deinit(GPIO_NUM_0);
+    //rtc_gpio_deinit(GPIO_NUM_2);
+
+
+    ledc_timer_config_t ledTCFG = {};
+    ledTCFG.speed_mode = LEDC_HIGH_SPEED_MODE;
+    ledTCFG.duty_resolution = LEDC_TIMER_8_BIT;
+    ledTCFG.freq_hz = 3500;
+    ledTCFG.timer_num = LEDC_TIMER_0;
+
+    ledc_timer_config(&ledTCFG);
+
+    //ledc_timer_set(LEDC_HIGH_SPEED_MODE, LEDC_TIMER_0, 3500, 8, LEDC_REF_TICK);
+    ledc_timer_resume(LEDC_HIGH_SPEED_MODE, LEDC_TIMER_0);
+
+    ledc_channel_config_t redLEDCFG = {};
+    redLEDCFG.gpio_num = TEST_PIN_R;
+    redLEDCFG.speed_mode = LEDC_HIGH_SPEED_MODE;
+    redLEDCFG.timer_sel = LEDC_TIMER_0;
+    redLEDCFG.channel = LEDC_CHANNEL_0;
+    redLEDCFG.intr_type = LEDC_INTR_DISABLE;
+    redLEDCFG.duty = 250;
+
+    ledc_channel_config(&redLEDCFG);
+
+    redLEDCFG.gpio_num = TEST_PIN_G;
+    redLEDCFG.channel = LEDC_CHANNEL_1;
+    ledc_channel_config(&redLEDCFG);
 
     /* Print chip information */
     esp_chip_info_t chip_info;
@@ -32,9 +97,10 @@ void app_main()
     printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024),
             (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 
-    for (int i = 10; i >= 0; i--) {
-        printf("Restarting in %d seconds...\n", i);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    for (int i = 0; i >= 0; i++) {
+        //printf("Setting timer to %d...\n", i);
+        vTaskDelay(10);
+        set_RG_Level(i%100);
     }
     printf("Restarting now.\n");
     fflush(stdout);
