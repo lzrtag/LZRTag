@@ -23,6 +23,9 @@
 #include "IODefs.h"
 
 #include "BatteryManager.h"
+#include "BLEPipe.h"
+
+auto testPipe = Xasin::Communication::BLE_Pipe("TestPipe");
 
 #define TEST_PIN_R GPIO_NUM_0
 #define TEST_PIN_G GPIO_NUM_2
@@ -42,6 +45,8 @@ extern "C"
 void app_main()
 {
     printf("Hello world!\n");
+
+    testPipe.start();
 
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
     //esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
