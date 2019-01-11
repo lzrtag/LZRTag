@@ -31,7 +31,7 @@
 auto dataRegisters = Xasin::Communication::RegisterBlock();
 auto testBMan = Housekeeping::BatteryManager();
 
-auto testPipe = Xasin::Communication::BLE_SlaveChannel("TestPipe", dataRegisters);
+//auto testPipe = Xasin::Communication::BLE_SlaveChannel("TestPipe", dataRegisters);
 
 #define TEST_PIN_R GPIO_NUM_0
 #define TEST_PIN_G GPIO_NUM_2
@@ -50,13 +50,13 @@ void set_RG_Level(int8_t percentage, uint8_t bNess = 254) {
 extern "C"
 void app_main()
 {
-    nvs_flash_init();
+    //nvs_flash_init();
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
 
     printf("Hello world!\n");
 
-    testPipe.start();
-    //esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
+    //testPipe.start();
 
     esp_pm_config_esp32_t pCFG;
     pCFG.max_freq_mhz = 160;
@@ -79,7 +79,7 @@ void app_main()
 
     ledc_timer_config(&ledTCFG);
 
-    //ledc_timer_set(LEDC_HIGH_SPEED_MODE, LEDC_TIMER_0, 3500, 8, LEDC_REF_TICK);
+    ledc_timer_set(LEDC_HIGH_SPEED_MODE, LEDC_TIMER_0, 3500, 8, LEDC_REF_TICK);
     ledc_timer_resume(LEDC_HIGH_SPEED_MODE, LEDC_TIMER_0);
 
     ledc_channel_config_t redLEDCFG = {};
