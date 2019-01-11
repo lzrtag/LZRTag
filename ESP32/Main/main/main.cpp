@@ -7,10 +7,12 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 #include <stdio.h>
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
+#include "nvs_flash.h"
 
 #include "esp_sleep.h"
 #include "esp_pm.h"
@@ -23,9 +25,13 @@
 #include "IODefs.h"
 
 #include "BatteryManager.h"
-#include "BLEPipe.h"
 
-auto testPipe = Xasin::Communication::BLE_Pipe("TestPipe");
+#include "BLESlaveChannel.h"
+
+auto dataRegisters = Xasin::Communication::RegisterBlock();
+auto testBMan = Housekeeping::BatteryManager();
+
+auto testPipe = Xasin::Communication::BLE_SlaveChannel("TestPipe", dataRegisters);
 
 #define TEST_PIN_R GPIO_NUM_0
 #define TEST_PIN_G GPIO_NUM_2
@@ -44,11 +50,12 @@ void set_RG_Level(int8_t percentage, uint8_t bNess = 254) {
 extern "C"
 void app_main()
 {
+    nvs_flash_init();
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
+
     printf("Hello world!\n");
 
     testPipe.start();
-
-    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
     //esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
 
     esp_pm_config_esp32_t pCFG;
