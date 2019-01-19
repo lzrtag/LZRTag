@@ -19,7 +19,7 @@
 #include "esp32/pm.h"
 
 #include "driver/gpio.h"
-#include "driver/rtc_io.h"
+#include "driver/rtc_io.h"    printf("Hello world!\n");
 #include "driver/ledc.h"
 
 #include "IODefs.h"
@@ -47,6 +47,14 @@ void set_RG_Level(int8_t percentage, uint8_t bNess = 254) {
 	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
 }
 
+void animator_task() {
+	TickType_t lastTick;
+
+	while(true) {
+		vTaskDelayUntil(&lastTick, 10);
+	}
+}
+
 extern "C"
 void app_main()
 {
@@ -54,13 +62,11 @@ void app_main()
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
     esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
 
-    printf("Hello world!\n");
-
     testPipe.start();
 
     esp_pm_config_esp32_t pCFG;
     pCFG.max_freq_mhz = 160;
-    pCFG.min_freq_mhz = 80;
+    pCFG.min_freq_mhz = 40;
     pCFG.light_sleep_enable = true;
     esp_pm_configure(&pCFG);
 
