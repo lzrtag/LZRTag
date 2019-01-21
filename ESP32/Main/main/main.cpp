@@ -7,6 +7,7 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 #include <stdio.h>
+#include <cmath>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -19,38 +20,96 @@
 #include "esp32/pm.h"
 
 #include "driver/gpio.h"
-#include "driver/rtc_io.h"    printf("Hello world!\n");
+#include "driver/rtc_io.h"
 #include "driver/ledc.h"
 
 #include "IODefs.h"
 
 #include "BatteryManager.h"
-
 #include "BLESlaveChannel.h"
+
+#include "AudioHandler.h"
+
+#include "NeoController.h"
+#include "ManeAnimator.h"
+
+#include "GunHandler.h"
+
+#include "audio_example_file.h"
+
+using namespace Peripheral;
+
+auto audio_example_cassette = Xasin::Peripheral::AudioCassette(audio_table, sizeof(audio_table));
 
 auto dataRegisters = Xasin::Communication::RegisterBlock();
 auto testBMan = Housekeeping::BatteryManager();
 
 auto testPipe = Xasin::Communication::BLE_SlaveChannel("TestPipe", dataRegisters);
 
-#define TEST_PIN_R GPIO_NUM_0
-#define TEST_PIN_G GPIO_NUM_2
+auto audioMan = Xasin::Peripheral::AudioHandler();
 
-void set_RG_Level(int8_t percentage, uint8_t bNess = 254) {
-	int gLevel = percentage *254 /100;
-	int rLevel = 254 - gLevel;
+auto RGBController = Peripheral::NeoController(GPIO_NUM_27, RMT_CHANNEL_0, 5);
 
-	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, rLevel*bNess / 254);
-	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, gLevel*bNess / 254);
+auto gunHandler = Lasertag::GunHandler(GPIO_NUM_0);
 
-	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
-	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
-}
-
-void animator_task() {
+void animator_task(void *data) {
 	TickType_t lastTick;
 
+	Color muzzleBaseColor  = 0;
+
+	Color muzzleHeatColor  = Color(Material::DEEP_ORANGE);
+	Color muzzleFlashColor = Color(Material::PURPLE).merge_overlay(0xFFFFFF, 100);
+
+	Layer vestBaseLayer = Layer(4);
+	vestBaseLayer.fill(Color(Material::PURPLE, 100));
+	Layer vestBufferLayer = vestBaseLayer;
+	vestBaseLayer.alpha = 30;
+
+	auto vestShotAnimator = ManeAnimator(vestBaseLayer.length());
+	vestShotAnimator.baseTug   = 0.0013;
+	vestShotAnimator.basePoint = 0.1;
+	vestShotAnimator.dampening = 0.94;
+	vestShotAnimator.ptpTug    = 0.015;
+	vestShotAnimator.wrap 	   = true;
+
+	auto vestShotOverlay = Layer(vestBaseLayer.length());
+	vestShotOverlay.fill(Material::DEEP_PURPLE);
+	vestShotOverlay.alpha = 130;
+
 	while(true) {
+
+		gunHandler.tick();
+
+		if(gunHandler.timeSinceLastShot() < 3)
+			vestShotAnimator.points[0].pos = 1;
+
+		for(int i=3; i!=0; i--)
+			vestShotAnimator.tick();
+
+
+		for(int i=0; i<vestBaseLayer.length(); i++)
+			vestBaseLayer[i] = Color(Material::PURPLE, (50 + (170.0*gunHandler.getGunHeat())/255)*(0.8 + 0.4*sin((xTaskGetTickCount() - i*300)/1200.0 * M_PI)));
+		vestBufferLayer.merge_overlay(vestBaseLayer);
+
+		RGBController.colors.merge_overlay(vestBufferLayer, 1);
+
+		vestShotOverlay.alpha_set(vestShotAnimator.scalarPoints);
+		RGBController.colors.merge_overlay(vestShotOverlay, 1);
+
+
+		Color newMuzzleColor = muzzleBaseColor;
+		muzzleHeatColor.alpha = gunHandler.getGunHeat();
+		newMuzzleColor.merge_overlay(muzzleHeatColor);
+
+		if(gunHandler.timeSinceLastShot() < 3) {
+			newMuzzleColor.merge_overlay(muzzleFlashColor);
+		    audioMan.insert_cassette(audio_example_cassette);
+		}
+
+		RGBController.colors[0] = newMuzzleColor;
+
+		RGBController.update();
+
 		vTaskDelayUntil(&lastTick, 10);
 	}
 }
@@ -62,19 +121,14 @@ void app_main()
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
     esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
 
-    testPipe.start();
-
     esp_pm_config_esp32_t pCFG;
     pCFG.max_freq_mhz = 160;
-    pCFG.min_freq_mhz = 40;
+    pCFG.min_freq_mhz = 80;
     pCFG.light_sleep_enable = true;
     esp_pm_configure(&pCFG);
 
     rtc_gpio_init(GPIO_NUM_4);
     rtc_gpio_set_direction(GPIO_NUM_4, RTC_GPIO_MODE_OUTPUT_ONLY);
-
-    rtc_gpio_deinit(GPIO_NUM_0);
-    rtc_gpio_deinit(GPIO_NUM_2);
 
     ledc_timer_config_t ledTCFG = {};
     ledTCFG.speed_mode = LEDC_LOW_SPEED_MODE;
@@ -85,23 +139,15 @@ void app_main()
     ledc_timer_config(&ledTCFG);
 
     ledc_timer_set(LEDC_LOW_SPEED_MODE, LEDC_TIMER_0, 350, 8, LEDC_REF_TICK);
-    ledc_timer_rst(LEDC_LOW_SPEED_MODE, LEDC_TIMER_0);
-    ledc_timer_resume(LEDC_LOW_SPEED_MODE, LEDC_TIMER_0);
 
     ledc_channel_config_t redLEDCFG = {};
-    redLEDCFG.gpio_num = TEST_PIN_R;
+    redLEDCFG.gpio_num = GPIO_NUM_2;
     redLEDCFG.speed_mode = LEDC_LOW_SPEED_MODE;
     redLEDCFG.timer_sel = LEDC_TIMER_0;
     redLEDCFG.channel = LEDC_CHANNEL_0;
     redLEDCFG.intr_type = LEDC_INTR_DISABLE;
     redLEDCFG.duty = 250;
 
-    ledc_channel_config(&redLEDCFG);
-
-    ledc_bind_channel_timer(LEDC_LOW_SPEED_MODE, 0, 0);
-
-    redLEDCFG.gpio_num = TEST_PIN_G;
-    redLEDCFG.channel = LEDC_CHANNEL_1;
     ledc_channel_config(&redLEDCFG);
 
     /* Print chip information */
@@ -121,21 +167,32 @@ void app_main()
 
     auto testRegister = Xasin::Communication::ComRegister(0xA, dataRegisters, &batLvl, 1, true);
 
-    while(true) {
+    TaskHandle_t animatorTaskHandle;
+    xTaskCreatePinnedToCore(animator_task, "Animator", 4*1024, nullptr, 10, &animatorTaskHandle, 1);
 
-		for (int i = 0; i < 300; i++) {
-			//printf("Setting timer to %d...\n", i);
-			vTaskDelay(10);
-			if(i%300 < 100)
-				set_RG_Level(batLvl, (i)*2.5);
-			else if(i < 150)
-				set_RG_Level(batLvl, (150 - i)*5);
-			else
-				set_RG_Level(0, 0);
-		}
-		batLvl++;
-		testRegister.update();
+    audioMan.start_thread();
+
+    testPipe.start();
+
+    while(true) {
+    	vTaskDelay(10000);
     }
+
+//    while(true) {
+//
+//		for (int i = 0; i < 300; i++) {
+//			//printf("Setting timer to %d...\n", i);
+//			vTaskDelay(10);
+//			if(i%300 < 100)
+//				set_RG_Level(batLvl, (i)*2.5);
+//			else if(i < 150)
+//				set_RG_Level(batLvl, (150 - i)*5);
+//			else
+//				set_RG_Level(0, 0);
+//		}
+//		batLvl++;
+//		testRegister.update();
+//    }
     printf("Restarting now.\n");
     fflush(stdout);
     esp_restart();

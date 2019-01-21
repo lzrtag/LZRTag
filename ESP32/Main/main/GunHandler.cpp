@@ -9,16 +9,38 @@
 
 namespace Lasertag {
 
+GunSpecs::GunSpecs() {
+	maxAmmo = 50;
+
+	postTriggerTicks   = 0;
+	postTriggerRelease = false;
+
+	shotsPerSalve = 1;
+
+	perShotDelay   = 80;
+	postSalveDelay = 0;
+	postSalveRelease = false;
+
+	postShotReloadBlock =   60;
+	postReloadReloadBlock = 60;
+	perReloadRecharge = maxAmmo;
+
+	perShotHeatup 	= 0.017;
+	perTickCooldown = 0.998;
+}
+
 GunHandler::GunHandler(gpio_num_t trgPin)
 	:	fireState(WAIT_ON_VALID),
 		reloadState(FULL),
-		shotTick(0), salveCounter(0),
+		shotTick(0), salveCounter(0), lastShotTick(0),
 		reloadTick(0),
+		gunHeat(0),
 		triggerPin(trgPin),
 		currentGun() {
 
 	currentAmmo = currentGun.maxAmmo;
 
+	gpio_set_direction(triggerPin, GPIO_MODE_INPUT);
 	gpio_set_pull_mode(triggerPin, GPIO_PULLUP_ONLY);
 	gpio_pullup_en(triggerPin);
 }
@@ -30,11 +52,18 @@ bool GunHandler::triggerPressed() {
 void GunHandler::handle_shot() {
 	puts("PEW!");
 
+	currentAmmo--;
+	gunHeat += currentGun.perShotHeatup;
+
 	fireState = POST_SHOT_DELAY;
 	shotTick  = xTaskGetTickCount() + currentGun.perShotDelay;
+	lastShotTick = xTaskGetTickCount();
+
+	reloadState = POST_SHOT_WAIT;
+	reloadTick  = xTaskGetTickCount() + currentGun.postShotReloadBlock;
 }
 
-void GunHandler::tick() {
+void GunHandler::shot_tick() {
 	bool fireStateChanged = true;
 
 	while(fireStateChanged) {
@@ -44,6 +73,11 @@ void GunHandler::tick() {
 		case WAIT_ON_VALID:
 			if(!triggerPressed())
 				break;
+			if(currentAmmo < currentGun.shotsPerSalve)
+				break;
+
+			if(currentGun.postTriggerTicks != 0)
+				puts("Weapon charging!");
 
 			shotTick  = xTaskGetTickCount() + currentGun.postTriggerTicks;
 			fireState = POST_TRIGGER_DELAY;
@@ -84,12 +118,51 @@ void GunHandler::tick() {
 				fireStateChanged = true;
 
 				if(!triggerPressed() && !currentGun.postSalveRelease && !currentGun.postTriggerRelease) {
-					// TODO Add shot-loop-stop here.
+					puts("Shot loop stopped!");
 				}
 			}
 		break;
 		}
 	}
+}
+
+void GunHandler::reload_tick() {
+	if(currentAmmo >= currentGun.maxAmmo)
+		return;
+
+	if(reloadTick > xTaskGetTickCount())
+		return;
+
+	currentAmmo += currentGun.perReloadRecharge;
+	if(currentAmmo > currentGun.maxAmmo)
+		currentAmmo = currentGun.maxAmmo;
+
+	reloadTick = xTaskGetTickCount() + currentGun.postReloadReloadBlock;
+
+	puts("Reloaded a 'lil");
+}
+
+void GunHandler::graphics_tick() {
+	gunHeat *= currentGun.perTickCooldown;
+}
+
+TickType_t GunHandler::timeSinceLastShot() {
+	return xTaskGetTickCount() - lastShotTick;
+}
+uint8_t GunHandler::getGunHeat() {
+	if(gunHeat > 1)
+		return 255;
+	if(gunHeat < 0)
+		return 0;
+
+	return gunHeat * (255-3) + 3;
+}
+
+void GunHandler::tick() {
+	reload_tick();
+	shot_tick();
+
+	graphics_tick();
 }
 
 } /* namespace Lasertag */

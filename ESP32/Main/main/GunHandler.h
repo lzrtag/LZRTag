@@ -48,7 +48,10 @@ public:
 	int	 postReloadReloadBlock;
 	int  perReloadRecharge;
 
-	float perShotHeatup;
+	double perShotHeatup;
+	double perTickCooldown;
+
+	GunSpecs();
 };
 
 class GunHandler {
@@ -60,12 +63,19 @@ private:
 
 	TickType_t shotTick;
 	int salveCounter;
+	TickType_t lastShotTick;
 
 	TickType_t reloadTick;
+
+	float gunHeat;
 
 	const gpio_num_t triggerPin;
 
 	void handle_shot();
+
+	void shot_tick();
+	void reload_tick();
+	void graphics_tick();
 
 public:
 	GunSpecs currentGun;
@@ -73,6 +83,9 @@ public:
 	GunHandler(gpio_num_t trgtPin);
 
 	bool triggerPressed();
+
+	TickType_t timeSinceLastShot();
+	uint8_t getGunHeat();
 
 	void tick();
 };
