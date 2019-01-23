@@ -46,7 +46,7 @@ GunHandler::GunHandler(gpio_num_t trgPin)
 }
 
 bool GunHandler::triggerPressed() {
-	return gpio_get_level(triggerPin) == 0;
+	return gpio_get_level(triggerPin) != 0;
 }
 
 void GunHandler::handle_shot() {

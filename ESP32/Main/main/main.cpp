@@ -48,9 +48,9 @@ auto testPipe = Xasin::Communication::BLE_SlaveChannel("TestPipe", dataRegisters
 
 auto audioMan = Xasin::Peripheral::AudioHandler();
 
-auto RGBController = Peripheral::NeoController(GPIO_NUM_27, RMT_CHANNEL_0, 5);
+auto RGBController = Peripheral::NeoController(PIN_WS2812_OUT, RMT_CHANNEL_0, 5);
 
-auto gunHandler = Lasertag::GunHandler(GPIO_NUM_0);
+auto gunHandler = Lasertag::GunHandler(PIN_TRIGR);
 
 void animator_task(void *data) {
 	TickType_t lastTick;
@@ -103,15 +103,33 @@ void animator_task(void *data) {
 
 		if(gunHandler.timeSinceLastShot() < 3) {
 			newMuzzleColor.merge_overlay(muzzleFlashColor);
-		    audioMan.insert_cassette(audio_example_cassette);
+		    //audioMan.insert_cassette(audio_example_cassette);
 		}
+		gpio_set_level(PIN_VBRT, gunHandler.timeSinceLastShot() <= 30 ? 1 : 0);
 
-		RGBController.colors[0] = newMuzzleColor;
+
+		Color actualMuzzle = Color();
+		actualMuzzle.r = newMuzzleColor.g;
+		actualMuzzle.g = newMuzzleColor.r;
+		actualMuzzle.b = newMuzzleColor.b;
+		RGBController.colors[0] = actualMuzzle;
 
 		RGBController.update();
 
 		vTaskDelayUntil(&lastTick, 10);
 	}
+}
+
+void set_pins() {
+	gpio_set_direction(PIN_IR_OUT, GPIO_MODE_OUTPUT);
+	gpio_set_level(PIN_IR_OUT, false);
+
+	gpio_set_direction(PIN_IR_IN, GPIO_MODE_INPUT);
+
+	gpio_set_direction(PIN_BAT_CHGING, GPIO_MODE_INPUT);
+
+	gpio_set_direction(PIN_VBRT, GPIO_MODE_OUTPUT);
+	gpio_set_level(PIN_VBRT, false);
 }
 
 extern "C"
@@ -121,14 +139,13 @@ void app_main()
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
     esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
 
+    set_pins();
+
     esp_pm_config_esp32_t pCFG;
     pCFG.max_freq_mhz = 160;
     pCFG.min_freq_mhz = 80;
-    pCFG.light_sleep_enable = true;
+    pCFG.light_sleep_enable = false;
     esp_pm_configure(&pCFG);
-
-    rtc_gpio_init(GPIO_NUM_4);
-    rtc_gpio_set_direction(GPIO_NUM_4, RTC_GPIO_MODE_OUTPUT_ONLY);
 
     ledc_timer_config_t ledTCFG = {};
     ledTCFG.speed_mode = LEDC_LOW_SPEED_MODE;
@@ -141,7 +158,7 @@ void app_main()
     ledc_timer_set(LEDC_LOW_SPEED_MODE, LEDC_TIMER_0, 350, 8, LEDC_REF_TICK);
 
     ledc_channel_config_t redLEDCFG = {};
-    redLEDCFG.gpio_num = GPIO_NUM_2;
+    redLEDCFG.gpio_num = PIN_BAT_GREEN;
     redLEDCFG.speed_mode = LEDC_LOW_SPEED_MODE;
     redLEDCFG.timer_sel = LEDC_TIMER_0;
     redLEDCFG.channel = LEDC_CHANNEL_0;
@@ -171,8 +188,6 @@ void app_main()
     xTaskCreatePinnedToCore(animator_task, "Animator", 4*1024, nullptr, 10, &animatorTaskHandle, 1);
 
     audioMan.start_thread();
-
-    testPipe.start();
 
     while(true) {
     	vTaskDelay(10000);
