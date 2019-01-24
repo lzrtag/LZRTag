@@ -107,6 +107,8 @@ void animator_task(void *data) {
 		}
 		gpio_set_level(PIN_VBRT, gunHandler.timeSinceLastShot() <= 30 ? 1 : 0);
 
+		ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, (0.5 + 0.5*sin(xTaskGetTickCount()/1200.0 * M_PI))*255);
+		ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
 
 		Color actualMuzzle = Color();
 		actualMuzzle.r = newMuzzleColor.g;
@@ -121,15 +123,57 @@ void animator_task(void *data) {
 }
 
 void set_pins() {
-	gpio_set_direction(PIN_IR_OUT, GPIO_MODE_OUTPUT);
+	gpio_config_t outCFG = {};
+	outCFG.pin_bit_mask = (1<<PIN_IR_OUT |
+			1<<PIN_VBRT);
+			//| 1<<PIN_BAT_GREEN | 1<<PIN_BAT_RED |
+			//1<<PIN_CONN_IND);
+	outCFG.mode = GPIO_MODE_OUTPUT;
+	outCFG.pull_down_en = GPIO_PULLDOWN_DISABLE;
+	outCFG.pull_up_en = GPIO_PULLUP_DISABLE;
+	outCFG.intr_type = GPIO_INTR_DISABLE;
+
+	gpio_config(&outCFG);
+
 	gpio_set_level(PIN_IR_OUT, false);
+	gpio_set_level(PIN_VBRT, false);
 
 	gpio_set_direction(PIN_IR_IN, GPIO_MODE_INPUT);
-
 	gpio_set_direction(PIN_BAT_CHGING, GPIO_MODE_INPUT);
+}
 
-	gpio_set_direction(PIN_VBRT, GPIO_MODE_OUTPUT);
-	gpio_set_level(PIN_VBRT, false);
+void enable_led_pwm(gpio_num_t pin, ledc_channel_t led_channel) {
+	ledc_channel_config_t redLEDCFG = {};
+	redLEDCFG.gpio_num = pin;
+	redLEDCFG.speed_mode = LEDC_LOW_SPEED_MODE;
+	redLEDCFG.timer_sel = LEDC_TIMER_0;
+	redLEDCFG.channel = led_channel;
+	redLEDCFG.intr_type = LEDC_INTR_DISABLE;
+	redLEDCFG.duty = 0;
+
+	ledc_channel_config(&redLEDCFG);
+}
+
+void set_led() {
+	esp_pm_config_esp32_t pCFG;
+	pCFG.max_freq_mhz = 80;
+	pCFG.min_freq_mhz = 80;
+	pCFG.light_sleep_enable = false;
+	esp_pm_configure(&pCFG);
+
+	ledc_timer_config_t ledTCFG = {};
+	ledTCFG.speed_mode = LEDC_LOW_SPEED_MODE;
+	ledTCFG.duty_resolution = LEDC_TIMER_8_BIT;
+	ledTCFG.freq_hz = 350;
+	ledTCFG.timer_num = LEDC_TIMER_0;
+
+	ledc_timer_config(&ledTCFG);
+
+	ledc_timer_set(LEDC_LOW_SPEED_MODE, LEDC_TIMER_0, 350, 8, LEDC_REF_TICK);
+
+	enable_led_pwm(PIN_BAT_GREEN, LEDC_CHANNEL_0);
+	enable_led_pwm(PIN_BAT_RED,   LEDC_CHANNEL_1);
+	enable_led_pwm(PIN_CONN_IND,  LEDC_CHANNEL_2);
 }
 
 extern "C"
@@ -141,31 +185,7 @@ void app_main()
 
     set_pins();
 
-    esp_pm_config_esp32_t pCFG;
-    pCFG.max_freq_mhz = 160;
-    pCFG.min_freq_mhz = 80;
-    pCFG.light_sleep_enable = false;
-    esp_pm_configure(&pCFG);
-
-    ledc_timer_config_t ledTCFG = {};
-    ledTCFG.speed_mode = LEDC_LOW_SPEED_MODE;
-    ledTCFG.duty_resolution = LEDC_TIMER_8_BIT;
-    ledTCFG.freq_hz = 350;
-    ledTCFG.timer_num = LEDC_TIMER_0;
-
-    ledc_timer_config(&ledTCFG);
-
-    ledc_timer_set(LEDC_LOW_SPEED_MODE, LEDC_TIMER_0, 350, 8, LEDC_REF_TICK);
-
-    ledc_channel_config_t redLEDCFG = {};
-    redLEDCFG.gpio_num = PIN_BAT_GREEN;
-    redLEDCFG.speed_mode = LEDC_LOW_SPEED_MODE;
-    redLEDCFG.timer_sel = LEDC_TIMER_0;
-    redLEDCFG.channel = LEDC_CHANNEL_0;
-    redLEDCFG.intr_type = LEDC_INTR_DISABLE;
-    redLEDCFG.duty = 250;
-
-    ledc_channel_config(&redLEDCFG);
+    set_led();
 
     /* Print chip information */
     esp_chip_info_t chip_info;

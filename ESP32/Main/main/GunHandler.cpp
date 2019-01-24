@@ -15,17 +15,17 @@ GunSpecs::GunSpecs() {
 	postTriggerTicks   = 0;
 	postTriggerRelease = false;
 
-	shotsPerSalve = 1;
+	shotsPerSalve = 3;
 
-	perShotDelay   = 80;
-	postSalveDelay = 0;
+	perShotDelay   = 70;
+	postSalveDelay = 200;
 	postSalveRelease = false;
 
-	postShotReloadBlock =   60;
+	postShotReloadBlock =   600;
 	postReloadReloadBlock = 60;
 	perReloadRecharge = maxAmmo;
 
-	perShotHeatup 	= 0.017;
+	perShotHeatup 	= 0.007;
 	perTickCooldown = 0.998;
 }
 
@@ -46,7 +46,7 @@ GunHandler::GunHandler(gpio_num_t trgPin)
 }
 
 bool GunHandler::triggerPressed() {
-	return gpio_get_level(triggerPin) != 0;
+	return gpio_get_level(triggerPin) == 0;
 }
 
 void GunHandler::handle_shot() {
