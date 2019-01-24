@@ -187,8 +187,6 @@ $EndSheet
 Wire Wire Line
 	2800 3575 2600 3575
 Wire Wire Line
-	2600 3575 2600 4075
-Wire Wire Line
 	2600 4325 2800 4325
 $Comp
 L Connector:DB9_Female J2
@@ -599,33 +597,10 @@ Wire Wire Line
 	3900 4250 4300 4250
 Text Label 4300 4250 2    50   ~ 0
 CHG_STAT
-$Comp
-L Device:Jumper_NO_Small JP?
-U 1 1 5C321B1D
-P 2425 4250
-F 0 "JP?" H 2475 4175 50  0000 R CNN
-F 1 "Jumper_NO_Small" H 2750 4400 50  0000 R CNN
-F 2 "" H 2425 4250 50  0001 C CNN
-F 3 "~" H 2425 4250 50  0001 C CNN
-	1    2425 4250
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
-	2425 4150 2425 4075
-Wire Wire Line
-	2425 4075 2600 4075
-Connection ~ 2600 4075
-Wire Wire Line
-	2600 4075 2600 4325
-$Comp
-L power:GND #PWR?
-U 1 1 5C3239BB
-P 2425 4350
-F 0 "#PWR?" H 2425 4100 50  0001 C CNN
-F 1 "GND" H 2430 4177 50  0000 C CNN
-F 2 "" H 2425 4350 50  0001 C CNN
-F 3 "" H 2425 4350 50  0001 C CNN
-	1    2425 4350
-	1    0    0    -1  
-$EndComp
+	2600 3575 2600 4325
+Text Label 6650 4275 0    50   ~ 0
+BCLK
+Text Label 6550 3100 0    50   ~ 0
+LRCLK
 $EndSCHEMATC

@@ -206,8 +206,6 @@ F 3 "" H 5150 6000 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5650 5450 5950 5450
-Wire Wire Line
-	5650 5850 5950 5850
 $Comp
 L Device:C_Small CRST1
 U 1 1 5C2C09DB
@@ -222,29 +220,8 @@ $EndComp
 Connection ~ 5950 5450
 Wire Wire Line
 	5950 5450 6450 5450
-$Comp
-L Device:C_Small CPRG1
-U 1 1 5C2C0A50
-P 5950 5950
-F 0 "CPRG1" H 6042 5996 50  0000 L CNN
-F 1 "150nF" H 6042 5905 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0603_1608Metric" H 5950 5950 50  0001 C CNN
-F 3 "~" H 5950 5950 50  0001 C CNN
-	1    5950 5950
-	1    0    0    -1  
-$EndComp
-Connection ~ 5950 5850
-Wire Wire Line
-	5950 5850 6450 5850
 Wire Wire Line
 	5950 5650 5850 5650
-Wire Wire Line
-	5850 5650 5850 6050
-Wire Wire Line
-	5950 6050 5850 6050
-Connection ~ 5850 6050
-Wire Wire Line
-	5850 6050 5850 6150
 $Comp
 L power:GND #PWR0119
 U 1 1 5C2C15E8
@@ -317,7 +294,7 @@ L Device:R_Small R1
 U 1 1 5C2DC6E6
 P 6875 4375
 F 0 "R1" V 6679 4375 50  0000 C CNN
-F 1 "2.2k" V 6770 4375 50  0000 C CNN
+F 1 "220" V 6770 4375 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 6875 4375 50  0001 C CNN
 F 3 "~" H 6875 4375 50  0001 C CNN
 	1    6875 4375
@@ -331,4 +308,8 @@ Text Label 7250 4375 2    50   ~ 0
 USB3.3
 Text Notes 5125 5900 1    50   ~ 0
 Footprints!\n
+Wire Wire Line
+	5650 5850 6450 5850
+Wire Wire Line
+	5850 5650 5850 6150
 $EndSCHEMATC
