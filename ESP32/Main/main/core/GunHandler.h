@@ -13,6 +13,12 @@
 
 #include "driver/gpio.h"
 
+#include <vector>
+
+#include "AudioHandler.h"
+
+using namespace Xasin::Peripheral;
+
 namespace Lasertag {
 
 enum FIRE_STATE {
@@ -30,6 +36,8 @@ enum RELOAD_STATE {
 	POST_RELOAD_WAIT
 };
 
+
+
 class GunSpecs {
 public:
 	int  maxAmmo;
@@ -40,8 +48,11 @@ public:
 	int	 shotsPerSalve;
 
 	int	 perShotDelay;
-	int	 postSalveDelay;
 
+	int  postShotCooldownTicks;
+	int	 postShotVibrationTicks;
+
+	int	 postSalveDelay;
 	bool postSalveRelease;
 
 	int	 postShotReloadBlock;
@@ -51,8 +62,12 @@ public:
 	double perShotHeatup;
 	double perTickCooldown;
 
-	GunSpecs();
+	CassetteCollection	chargeSounds;
+	CassetteCollection	shotSounds;
+	CassetteCollection	cooldownSounds;
 };
+
+extern const GunSpecs defaultGun;
 
 class GunHandler {
 private:
@@ -67,23 +82,31 @@ private:
 
 	TickType_t reloadTick;
 
+	TickType_t lastTick;
+
 	float gunHeat;
 
 	const gpio_num_t triggerPin;
 
+	bool shot_performed;
 	void handle_shot();
 
 	void shot_tick();
 	void reload_tick();
-	void graphics_tick();
+	void fx_tick();
+
+	GunSpecs const *currentGun;
 
 public:
-	GunSpecs currentGun;
+	AudioHandler &audio;
 
-	GunHandler(gpio_num_t trgtPin);
+	GunSpecs const &cGun();
+
+	GunHandler(gpio_num_t trgtPin, AudioHandler &audio);
 
 	bool triggerPressed();
 
+	bool was_shot_tick();
 	TickType_t timeSinceLastShot();
 	uint8_t getGunHeat();
 

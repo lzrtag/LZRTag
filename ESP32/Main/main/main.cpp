@@ -23,6 +23,8 @@
 #include "driver/rtc_io.h"
 #include "driver/ledc.h"
 
+#include "core/setup.h"
+
 #include "IODefs.h"
 
 #include "BatteryManager.h"
@@ -31,9 +33,7 @@
 #include "AudioHandler.h"
 
 #include "NeoController.h"
-#include "ManeAnimator.h"
-
-#include "GunHandler.h"
+#include "fx/ManeAnimator.h"
 
 #include "audio_example_file.h"
 
@@ -50,7 +50,7 @@ auto audioMan = Xasin::Peripheral::AudioHandler();
 
 auto RGBController = Peripheral::NeoController(PIN_WS2812_OUT, RMT_CHANNEL_0, 5);
 
-auto gunHandler = Lasertag::GunHandler(PIN_TRIGR);
+auto gunHandler = Lasertag::GunHandler(PIN_TRIGR, audioMan);
 
 void animator_task(void *data) {
 	TickType_t lastTick;
@@ -101,13 +101,13 @@ void animator_task(void *data) {
 		muzzleHeatColor.alpha = gunHandler.getGunHeat();
 		newMuzzleColor.merge_overlay(muzzleHeatColor);
 
-		if(gunHandler.timeSinceLastShot() < 3) {
+		if(gunHandler.was_shot_tick()) {
 			newMuzzleColor.merge_overlay(muzzleFlashColor);
-		    //audioMan.insert_cassette(audio_example_cassette);
+		    audioMan.insert_cassette(audio_example_cassette);
 		}
 		gpio_set_level(PIN_VBRT, gunHandler.timeSinceLastShot() <= 30 ? 1 : 0);
 
-		ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, (0.5 + 0.5*sin(xTaskGetTickCount()/1200.0 * M_PI))*255);
+		ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, pow((0.5 + 0.5*sin(xTaskGetTickCount()/1200.0 * M_PI)),2)*255);
 		ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
 
 		Color actualMuzzle = Color();
@@ -125,9 +125,9 @@ void animator_task(void *data) {
 void set_pins() {
 	gpio_config_t outCFG = {};
 	outCFG.pin_bit_mask = (1<<PIN_IR_OUT |
-			1<<PIN_VBRT);
-			//| 1<<PIN_BAT_GREEN | 1<<PIN_BAT_RED |
-			//1<<PIN_CONN_IND);
+			1<<PIN_VBRT |
+			1<<PIN_BAT_GREEN | 1<<PIN_BAT_RED |
+			1<<PIN_CONN_IND);
 	outCFG.mode = GPIO_MODE_OUTPUT;
 	outCFG.pull_down_en = GPIO_PULLDOWN_DISABLE;
 	outCFG.pull_up_en = GPIO_PULLUP_DISABLE;
@@ -204,10 +204,13 @@ void app_main()
 
     auto testRegister = Xasin::Communication::ComRegister(0xA, dataRegisters, &batLvl, 1, true);
 
-    TaskHandle_t animatorTaskHandle;
-    xTaskCreatePinnedToCore(animator_task, "Animator", 4*1024, nullptr, 10, &animatorTaskHandle, 1);
-
-    audioMan.start_thread();
+    i2s_pin_config_t i2sPins = {
+    		PIN_I2S_BLCK,
+			PIN_I2S_LRCK,
+			PIN_I2S_DATA,
+			-1
+    };
+    audioMan.start_thread(i2sPins);
 
     while(true) {
     	vTaskDelay(10000);
