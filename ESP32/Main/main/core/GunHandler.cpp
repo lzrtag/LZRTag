@@ -5,11 +5,14 @@
  *      Author: xasin
  */
 
-#include "../core/GunHandler.h"
+#include "GunHandler.h"
 
 #include "../weapons/wyre.h"
+#include "empty_click.h"
 
 namespace Lasertag {
+
+const AudioCassette emptyClick(empty_click, sizeof(empty_click));
 
 const GunSpecs defaultGun = {
 	.maxAmmo = 50,
@@ -32,7 +35,7 @@ const GunSpecs defaultGun = {
 	.perReloadRecharge = 5,
 
 	.perShotHeatup 	 = 0.007,
-	.perTickCooldown = 0.998,
+	.perTickCooldown = 0.9985,
 
 	.chargeSounds	= CassetteCollection(),
 	.shotSounds 	= CassetteCollection(),
@@ -43,6 +46,7 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 	:	fireState(WAIT_ON_VALID),
 		reloadState(FULL),
 		shotTick(0), salveCounter(0), lastShotTick(0),
+		emptyClickPlayed(false),
 		reloadTick(0),
 		lastTick(0),
 		gunHeat(0),
@@ -51,7 +55,7 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 		currentGun(nullptr),
 		audio(audio) {
 
-	currentAmmo = defaultGun.maxAmmo;
+	currentAmmo = cGun().maxAmmo;
 
 	gpio_set_direction(triggerPin, GPIO_MODE_INPUT);
 	gpio_set_pull_mode(triggerPin, GPIO_PULLUP_ONLY);
@@ -76,7 +80,7 @@ void GunHandler::handle_shot() {
 	gunHeat += cGun().perShotHeatup;
 
 	fireState = POST_SHOT_DELAY;
-	shotTick  = xTaskGetTickCount() + cGun().perShotDelay;
+	shotTick  = xTaskGetTickCount() + cGun().perShotDelay*(85 + esp_random()%30)/100;
 	lastShotTick = xTaskGetTickCount();
 
 	reloadState = POST_SHOT_WAIT;
@@ -98,8 +102,14 @@ void GunHandler::shot_tick() {
 		case WAIT_ON_VALID:
 			if(!triggerPressed())
 				break;
-			if(currentAmmo < cGun().shotsPerSalve)
+			if(currentAmmo < cGun().shotsPerSalve) {
+				if(!emptyClickPlayed) {
+					audio.insert_cassette(emptyClick);
+					emptyClickPlayed = true;
+				}
+
 				break;
+			}
 
 			if(cGun().postTriggerTicks != 0) {
 				audio.insert_cassette(cGun().chargeSounds);
@@ -144,12 +154,17 @@ void GunHandler::shot_tick() {
 				fireStateChanged = true;
 
 				if(!triggerPressed() && !cGun().postSalveRelease && !cGun().postTriggerRelease) {
-					puts("Shot loop stopped!");
+					puts("Cooldown!");
+					if(gunHeat > 0.2)
+						audio.insert_cassette(cGun().cooldownSounds);
 				}
 			}
 		break;
 		}
 	}
+
+	if(!triggerPressed())
+		emptyClickPlayed = false;
 }
 
 void GunHandler::reload_tick() {
@@ -160,8 +175,10 @@ void GunHandler::reload_tick() {
 		return;
 
 	currentAmmo += cGun().perReloadRecharge;
-	if(currentAmmo > cGun().maxAmmo)
+	if(currentAmmo >= cGun().maxAmmo) {
+		audio.insert_cassette(cGun().chargeSounds);
 		currentAmmo = cGun().maxAmmo;
+	}
 
 	reloadTick = xTaskGetTickCount() + cGun().postReloadReloadBlock;
 }
@@ -169,9 +186,9 @@ void GunHandler::reload_tick() {
 void GunHandler::fx_tick() {
 	gunHeat *= cGun().perTickCooldown;
 
-	TickType_t cooldownSoundTick = lastShotTick + cGun().postShotCooldownTicks;
-	if(xTaskGetTickCount() >= cooldownSoundTick && lastTick < cooldownSoundTick)
-		audio.insert_cassette(cGun().cooldownSounds);
+//	TickType_t cooldownSoundTick = lastShotTick + cGun().postShotCooldownTicks;
+//	if(xTaskGetTickCount() >= cooldownSoundTick && lastTick < cooldownSoundTick)
+//		audio.insert_cassette(cGun().cooldownSounds);
 }
 
 bool GunHandler::was_shot_tick() {

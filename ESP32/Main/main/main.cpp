@@ -6,6 +6,7 @@
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
 */
+
 #include <stdio.h>
 #include <cmath>
 
@@ -35,112 +36,11 @@
 #include "NeoController.h"
 #include "fx/ManeAnimator.h"
 
-#include "audio_example_file.h"
 
 using namespace Peripheral;
 
-auto audio_example_cassette = Xasin::Peripheral::AudioCassette(audio_table, sizeof(audio_table));
-
 auto dataRegisters = Xasin::Communication::RegisterBlock();
-auto testBMan = Housekeeping::BatteryManager();
-
 auto testPipe = Xasin::Communication::BLE_SlaveChannel("TestPipe", dataRegisters);
-
-auto audioMan = Xasin::Peripheral::AudioHandler();
-
-auto RGBController = Peripheral::NeoController(PIN_WS2812_OUT, RMT_CHANNEL_0, 5);
-
-auto gunHandler = Lasertag::GunHandler(PIN_TRIGR, audioMan);
-
-void animator_task(void *data) {
-	TickType_t lastTick;
-
-	Color muzzleBaseColor  = 0;
-
-	Color muzzleHeatColor  = Color(Material::DEEP_ORANGE);
-	Color muzzleFlashColor = Color(Material::PURPLE).merge_overlay(0xFFFFFF, 100);
-
-	Layer vestBaseLayer = Layer(4);
-	vestBaseLayer.fill(Color(Material::PURPLE, 100));
-	Layer vestBufferLayer = vestBaseLayer;
-	vestBaseLayer.alpha = 30;
-
-	auto vestShotAnimator = ManeAnimator(vestBaseLayer.length());
-	vestShotAnimator.baseTug   = 0.0013;
-	vestShotAnimator.basePoint = 0.1;
-	vestShotAnimator.dampening = 0.94;
-	vestShotAnimator.ptpTug    = 0.015;
-	vestShotAnimator.wrap 	   = true;
-
-	auto vestShotOverlay = Layer(vestBaseLayer.length());
-	vestShotOverlay.fill(Material::DEEP_PURPLE);
-	vestShotOverlay.alpha = 130;
-
-	while(true) {
-
-		gunHandler.tick();
-
-		if(gunHandler.timeSinceLastShot() < 3)
-			vestShotAnimator.points[0].pos = 1;
-
-		for(int i=3; i!=0; i--)
-			vestShotAnimator.tick();
-
-
-		for(int i=0; i<vestBaseLayer.length(); i++)
-			vestBaseLayer[i] = Color(Material::PURPLE, (50 + (170.0*gunHandler.getGunHeat())/255)*(0.8 + 0.4*sin((xTaskGetTickCount() - i*300)/1200.0 * M_PI)));
-		vestBufferLayer.merge_overlay(vestBaseLayer);
-
-		RGBController.colors.merge_overlay(vestBufferLayer, 1);
-
-		vestShotOverlay.alpha_set(vestShotAnimator.scalarPoints);
-		RGBController.colors.merge_overlay(vestShotOverlay, 1);
-
-
-		Color newMuzzleColor = muzzleBaseColor;
-		muzzleHeatColor.alpha = gunHandler.getGunHeat();
-		newMuzzleColor.merge_overlay(muzzleHeatColor);
-
-		if(gunHandler.was_shot_tick()) {
-			newMuzzleColor.merge_overlay(muzzleFlashColor);
-		    audioMan.insert_cassette(audio_example_cassette);
-		}
-		gpio_set_level(PIN_VBRT, gunHandler.timeSinceLastShot() <= 30 ? 1 : 0);
-
-		ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, pow((0.5 + 0.5*sin(xTaskGetTickCount()/1200.0 * M_PI)),2)*255);
-		ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
-
-		Color actualMuzzle = Color();
-		actualMuzzle.r = newMuzzleColor.g;
-		actualMuzzle.g = newMuzzleColor.r;
-		actualMuzzle.b = newMuzzleColor.b;
-		RGBController.colors[0] = actualMuzzle;
-
-		RGBController.update();
-
-		vTaskDelayUntil(&lastTick, 10);
-	}
-}
-
-void set_pins() {
-	gpio_config_t outCFG = {};
-	outCFG.pin_bit_mask = (1<<PIN_IR_OUT |
-			1<<PIN_VBRT |
-			1<<PIN_BAT_GREEN | 1<<PIN_BAT_RED |
-			1<<PIN_CONN_IND);
-	outCFG.mode = GPIO_MODE_OUTPUT;
-	outCFG.pull_down_en = GPIO_PULLDOWN_DISABLE;
-	outCFG.pull_up_en = GPIO_PULLUP_DISABLE;
-	outCFG.intr_type = GPIO_INTR_DISABLE;
-
-	gpio_config(&outCFG);
-
-	gpio_set_level(PIN_IR_OUT, false);
-	gpio_set_level(PIN_VBRT, false);
-
-	gpio_set_direction(PIN_IR_IN, GPIO_MODE_INPUT);
-	gpio_set_direction(PIN_BAT_CHGING, GPIO_MODE_INPUT);
-}
 
 void enable_led_pwm(gpio_num_t pin, ledc_channel_t led_channel) {
 	ledc_channel_config_t redLEDCFG = {};
@@ -183,34 +83,9 @@ void app_main()
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
     esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
 
-    set_pins();
+    LZR::setup();
 
-    set_led();
-
-    /* Print chip information */
-    esp_chip_info_t chip_info;
-    esp_chip_info(&chip_info);
-    printf("This is ESP32 chip with %d CPU cores, WiFi%s%s, ",
-            chip_info.cores,
-            (chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "",
-            (chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "");
-
-    printf("silicon revision %d, ", chip_info.revision);
-
-    printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024),
-            (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
-
-    uint8_t batLvl = 0;
-
-    auto testRegister = Xasin::Communication::ComRegister(0xA, dataRegisters, &batLvl, 1, true);
-
-    i2s_pin_config_t i2sPins = {
-    		PIN_I2S_BLCK,
-			PIN_I2S_LRCK,
-			PIN_I2S_DATA,
-			-1
-    };
-    audioMan.start_thread(i2sPins);
+    //auto testRegister = Xasin::Communication::ComRegister(0xA, dataRegisters, &batLvl, 1, true);
 
     while(true) {
     	vTaskDelay(10000);

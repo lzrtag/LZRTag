@@ -13,9 +13,6 @@
 namespace LZR {
 namespace Weapons {
 
-#include "wyre_cooldown.h"
-#include "wyre_fire_1.h"
-
 const extern Lasertag::GunSpecs wyre;
 
 }

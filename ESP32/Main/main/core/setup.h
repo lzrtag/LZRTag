@@ -24,8 +24,6 @@ extern Peripheral::NeoController	RGBController;
 
 extern Lasertag::GunHandler	gunHandler;
 
-void animation_task();
-
 void setup();
 
 }

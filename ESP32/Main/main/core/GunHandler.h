@@ -80,6 +80,8 @@ private:
 	int salveCounter;
 	TickType_t lastShotTick;
 
+	bool emptyClickPlayed;
+
 	TickType_t reloadTick;
 
 	TickType_t lastTick;

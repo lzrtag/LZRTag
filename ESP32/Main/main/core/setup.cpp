@@ -26,7 +26,7 @@ void setup_io_pins() {
 	gpio_config_t outCFG = {};
 
 	outCFG.pin_bit_mask = (1<<PIN_IR_OUT |
-			1<< PIN_VBRT| PIN_WS2812_OUT |
+			1<< PIN_VBRT |
 			1<< PIN_BAT_GREEN | 1<< PIN_BAT_RED |
 			1<< PIN_CONN_IND);
 	outCFG.mode 		= GPIO_MODE_OUTPUT;
@@ -86,13 +86,33 @@ void power_config() {
 	esp_pm_configure(&pCFG);
 }
 
+void set_audio() {
+    i2s_pin_config_t i2sPins = {
+    		PIN_I2S_BLCK,
+			PIN_I2S_LRCK,
+			PIN_I2S_DATA,
+			-1
+    };
+    audioManager.start_thread(i2sPins);
+}
+
 void setup() {
 	power_config();
+
+	vTaskDelay(10);
 
 	setup_io_pins();
 
 	set_led();
 
+	vTaskDelay(10);
+
+	set_audio();
+
+	vTaskDelay(100);
+
 	start_animation_thread();
+
+	puts("Initialisation finished!");
 }
 }

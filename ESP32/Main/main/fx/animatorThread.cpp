@@ -20,6 +20,17 @@ namespace LZR {
 
 using namespace Peripheral;
 
+void set_bat_pwr(uint8_t level) {
+	uint8_t gLevel = pow(255*level / 100, 2)/255;
+
+	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 255 - gLevel);
+	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, gLevel);
+
+	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
+
+}
+
 void animation_thread(void *args) {
 	TickType_t lastTick;
 
@@ -42,7 +53,7 @@ void animation_thread(void *args) {
 
 	auto vestShotOverlay = Layer(vestBaseLayer.length());
 	vestShotOverlay.fill(Material::DEEP_PURPLE);
-	vestShotOverlay.alpha = 130;
+	vestShotOverlay.alpha = 255;
 
 	while(true) {
 
@@ -56,7 +67,7 @@ void animation_thread(void *args) {
 
 
 		for(int i=0; i<vestBaseLayer.length(); i++)
-			vestBaseLayer[i] = Color(Material::PURPLE, (50 + (170.0*gunHandler.getGunHeat())/255)*(0.8 + 0.4*sin((xTaskGetTickCount() - i*300)/1200.0 * M_PI)));
+			vestBaseLayer[i] = Color(Material::GREEN, (125 + (130.0*gunHandler.getGunHeat())/255)*(0.75 + 0.25*sin((xTaskGetTickCount() - i*300)/1200.0 * M_PI)));
 		vestBufferLayer.merge_overlay(vestBaseLayer);
 
 		RGBController.colors.merge_overlay(vestBufferLayer, 1);
@@ -74,8 +85,10 @@ void animation_thread(void *args) {
 				gunHandler.timeSinceLastShot() <= gunHandler.cGun().postShotVibrationTicks
 				? 1 : 0);
 
-		ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, pow((0.5 + 0.5*sin(xTaskGetTickCount()/1200.0 * M_PI)),2)*255);
+		ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 255 - pow((0.3 + 0.3*sin(xTaskGetTickCount()/3000.0 * M_PI)),2)*255);
 		ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
+
+		set_bat_pwr(50 + 50*sin(xTaskGetTickCount()/5000.0));
 
 		Color actualMuzzle = Color();
 		actualMuzzle.r = newMuzzleColor.g;
