@@ -28,15 +28,15 @@ const Lasertag::GunSpecs wyre {
 	.postTriggerTicks = 0,
 	.postTriggerRelease = false,
 
-	.shotsPerSalve = 1,
+	.shotsPerSalve = 3,
 
-	.perShotDelay = 100,
+	.perShotDelay = 40,
 
-	.postShotCooldownTicks = 300,
+	.postShotCooldownTicks = 200,
 	.postShotVibrationTicks = 50,
 
-	.postSalveDelay = 0,
-	.postSalveRelease = false,
+	.postSalveDelay = 300,
+	.postSalveRelease = true,
 
 	.postShotReloadBlock = 3*600,
 	.postReloadReloadBlock = 600,
