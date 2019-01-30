@@ -15,6 +15,8 @@
 
 namespace LZR {
 
+CORE_WEAPON_STATUS main_weapon_status = INITIALIZING;
+
 Housekeeping::BatteryManager battery = Housekeeping::BatteryManager();
 
 Xasin::Peripheral::AudioHandler  audioManager = Xasin::Peripheral::AudioHandler();
@@ -51,11 +53,9 @@ void setup_io_pins() {
 }
 
 void setup_adc() {
-	adc_gpio_init(ADC_UNIT_1, ADC_CHANNEL_5);
-	adc1_config_channel_atten(ADC_BAT_MES, ADC_ATTEN_DB_11);
+	//adc_gpio_init(ADC_UNIT_1, ADC_CHANNEL_5);
 	adc1_config_width(ADC_WIDTH_BIT_12);
-
-	printf("ADC on, measuring: %d\n", adc1_get_raw(ADC_BAT_MES));
+	adc1_config_channel_atten(ADC_BAT_MES, ADC_ATTEN_DB_11);
 
 	adc_power_on();
 }
@@ -109,8 +109,27 @@ void set_audio() {
 void housekeeping_thread(void *args) {
 	TickType_t nextTick;
 
+	if(gpio_get_level(PIN_BAT_CHGING))
+		main_weapon_status = CHARGING;
+
 	while(true) {
 
+		uint32_t rawBattery = 0;
+		for(int i=0; i<12; i++) {
+			rawBattery += adc1_get_raw(ADC_BAT_MES);
+			vTaskDelay(3);
+		}
+		rawBattery = rawBattery/12;
+
+
+		rawBattery = ((3300 * rawBattery)/ 4096) * 3 / 2 * (4195/4130);
+		battery.set_voltage(rawBattery);
+		battery.is_charging = gpio_get_level(PIN_BAT_CHGING);
+
+		if(battery.current_capacity() < 5 && !battery.is_charging)
+			main_weapon_status = DISCHARGED;
+
+		printf("Battery %sis at %d%% (raw: %d)\n", battery.is_charging ? "(chg) " : "", battery.current_capacity(), rawBattery);
 
 		vTaskDelayUntil(&nextTick, 1800);
 	}
@@ -125,12 +144,15 @@ void setup() {
 	setup_adc();
 	set_ledc();
 
-	xTaskCreate(housekeeping_thread, "Housekeeping", 1024, nullptr, 10, nullptr);
+	xTaskCreate(housekeeping_thread, "Housekeeping", 2*1024, nullptr, 10, nullptr);
 
 	vTaskDelay(10);
 	set_audio();
 	vTaskDelay(10);
 	start_animation_thread();
+
+	if(main_weapon_status == INITIALIZING)
+		main_weapon_status = NOMINAL;
 
 	puts("Initialisation finished!");
 }

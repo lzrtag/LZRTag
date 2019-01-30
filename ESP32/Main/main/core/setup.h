@@ -17,6 +17,17 @@
 
 namespace LZR {
 
+enum CORE_WEAPON_STATUS {
+	INITIALIZING,
+	DISCHARGED,
+	CHARGING,
+	CONNECTING,
+	NOMINAL,
+	DEBUG,
+};
+
+extern CORE_WEAPON_STATUS main_weapon_status;
+
 extern Housekeeping::BatteryManager battery;
 
 extern Xasin::Peripheral::AudioHandler audioManager;

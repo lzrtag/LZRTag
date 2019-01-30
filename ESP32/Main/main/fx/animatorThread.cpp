@@ -23,8 +23,8 @@ using namespace Peripheral;
 void set_bat_pwr(uint8_t level) {
 	uint8_t gLevel = pow(255*level / 100, 2)/255;
 
-	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 255 - gLevel);
-	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, gLevel);
+	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, gLevel);
+	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 255 - gLevel);
 
 	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
 	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
@@ -88,7 +88,7 @@ void animation_thread(void *args) {
 		ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 255 - pow((0.3 + 0.3*sin(xTaskGetTickCount()/3000.0 * M_PI)),2)*255);
 		ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
 
-		set_bat_pwr(50 + 50*sin(xTaskGetTickCount()/5000.0));
+		set_bat_pwr(battery.current_capacity());
 
 		Color actualMuzzle = Color();
 		actualMuzzle.r = newMuzzleColor.g;
