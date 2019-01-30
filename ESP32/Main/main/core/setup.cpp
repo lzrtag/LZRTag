@@ -50,6 +50,16 @@ void setup_io_pins() {
 	gpio_config(&inCFG);
 }
 
+void setup_adc() {
+	adc_gpio_init(ADC_UNIT_1, ADC_CHANNEL_5);
+	adc1_config_channel_atten(ADC_BAT_MES, ADC_ATTEN_DB_11);
+	adc1_config_width(ADC_WIDTH_BIT_12);
+
+	printf("ADC on, measuring: %d\n", adc1_get_raw(ADC_BAT_MES));
+
+	adc_power_on();
+}
+
 void enable_led_pwm(gpio_num_t pin, ledc_channel_t led_channel) {
 	ledc_channel_config_t redLEDCFG = {};
 	redLEDCFG.gpio_num = pin;
@@ -62,7 +72,7 @@ void enable_led_pwm(gpio_num_t pin, ledc_channel_t led_channel) {
 	ledc_channel_config(&redLEDCFG);
 }
 
-void set_led() {
+void set_ledc() {
 	ledc_timer_config_t ledTCFG = {};
 	ledTCFG.speed_mode = LEDC_LOW_SPEED_MODE;
 	ledTCFG.duty_resolution = LEDC_TIMER_8_BIT;
@@ -96,21 +106,30 @@ void set_audio() {
     audioManager.start_thread(i2sPins);
 }
 
+void housekeeping_thread(void *args) {
+	TickType_t nextTick;
+
+	while(true) {
+
+
+		vTaskDelayUntil(&nextTick, 1800);
+	}
+}
+
 void setup() {
 	power_config();
 
 	vTaskDelay(10);
 
 	setup_io_pins();
+	setup_adc();
+	set_ledc();
 
-	set_led();
+	xTaskCreate(housekeeping_thread, "Housekeeping", 1024, nullptr, 10, nullptr);
 
 	vTaskDelay(10);
-
 	set_audio();
-
-	vTaskDelay(100);
-
+	vTaskDelay(10);
 	start_animation_thread();
 
 	puts("Initialisation finished!");
