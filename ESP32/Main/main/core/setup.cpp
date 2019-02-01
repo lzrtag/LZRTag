@@ -109,7 +109,7 @@ void set_audio() {
 void housekeeping_thread(void *args) {
 	TickType_t nextTick;
 
-	if(gpio_get_level(PIN_BAT_CHGING))
+	if(!gpio_get_level(PIN_BAT_CHGING))
 		main_weapon_status = CHARGING;
 
 	while(true) {
@@ -124,7 +124,7 @@ void housekeeping_thread(void *args) {
 
 		rawBattery = ((3300 * rawBattery)/ 4096) * 3 / 2 * (4195/4130);
 		battery.set_voltage(rawBattery);
-		battery.is_charging = gpio_get_level(PIN_BAT_CHGING);
+		battery.is_charging = !gpio_get_level(PIN_BAT_CHGING);
 
 		if(battery.current_capacity() < 5 && !battery.is_charging)
 			main_weapon_status = DISCHARGED;

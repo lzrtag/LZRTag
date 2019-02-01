@@ -20,76 +20,112 @@ namespace LZR {
 
 using namespace Peripheral;
 
-void set_bat_pwr(uint8_t level) {
-	uint8_t gLevel = pow(255*level / 100, 2)/255;
+Color muzzleBaseColor  = 0;
 
-	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, gLevel);
-	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 255 - gLevel);
+Color muzzleHeatColor  = Color(Material::DEEP_ORANGE);
+Color muzzleFlashColor = Color(Material::PURPLE).merge_overlay(0xFFFFFF, 100);
+
+Layer vestBaseLayer = Layer(4);
+Layer vestBufferLayer = vestBaseLayer;
+
+ManeAnimator vestShotAnimator = ManeAnimator(vestBaseLayer.length());
+
+auto vestShotOverlay = Layer(vestBaseLayer.length());
+
+void set_bat_pwr(uint8_t level, uint8_t brightness = 255) {
+	uint8_t gLevel = 255 - pow(255 - 2.55*level, 2)/255;
+
+	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 255 - (255-gLevel)*pow(brightness, 2)/65025);
+	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 255 - gLevel*pow(brightness, 2)/65025);
 
 	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
 	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
 
 }
 
+void status_led_tick() {
+
+	float conIndB = 0;
+	float batBrightness = 1;
+
+	switch(LZR::main_weapon_status) {
+	case CHARGING: {
+		int cycleTime = xTaskGetTickCount() % 1200;
+
+		if(battery.is_charging)
+			batBrightness = 0.4 + 0.6*cycleTime/1200;
+		else if(cycleTime%600 < 300)
+			batBrightness = 0.6;
+	break;
+	}
+	default:
+		conIndB = (0.3 + 0.3*sin(xTaskGetTickCount()/3000.0 * M_PI));
+	}
+	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 255 - pow(conIndB ,2)*255);
+	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
+
+
+	set_bat_pwr(battery.current_capacity(), batBrightness*255);
+}
+
+void vibr_motor_tick() {
+	gpio_set_level(PIN_VBRT,
+			gunHandler.timeSinceLastShot() <= gunHandler.cGun().postShotVibrationTicks
+			? 1 : 0);
+}
+
+void vest_tick() {
+
+	// Muzzle flash and heatup
+	Color &newMuzzleColor = RGBController.colors[0];
+	newMuzzleColor = muzzleBaseColor;
+	muzzleHeatColor.alpha = gunHandler.getGunHeat();
+	newMuzzleColor.merge_overlay(muzzleHeatColor);
+	if(gunHandler.was_shot_tick())
+		newMuzzleColor.merge_overlay(muzzleFlashColor);
+
+	// Basic vest wavering & heatup
+	for(int i=0; i<vestBaseLayer.length(); i++)
+		vestBaseLayer[i] = Color(Material::GREEN,
+				(125 + (130.0*gunHandler.getGunHeat())/255)*(0.75 + 0.25*sin((xTaskGetTickCount() - i*300)/1200.0 * M_PI)));
+	vestBufferLayer.merge_overlay(vestBaseLayer);
+
+	RGBController.colors.merge_overlay(vestBufferLayer, 1);
+
+	// Vest shot flaring & wave animation
+	if(gunHandler.was_shot_tick())
+		vestShotAnimator.points[0].pos = 1;
+	for(int i=3; i!=0; i--)
+		vestShotAnimator.tick();
+	vestShotOverlay.alpha_set(vestShotAnimator.scalarPoints);
+	RGBController.colors.merge_add(vestShotOverlay, 1);
+}
+
 void animation_thread(void *args) {
 	TickType_t lastTick;
 
-	Color muzzleBaseColor  = 0;
-
-	Color muzzleHeatColor  = Color(Material::DEEP_ORANGE);
-	Color muzzleFlashColor = Color(Material::PURPLE).merge_overlay(0xFFFFFF, 100);
-
-	Layer vestBaseLayer = Layer(4);
 	vestBaseLayer.fill(Color(Material::PURPLE, 100));
-	Layer vestBufferLayer = vestBaseLayer;
 	vestBaseLayer.alpha = 30;
 
-	auto vestShotAnimator = ManeAnimator(vestBaseLayer.length());
 	vestShotAnimator.baseTug   = 0.0013;
 	vestShotAnimator.basePoint = 0.1;
 	vestShotAnimator.dampening = 0.94;
 	vestShotAnimator.ptpTug    = 0.015;
 	vestShotAnimator.wrap 	   = true;
 
-	auto vestShotOverlay = Layer(vestBaseLayer.length());
 	vestShotOverlay.fill(Material::DEEP_PURPLE);
-	vestShotOverlay.alpha = 255;
 
 	while(true) {
+		status_led_tick();
 
 		gunHandler.tick();
 
-		if(gunHandler.timeSinceLastShot() < 3)
-			vestShotAnimator.points[0].pos = 1;
+		if(main_weapon_status == NOMINAL) {
+			vest_tick();
+			vibr_motor_tick();
+		}
 
-		for(int i=3; i!=0; i--)
-			vestShotAnimator.tick();
-
-
-		for(int i=0; i<vestBaseLayer.length(); i++)
-			vestBaseLayer[i] = Color(Material::GREEN, (125 + (130.0*gunHandler.getGunHeat())/255)*(0.75 + 0.25*sin((xTaskGetTickCount() - i*300)/1200.0 * M_PI)));
-		vestBufferLayer.merge_overlay(vestBaseLayer);
-
-		RGBController.colors.merge_overlay(vestBufferLayer, 1);
-
-		vestShotOverlay.alpha_set(vestShotAnimator.scalarPoints);
-		RGBController.colors.merge_overlay(vestShotOverlay, 1);
-
-		Color newMuzzleColor = muzzleBaseColor;
-		muzzleHeatColor.alpha = gunHandler.getGunHeat();
-		newMuzzleColor.merge_overlay(muzzleHeatColor);
-
-		if(gunHandler.was_shot_tick())
-			newMuzzleColor.merge_overlay(muzzleFlashColor);
-		gpio_set_level(PIN_VBRT,
-				gunHandler.timeSinceLastShot() <= gunHandler.cGun().postShotVibrationTicks
-				? 1 : 0);
-
-		ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 255 - pow((0.3 + 0.3*sin(xTaskGetTickCount()/3000.0 * M_PI)),2)*255);
-		ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
-
-		set_bat_pwr(battery.current_capacity());
-
+		Color newMuzzleColor = RGBController.colors[0];
 		Color actualMuzzle = Color();
 		actualMuzzle.r = newMuzzleColor.g;
 		actualMuzzle.g = newMuzzleColor.r;
