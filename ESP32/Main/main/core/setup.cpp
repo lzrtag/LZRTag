@@ -13,6 +13,8 @@
 
 #include "driver/ledc.h"
 
+#include <array>
+
 namespace LZR {
 
 CORE_WEAPON_STATUS main_weapon_status = INITIALIZING;
@@ -106,6 +108,38 @@ void set_audio() {
     audioManager.start_thread(i2sPins);
 }
 
+std::array<uint16_t, 20> battery_samples;
+int8_t battery_sample_pos = -1;
+void take_battery_measurement() {
+	uint32_t rawBattery = 0;
+	for(int i=0; i<6; i++) {
+		rawBattery += adc1_get_raw(ADC_BAT_MES);
+		vTaskDelay(4);
+	}
+	rawBattery = rawBattery/6;
+	rawBattery = ((3300 * rawBattery)/ 4096) * 3 / 2 * (4195/4130); // TODO Measure proper ADC correction factors
+
+	if(battery_sample_pos == -1)
+		battery_samples.fill(rawBattery);
+	else
+		battery_samples[battery_sample_pos] = rawBattery;
+
+	if(++battery_sample_pos > battery_samples.size())
+		battery_sample_pos = 0;
+
+	uint32_t battery_avg = 0;
+	for(auto s : battery_samples)
+		battery_avg += s;
+
+	battery.set_voltage(battery_avg / battery_samples.size());
+	battery.is_charging = !gpio_get_level(PIN_BAT_CHGING);
+
+	if(battery.current_capacity() < 5 && !battery.is_charging)
+		main_weapon_status = DISCHARGED;
+
+	printf("Battery %sis at %d%% (raw: %d)\n", battery.is_charging ? "(chg) " : "", battery.current_capacity(), rawBattery);
+}
+
 void housekeeping_thread(void *args) {
 	TickType_t nextTick;
 
@@ -113,23 +147,7 @@ void housekeeping_thread(void *args) {
 		main_weapon_status = CHARGING;
 
 	while(true) {
-
-		uint32_t rawBattery = 0;
-		for(int i=0; i<12; i++) {
-			rawBattery += adc1_get_raw(ADC_BAT_MES);
-			vTaskDelay(3);
-		}
-		rawBattery = rawBattery/12;
-
-
-		rawBattery = ((3300 * rawBattery)/ 4096) * 3 / 2 * (4195/4130);
-		battery.set_voltage(rawBattery);
-		battery.is_charging = !gpio_get_level(PIN_BAT_CHGING);
-
-		if(battery.current_capacity() < 5 && !battery.is_charging)
-			main_weapon_status = DISCHARGED;
-
-		printf("Battery %sis at %d%% (raw: %d)\n", battery.is_charging ? "(chg) " : "", battery.current_capacity(), rawBattery);
+		take_battery_measurement();
 
 		vTaskDelayUntil(&nextTick, 1800);
 	}

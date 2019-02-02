@@ -58,6 +58,12 @@ void status_led_tick() {
 			batBrightness = 0.6;
 	break;
 	}
+	case DISCHARGED:
+		if(xTaskGetTickCount()%300 < 150) {
+			batBrightness = 0.1;
+			conIndB = 0.5;
+		}
+	break;
 	default:
 		conIndB = (0.3 + 0.3*sin(xTaskGetTickCount()/3000.0 * M_PI));
 	}
@@ -118,11 +124,15 @@ void animation_thread(void *args) {
 	while(true) {
 		status_led_tick();
 
-		gunHandler.tick();
-
 		if(main_weapon_status == NOMINAL) {
+			gunHandler.tick();
+
 			vest_tick();
 			vibr_motor_tick();
+		}
+		else {
+			RGBController.fill(0);
+			gpio_set_level(PIN_VBRT, false);
 		}
 
 		Color newMuzzleColor = RGBController.colors[0];
