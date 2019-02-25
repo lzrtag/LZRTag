@@ -8,7 +8,7 @@
 #include "setup.h"
 
 #include "../IODefs.h"
-
+#include "IR.h"
 #include "../fx/animatorThread.h"
 
 #include "driver/ledc.h"
@@ -29,8 +29,7 @@ Lasertag::GunHandler gunHandler = Lasertag::GunHandler(PIN_TRIGR, audioManager);
 void setup_io_pins() {
 	gpio_config_t outCFG = {};
 
-	outCFG.pin_bit_mask = (1<<PIN_IR_OUT |
-			1<< PIN_VBRT |
+	outCFG.pin_bit_mask = (1<< PIN_VBRT |
 			1<< PIN_BAT_GREEN | 1<< PIN_BAT_RED |
 			1<< PIN_CONN_IND);
 	outCFG.mode 		= GPIO_MODE_OUTPUT;
@@ -165,6 +164,8 @@ void setup() {
 	xTaskCreate(housekeeping_thread, "Housekeeping", 2*1024, nullptr, 10, nullptr);
 
 	vTaskDelay(10);
+
+	IR::init();
 	set_audio();
 	vTaskDelay(10);
 	start_animation_thread();
