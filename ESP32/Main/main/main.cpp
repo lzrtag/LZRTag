@@ -36,6 +36,7 @@
 #include "NeoController.h"
 #include "fx/ManeAnimator.h"
 
+#include "core/IR.h"
 
 using namespace Peripheral;
 
@@ -54,25 +55,12 @@ void app_main()
     //auto testRegister = Xasin::Communication::ComRegister(0xA, dataRegisters, &batLvl, 1, true);
 
     while(true) {
-    	vTaskDelay(10000);
+    	vTaskDelay(1000);
+
+    	LZR::IR::send_signal(-1);
+    	//puts("Sent IR Code!");
     }
 
-//    while(true) {
-//
-//		for (int i = 0; i < 300; i++) {
-//			//printf("Setting timer to %d...\n", i);
-//			vTaskDelay(10);
-//			if(i%300 < 100)
-//				set_RG_Level(batLvl, (i)*2.5);
-//			else if(i < 150)
-//				set_RG_Level(batLvl, (150 - i)*5);
-//			else
-//				set_RG_Level(0, 0);
-//		}
-//		batLvl++;
-//		testRegister.update();
-//    }
-    printf("Restarting now.\n");
     fflush(stdout);
     esp_restart();
 }
