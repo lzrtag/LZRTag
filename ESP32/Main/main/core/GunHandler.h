@@ -36,7 +36,7 @@ enum RELOAD_STATE {
 	POST_RELOAD_WAIT
 };
 
-
+#define GUN_TAG "LZR::Gun"
 
 class GunSpecs {
 public:

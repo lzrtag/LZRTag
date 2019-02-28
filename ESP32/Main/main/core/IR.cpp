@@ -76,6 +76,8 @@ void ir_rx_try_parse(rmt_item32_t *data, size_t num) {
 			dataBoi.reg |= (1^data[i].level1) << bitPos++;
 	}
 
+	ESP_LOGV(lTag, "Raw shot data is: %d", dataBoi.reg);
+
 	if(dataBoi.bits.start != 0b1110111)
 		return;
 
@@ -95,10 +97,15 @@ void ir_rx_task(void *args) {
 
 	rmt_rx_start(RMT_CHANNEL_2, 1);
 
+	ESP_LOGI(lTag, "RX Task started");
+
 	while(true) {
 		size_t dataNum = 0;
-		auto headItem = (rmt_item32_t *)xRingbufferReceive(rx_buffer, &dataNum, 1000);
+		auto headItem = (rmt_item32_t *)xRingbufferReceive(rx_buffer, &dataNum, 5*600);
+		if(headItem == nullptr)
+			continue;
 
+		ESP_LOGV(lTag, "Got a bit of data!");
 		ir_rx_try_parse(headItem, dataNum);
 
 		vRingbufferReturnItem(rx_buffer, headItem);
@@ -132,7 +139,8 @@ void init() {
 	ESP_ERROR_CHECK(rmt_driver_install(RMT_CHANNEL_1, 0, 0));
 
 	rmt_rx_config_t rx_config = {};
-	rx_config.filter_en = false;
+	rx_config.filter_en = true;
+	rx_config.filter_ticks_thresh = 255;
 	rx_config.idle_threshold = TPB * 5;
 	cfg.rx_config = rx_config;
 
@@ -141,11 +149,11 @@ void init() {
 	cfg.gpio_num = PIN_IR_IN;
 
 	ESP_ERROR_CHECK(rmt_config(&cfg));
-	ESP_ERROR_CHECK(rmt_driver_install(RMT_CHANNEL_2, 1, 0));
+	ESP_ERROR_CHECK(rmt_driver_install(RMT_CHANNEL_2, 64, 0));
 
 	xTaskCreate(ir_rx_task, "LZR:IR:RX", 2048, nullptr, 5, nullptr);
 
-	esp_log_level_set(lTag, ESP_LOG_VERBOSE);
+	esp_log_level_set(lTag, ESP_LOG_INFO);
 
 	ESP_LOGI(lTag, "Init finished");
 }

@@ -8,7 +8,11 @@
 #include "GunHandler.h"
 
 #include "../weapons/wyre.h"
+
 #include "empty_click.h"
+
+#define LOG_LOCAL_LEVEL ESP_LOG_INFO
+#include "esp_log.h"
 
 namespace Lasertag {
 
@@ -74,13 +78,11 @@ bool GunHandler::triggerPressed() {
 }
 
 void GunHandler::handle_shot() {
-	puts("PEW!");
-
 	currentAmmo--;
 	gunHeat += cGun().perShotHeatup;
 
 	fireState = POST_SHOT_DELAY;
-	shotTick  = xTaskGetTickCount() + cGun().perShotDelay*(85 + esp_random()%30)/100;
+	shotTick  = xTaskGetTickCount() + (cGun().perShotDelay*(95 + esp_random()%10))/100;
 	lastShotTick = xTaskGetTickCount();
 
 	reloadState = POST_SHOT_WAIT;
@@ -89,6 +91,8 @@ void GunHandler::handle_shot() {
 	shot_performed = true;
 
 	audio.insert_cassette(cGun().shotSounds);
+
+	ESP_LOGD(GUN_TAG, "Fired, ammo : %3d", currentAmmo);
 }
 
 void GunHandler::shot_tick() {
@@ -179,6 +183,8 @@ void GunHandler::reload_tick() {
 		audio.insert_cassette(cGun().chargeSounds);
 		currentAmmo = cGun().maxAmmo;
 	}
+
+	ESP_LOGD(GUN_TAG, "Reloaded, ammo: %3d", currentAmmo);
 
 	reloadTick = xTaskGetTickCount() + cGun().postReloadReloadBlock;
 }

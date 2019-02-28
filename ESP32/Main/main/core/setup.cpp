@@ -15,6 +15,8 @@
 
 #include <array>
 
+#include "esp_log.h"
+
 namespace LZR {
 
 CORE_WEAPON_STATUS main_weapon_status = INITIALIZING;
@@ -137,6 +139,10 @@ void take_battery_measurement() {
 		main_weapon_status = DISCHARGED;
 
 	printf("Battery %sis at %d%% (raw: %d)\n", battery.is_charging ? "(chg) " : "", battery.current_capacity(), rawBattery);
+	ESP_LOGI("LZR::Core", "%sBattery level: %s%d",
+			battery.current_capacity() < 20 ? LOG_COLOR("33") : "",
+			battery.is_charging ? "^" : "",
+			battery.current_capacity());
 }
 
 void housekeeping_thread(void *args) {
