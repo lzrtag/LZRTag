@@ -13,6 +13,8 @@
 #include "AudioHandler.h"
 #include "NeoController.h"
 
+#include "xasin/mqtt/Handler.h"
+
 #include "GunHandler.h"
 
 namespace LZR {
@@ -32,6 +34,8 @@ extern Housekeeping::BatteryManager battery;
 
 extern Xasin::Peripheral::AudioHandler audioManager;
 extern Peripheral::NeoController	RGBController;
+
+extern Xasin::MQTT::Handler mqtt;
 
 extern Lasertag::GunHandler	gunHandler;
 

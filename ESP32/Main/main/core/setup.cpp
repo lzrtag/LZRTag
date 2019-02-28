@@ -26,6 +26,8 @@ Housekeeping::BatteryManager battery = Housekeeping::BatteryManager();
 Xasin::Peripheral::AudioHandler  audioManager = Xasin::Peripheral::AudioHandler();
 Peripheral::NeoController RGBController = Peripheral::NeoController(PIN_WS2812_OUT, RMT_CHANNEL_0, 5);
 
+Xasin::MQTT::Handler mqtt = Xasin::MQTT::Handler();
+
 Lasertag::GunHandler gunHandler = Lasertag::GunHandler(PIN_TRIGR, audioManager);
 
 void setup_io_pins() {
@@ -56,7 +58,6 @@ void setup_io_pins() {
 }
 
 void setup_adc() {
-	//adc_gpio_init(ADC_UNIT_1, ADC_CHANNEL_5);
 	adc1_config_width(ADC_WIDTH_BIT_12);
 	adc1_config_channel_atten(ADC_BAT_MES, ADC_ATTEN_DB_11);
 
@@ -99,7 +100,7 @@ void power_config() {
 	esp_pm_configure(&pCFG);
 }
 
-void set_audio() {
+void setup_audio() {
     i2s_pin_config_t i2sPins = {
     		PIN_I2S_BLCK,
 			PIN_I2S_LRCK,
@@ -125,7 +126,7 @@ void take_battery_measurement() {
 	else
 		battery_samples[battery_sample_pos] = rawBattery;
 
-	if(++battery_sample_pos > battery_samples.size())
+	if(++battery_sample_pos >= battery_samples.size())
 		battery_sample_pos = 0;
 
 	uint32_t battery_avg = 0;
@@ -138,7 +139,6 @@ void take_battery_measurement() {
 	if(battery.current_capacity() < 5 && !battery.is_charging)
 		main_weapon_status = DISCHARGED;
 
-	printf("Battery %sis at %d%% (raw: %d)\n", battery.is_charging ? "(chg) " : "", battery.current_capacity(), rawBattery);
 	ESP_LOGI("LZR::Core", "%sBattery level: %s%d",
 			battery.current_capacity() < 20 ? LOG_COLOR("33") : "",
 			battery.is_charging ? "^" : "",
@@ -148,8 +148,9 @@ void take_battery_measurement() {
 void housekeeping_thread(void *args) {
 	TickType_t nextTick;
 
-	if(!gpio_get_level(PIN_BAT_CHGING))
-		main_weapon_status = CHARGING;
+	// FIXME DEBUG
+//	if(!gpio_get_level(PIN_BAT_CHGING))
+//		main_weapon_status = CHARGING;
 
 	while(true) {
 		take_battery_measurement();
@@ -172,8 +173,11 @@ void setup() {
 	vTaskDelay(10);
 
 	IR::init();
-	set_audio();
+	setup_audio();
+	mqtt.start("mqtt://iot.eclipse.org");
+
 	vTaskDelay(10);
+
 	start_animation_thread();
 
 	if(main_weapon_status == INITIALIZING)
