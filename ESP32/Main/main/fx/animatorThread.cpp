@@ -65,7 +65,12 @@ void status_led_tick() {
 		}
 	break;
 	default:
-		conIndB = (0.3 + 0.3*sin(xTaskGetTickCount()/3000.0 * M_PI));
+		if(mqtt.is_disconnected() == 0)
+			conIndB = (0.3 + 0.3*sin(xTaskGetTickCount()/2300.0 * M_PI));
+		else if(mqtt.is_disconnected() == 1)
+			conIndB = xTaskGetTickCount()%800 < 600 ? 1 : 0.5;
+		else
+			conIndB = xTaskGetTickCount()%800 < 400 ? 1 : 0;
 	}
 	ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2, 255 - pow(conIndB ,2)*255);
 	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_2);
@@ -93,7 +98,8 @@ void vest_tick() {
 	// Basic vest wavering & heatup
 	for(int i=0; i<vestBaseLayer.length(); i++)
 		vestBaseLayer[i] = Color(Material::GREEN,
-				(125 + (130.0*gunHandler.getGunHeat())/255)*(0.75 + 0.25*sin((xTaskGetTickCount() - i*300)/1200.0 * M_PI)));
+				(125 + (130.0*gunHandler.getGunHeat())/255)*(0.85 + 0.15*sin((xTaskGetTickCount() - i*200)/1200.0 * M_PI)));
+
 	vestBufferLayer.merge_overlay(vestBaseLayer);
 
 	RGBController.colors.merge_overlay(vestBufferLayer, 1);
@@ -119,7 +125,7 @@ void animation_thread(void *args) {
 	vestShotAnimator.ptpTug    = 0.015;
 	vestShotAnimator.wrap 	   = true;
 
-	vestShotOverlay.fill(Material::DEEP_PURPLE);
+	vestShotOverlay.fill(Material::ORANGE);
 
 	while(true) {
 		status_led_tick();
