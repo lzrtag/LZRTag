@@ -43,6 +43,8 @@
 
 #include "core/IR.h"
 
+#include "xasin/TrekAudio.h"
+
 using namespace Peripheral;
 
 auto dataRegisters = Xasin::Communication::RegisterBlock();
@@ -56,6 +58,8 @@ esp_err_t event_handler(void *context, system_event_t *event) {
 	return ESP_OK;
 }
 
+using namespace Xasin::Trek;
+
 extern "C"
 void app_main()
 {
@@ -66,16 +70,17 @@ void app_main()
     tcpip_adapter_init();
 
     esp_event_loop_init(event_handler, 0);
+    Xasin::MQTT::Handler::start_wifi("TP-LINK_84CDC2\0", "f36eebda48\0");
 
     LZR::setup();
 
-    //auto testRegister = Xasin::Communication::ComRegister(0xA, dataRegisters, &batLvl, 1, true);
+    //FIXME
+    Xasin::Trek::init(LZR::audioManager);
+    Xasin::Trek::play(Xasin::Trek::INPUT_OK);
 
     while(true) {
-    	vTaskDelay(1000);
-
-    	LZR::IR::send_signal(-1);
-    	//puts("Sent IR Code!");
+    	vTaskDelay(4000);
+    	//LZR::IR::send_signal(-1);
     }
 
     fflush(stdout);
