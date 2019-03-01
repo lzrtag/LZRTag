@@ -39,11 +39,9 @@
 #include "AudioHandler.h"
 
 #include "NeoController.h"
-#include "fx/ManeAnimator.h"
+#include "fx/animatorThread.h"
 
 #include "core/IR.h"
-
-#include "xasin/TrekAudio.h"
 
 using namespace Peripheral;
 
@@ -58,7 +56,29 @@ esp_err_t event_handler(void *context, system_event_t *event) {
 	return ESP_OK;
 }
 
-using namespace Xasin::Trek;
+LZR::ColorSet cSets[] = {
+		{
+			.muzzleFlash = Material::CYAN,
+			.muzzleHeat	 = Material::BLUE,
+
+			.vestBase	 = Material::RED,
+			.vestShotEnergy = Color(0xFF3333)
+		},
+		{
+			.muzzleFlash = Material::PINK,
+			.muzzleHeat	 = Material::DEEP_PURPLE,
+			.vestBase	 = Material::GREEN,
+			.vestShotEnergy	 = Color(0x22FF22),
+			.vestMark	 = 0xFFFFFF,
+		},
+		{
+			.muzzleFlash = Material::YELLOW,
+			.muzzleHeat  = Material::DEEP_ORANGE,
+
+			.vestBase	 = Material::BLUE,
+			.vestShotEnergy = Color(0x3333FF),
+		}
+};
 
 extern "C"
 void app_main()
@@ -74,12 +94,11 @@ void app_main()
 
     LZR::setup();
 
-    //FIXME
-    Xasin::Trek::init(LZR::audioManager);
-    Xasin::Trek::play(Xasin::Trek::INPUT_OK);
-
+    uint8_t i=0;
     while(true) {
-    	vTaskDelay(4000);
+    	vTaskDelay(5*600);
+
+    	LZR::currentColors = cSets[i++ % 3];
     	//LZR::IR::send_signal(-1);
     }
 
