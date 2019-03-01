@@ -36,12 +36,12 @@ struct FXSet {
 	uint8_t maxBaseGlow;
 
 	float waverAmplitude;
-	int waverPeriod;
-	int waverPositionShift;
-
-	MarkMode marking;
-	int markSpeed;
+	int   waverPeriod;
+	float waverPositionShift;
 };
+
+extern ColorSet currentColors;
+extern FXSet 	currentFX;
 
 void start_animation_thread();
 }

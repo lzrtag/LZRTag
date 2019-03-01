@@ -5,6 +5,8 @@
  *      Author: xasin
  */
 
+#include "animatorThread.h"
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -20,17 +22,27 @@ namespace LZR {
 
 using namespace Peripheral;
 
-Color muzzleBaseColor  = 0;
+ColorSet currentColors = {
+		.muzzleFlash = Material::PURPLE,
+		.muzzleHeat	 = Material::ORANGE,
+		.vestBase	 = Material::GREEN,
+		.vestShotEnergy	 = Color(0x22FF22),
+		.vestMark	 = 0xFFFFFF,
+};
+FXSet 	 currentFX = {
+		.minBaseGlow = 200,
+		.maxBaseGlow = 200,
 
-Color muzzleHeatColor  = Color(Material::DEEP_ORANGE);
-Color muzzleFlashColor = Color(Material::PURPLE).merge_overlay(0xFFFFFF, 100);
+		.waverAmplitude = 0.8,
+		.waverPeriod 	= 1000,
+		.waverPositionShift = -0.2,
+};
 
-Layer vestBaseLayer = Layer(4);
-Layer vestBufferLayer = vestBaseLayer;
+auto vestBaseColor	 = Color();
+auto vestBufferLayer = Layer(4);
 
-ManeAnimator vestShotAnimator = ManeAnimator(vestBaseLayer.length());
-
-auto vestShotOverlay = Layer(vestBaseLayer.length());
+auto vestShotAnimator = ManeAnimator(vestBufferLayer.length());
+auto vestShotOverlay = Layer(vestBufferLayer.length());
 
 void set_bat_pwr(uint8_t level, uint8_t brightness = 255) {
 	uint8_t gLevel = 255 - pow(255 - 2.55*level, 2)/255;
@@ -86,21 +98,34 @@ void vibr_motor_tick() {
 }
 
 void vest_tick() {
-
 	// Muzzle flash and heatup
 	Color &newMuzzleColor = RGBController.colors[0];
-	newMuzzleColor = muzzleBaseColor;
-	muzzleHeatColor.alpha = gunHandler.getGunHeat();
-	newMuzzleColor.merge_overlay(muzzleHeatColor);
+	newMuzzleColor = 0;
+	currentColors.muzzleHeat.alpha = gunHandler.getGunHeat();
+	newMuzzleColor.merge_overlay(currentColors.muzzleHeat);
+
 	if(gunHandler.was_shot_tick())
-		newMuzzleColor.merge_overlay(muzzleFlashColor);
+		newMuzzleColor.merge_overlay(currentColors.muzzleFlash);
 
+	// Vest color fading
+	vestBaseColor.merge_overlay(currentColors.vestBase, 2);
+	Color currentVestColor = vestBaseColor;
+	currentVestColor.bMod(currentFX.minBaseGlow +
+			(currentFX.maxBaseGlow - currentFX.minBaseGlow)*gunHandler.getGunHeat()/255);
+
+	vestBufferLayer.fill(currentVestColor);
 	// Basic vest wavering & heatup
-	for(int i=0; i<vestBaseLayer.length(); i++)
-		vestBaseLayer[i] = Color(Material::GREEN,
-				(125 + (130.0*gunHandler.getGunHeat())/255)*(0.85 + 0.15*sin((xTaskGetTickCount() - i*200)/1200.0 * M_PI)));
+	for(int i=0; i<vestBufferLayer.length(); i++) {
+		float currentPhase = (xTaskGetTickCount()/float(currentFX.waverPeriod) + i*currentFX.waverPositionShift)*M_PI*2;
+		float currentFactor = 1-currentFX.waverAmplitude/2 + currentFX.waverAmplitude/2*sin(currentPhase);
 
-	vestBufferLayer.merge_overlay(vestBaseLayer);
+		if(currentFactor < 0)
+			currentFactor = 0;
+		if(currentFactor > 1)
+			currentFactor = 1;
+
+		vestBufferLayer[i].bMod(255 * currentFactor);
+	}
 
 	RGBController.colors.merge_overlay(vestBufferLayer, 1);
 
@@ -109,6 +134,7 @@ void vest_tick() {
 		vestShotAnimator.points[0].pos = 1;
 	for(int i=3; i!=0; i--)
 		vestShotAnimator.tick();
+	vestShotOverlay.fill(currentColors.vestShotEnergy);
 	vestShotOverlay.alpha_set(vestShotAnimator.scalarPoints);
 	RGBController.colors.merge_add(vestShotOverlay, 1);
 }
@@ -116,11 +142,8 @@ void vest_tick() {
 void animation_thread(void *args) {
 	TickType_t lastTick;
 
-	vestBaseLayer.fill(Color(Material::PURPLE, 100));
-	vestBaseLayer.alpha = 30;
-
 	vestShotAnimator.baseTug   = 0.0013;
-	vestShotAnimator.basePoint = 0.1;
+	vestShotAnimator.basePoint = 0.0;
 	vestShotAnimator.dampening = 0.94;
 	vestShotAnimator.ptpTug    = 0.015;
 	vestShotAnimator.wrap 	   = true;
@@ -150,7 +173,8 @@ void animation_thread(void *args) {
 
 		RGBController.update();
 
-		vTaskDelayUntil(&lastTick, 10);
+		vTaskDelay(10);
+		//vTaskDelayUntil(&lastTick, 10);
 	}
 }
 
