@@ -8,11 +8,15 @@
 #ifndef MAIN_CORE_PLAYER_H_
 #define MAIN_CORE_PLAYER_H_
 
+#include ""
+
 namespace LZR {
-namespace Player {
 
+class Player {
+public:
+	Player();
+};
 
-}
 }
 
 

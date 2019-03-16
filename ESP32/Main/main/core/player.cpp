@@ -8,9 +8,9 @@
 #include "player.h"
 
 namespace LZR {
-namespace Player {
 
-
+Player::Player() {
 
 }
+
 }

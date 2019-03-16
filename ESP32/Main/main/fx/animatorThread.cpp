@@ -44,6 +44,9 @@ auto vestBufferLayer = Layer(4);
 auto vestShotAnimator = ManeAnimator(vestBufferLayer.length());
 auto vestShotOverlay = Layer(vestBufferLayer.length());
 
+bool flashEnable = false;
+bool flashInvert = false;
+
 void set_bat_pwr(uint8_t level, uint8_t brightness = 255) {
 	uint8_t gLevel = 255 - pow(255 - 2.55*level, 2)/255;
 
@@ -92,9 +95,12 @@ void status_led_tick() {
 }
 
 void vibr_motor_tick() {
-	gpio_set_level(PIN_VBRT,
-			gunHandler.timeSinceLastShot() <= gunHandler.cGun().postShotVibrationTicks
-			? 1 : 0);
+	if(gunHandler.timeSinceLastShot() <= gunHandler.cGun().postShotVibrationTicks)
+		gpio_set_level(PIN_VBRT, 1);
+	else if(flashEnable && flashInvert)
+		gpio_set_level(PIN_VBRT, 1);
+	else
+		gpio_set_level(PIN_VBRT, 0);
 }
 
 #define COLOR_FADE(cName, alpha) bufferedColors.cName.merge_overlay(currentColors.cName, alpha)
@@ -115,26 +121,20 @@ void vest_tick() {
 		newMuzzleColor.merge_overlay(bufferedColors.muzzleFlash);
 	RGBController.colors[0] = newMuzzleColor;
 
-	bool flashEnable  = ((xTaskGetTickCount()/30) & 0b1) == 0;
-	bool flashCounter = ((xTaskGetTickCount()/20) & 0b10) == 0;
-
-	if((xTaskGetTickCount() % (5*600)) > 600) {
-		flashEnable = false;
-	}
-
 	// Generation of vest base color + heatup
 	Color currentVestColor = bufferedColors.vestBase;
 	currentVestColor.bMod(currentFX.minBaseGlow +
 			(currentFX.maxBaseGlow - currentFX.minBaseGlow)*gunHandler.getGunHeat()/255);
 
 	vestBufferLayer.fill(currentVestColor);
+
 	// Basic vest wavering
 	for(int i=0; i<vestBufferLayer.length(); i++) {
 		float currentPhase = (xTaskGetTickCount()/float(currentFX.waverPeriod) + i*currentFX.waverPositionShift)*M_PI*2;
 		float currentFactor = 1-currentFX.waverAmplitude/2 + currentFX.waverAmplitude/2*sin(currentPhase);
 
 		if(flashEnable) {
-			if(flashCounter ^ (i&1))
+			if(flashInvert ^ (i&1))
 				currentFactor *= 0.3;
 			else {
 				currentFactor += 0.4;
@@ -177,6 +177,12 @@ void animation_thread(void *args) {
 
 		if(main_weapon_status == NOMINAL) {
 			gunHandler.tick();
+
+			if((xTaskGetTickCount() % (5*600)) > 600)
+				flashEnable = false;
+
+			flashEnable  = ((xTaskGetTickCount()/30) & 0b1) == 0;
+			flashInvert = ((xTaskGetTickCount()/20) & 0b10) == 0;
 
 			vest_tick();
 			vibr_motor_tick();
