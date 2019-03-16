@@ -42,8 +42,8 @@ const Lasertag::GunSpecs wyre {
 	.postReloadReloadBlock = 600,
 	.perReloadRecharge = 6,
 
-	.perShotHeatup = 0.03,
-	.perTickCooldown = 0.993,
+	.perShotHeatup = 0.02,
+	.perTickCooldown = 0.998,
 
 	.chargeSounds = {
 			AC(wyre_charge)

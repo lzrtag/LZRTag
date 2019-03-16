@@ -27,8 +27,9 @@ ColorSet currentColors = {
 		.muzzleHeat	 = Material::ORANGE,
 		.vestBase	 = Material::GREEN,
 		.vestShotEnergy	 = Color(0x22FF22),
-		.vestMark	 = 0xFFFFFF,
 };
+ColorSet bufferedColors = currentColors;
+
 FXSet 	 currentFX = {
 		.minBaseGlow = 200,
 		.maxBaseGlow = 200,
@@ -38,7 +39,6 @@ FXSet 	 currentFX = {
 		.waverPositionShift = -0.2,
 };
 
-auto vestBaseColor	 = Color();
 auto vestBufferLayer = Layer(4);
 
 auto vestShotAnimator = ManeAnimator(vestBufferLayer.length());
@@ -97,22 +97,23 @@ void vibr_motor_tick() {
 			? 1 : 0);
 }
 
+#define COLOR_FADE(cName, alpha) bufferedColors.cName.merge_overlay(currentColors.cName, alpha)
+
 void vest_tick() {
-	// Muzzle flash and heatup
-	Color &newMuzzleColor = RGBController.colors[0];
-	newMuzzleColor = 0;
-	currentColors.muzzleHeat.alpha = gunHandler.getGunHeat();
-	newMuzzleColor.merge_overlay(currentColors.muzzleHeat);
+	// Vest color fading
+	COLOR_FADE(muzzleFlash, 13);
+	COLOR_FADE(muzzleHeat,  6);
+	COLOR_FADE(vestBase, 	4);
+	COLOR_FADE(vestShotEnergy, 10);
 
+	// Muzzle heatup
+	Color newMuzzleColor = 	bufferedColors.muzzleHeat;
+	newMuzzleColor.bMod(gunHandler.getGunHeat()*0.6);
+
+	// Muzzle flash for shots
 	if(gunHandler.was_shot_tick())
-		newMuzzleColor.merge_overlay(currentColors.muzzleFlash);
-
-	// Vest colorset smooth fading
-	vestBaseColor.merge_overlay(currentColors.vestBase, 2);
-	Color currentVestColor = vestBaseColor;
-	currentVestColor.bMod(currentFX.minBaseGlow +
-			(currentFX.maxBaseGlow - currentFX.minBaseGlow)*gunHandler.getGunHeat()/255);
-
+		newMuzzleColor.merge_overlay(bufferedColors.muzzleFlash);
+	RGBController.colors[0] = newMuzzleColor;
 
 	bool flashEnable  = ((xTaskGetTickCount()/30) & 0b1) == 0;
 	bool flashCounter = ((xTaskGetTickCount()/20) & 0b10) == 0;
@@ -121,8 +122,13 @@ void vest_tick() {
 		flashEnable = false;
 	}
 
-	// Basic vest wavering & heatup
+	// Generation of vest base color + heatup
+	Color currentVestColor = bufferedColors.vestBase;
+	currentVestColor.bMod(currentFX.minBaseGlow +
+			(currentFX.maxBaseGlow - currentFX.minBaseGlow)*gunHandler.getGunHeat()/255);
+
 	vestBufferLayer.fill(currentVestColor);
+	// Basic vest wavering
 	for(int i=0; i<vestBufferLayer.length(); i++) {
 		float currentPhase = (xTaskGetTickCount()/float(currentFX.waverPeriod) + i*currentFX.waverPositionShift)*M_PI*2;
 		float currentFactor = 1-currentFX.waverAmplitude/2 + currentFX.waverAmplitude/2*sin(currentPhase);
@@ -151,14 +157,13 @@ void vest_tick() {
 		vestShotAnimator.points[0].pos = 1;
 	for(int i=3; i!=0; i--)
 		vestShotAnimator.tick();
-	vestShotOverlay.fill(currentColors.vestShotEnergy);
+
+	vestShotOverlay.fill(bufferedColors.vestShotEnergy);
 	vestShotOverlay.alpha_set(vestShotAnimator.scalarPoints);
 	RGBController.colors.merge_add(vestShotOverlay, 1);
 }
 
 void animation_thread(void *args) {
-	TickType_t lastTick;
-
 	vestShotAnimator.baseTug   = 0.0013;
 	vestShotAnimator.basePoint = 0.0;
 	vestShotAnimator.dampening = 0.94;

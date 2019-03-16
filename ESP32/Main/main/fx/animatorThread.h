@@ -27,8 +27,6 @@ struct ColorSet {
 
 	Color vestBase;
 	Color vestShotEnergy;
-
-	Color vestMark;
 };
 
 struct FXSet {
