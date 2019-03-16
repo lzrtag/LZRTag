@@ -107,17 +107,34 @@ void vest_tick() {
 	if(gunHandler.was_shot_tick())
 		newMuzzleColor.merge_overlay(currentColors.muzzleFlash);
 
-	// Vest color fading
+	// Vest colorset smooth fading
 	vestBaseColor.merge_overlay(currentColors.vestBase, 2);
 	Color currentVestColor = vestBaseColor;
 	currentVestColor.bMod(currentFX.minBaseGlow +
 			(currentFX.maxBaseGlow - currentFX.minBaseGlow)*gunHandler.getGunHeat()/255);
 
-	vestBufferLayer.fill(currentVestColor);
+
+	bool flashEnable  = ((xTaskGetTickCount()/30) & 0b1) == 0;
+	bool flashCounter = ((xTaskGetTickCount()/20) & 0b10) == 0;
+
+	if((xTaskGetTickCount() % (5*600)) > 600) {
+		flashEnable = false;
+	}
+
 	// Basic vest wavering & heatup
+	vestBufferLayer.fill(currentVestColor);
 	for(int i=0; i<vestBufferLayer.length(); i++) {
 		float currentPhase = (xTaskGetTickCount()/float(currentFX.waverPeriod) + i*currentFX.waverPositionShift)*M_PI*2;
 		float currentFactor = 1-currentFX.waverAmplitude/2 + currentFX.waverAmplitude/2*sin(currentPhase);
+
+		if(flashEnable) {
+			if(flashCounter ^ (i&1))
+				currentFactor *= 0.3;
+			else {
+				currentFactor += 0.4;
+				vestBufferLayer[i].merge_overlay(0xFFFFFF, 160);
+			}
+		}
 
 		if(currentFactor < 0)
 			currentFactor = 0;
