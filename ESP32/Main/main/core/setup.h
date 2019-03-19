@@ -15,6 +15,7 @@
 
 #include "xasin/mqtt/Handler.h"
 
+#include "player.h"
 #include "GunHandler.h"
 
 namespace LZR {
@@ -37,6 +38,7 @@ extern Peripheral::NeoController	RGBController;
 
 extern Xasin::MQTT::Handler mqtt;
 
+extern LZR::Player	player;
 extern Lasertag::GunHandler	gunHandler;
 
 void setup();

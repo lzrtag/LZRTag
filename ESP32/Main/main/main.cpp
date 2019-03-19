@@ -68,13 +68,13 @@ void app_main()
     tcpip_adapter_init();
 
     esp_event_loop_init(event_handler, 0);
-    Xasin::MQTT::Handler::start_wifi("TP-LINK_84CDC2\0", "f36eebda48\0");
+    Xasin::MQTT::Handler::start_wifi("Lasertag\0", "\0");
 
     LZR::setup();
 
     uint8_t i=0;
     while(true) {
-    	LZR::currentColors = LZR::teamColors[i++ % 8];
+    	//LZR::currentColors = LZR::teamColors[i++ % 8];
     	vTaskDelay(10*600);
     	//LZR::IR::send_signal(-1);
     }

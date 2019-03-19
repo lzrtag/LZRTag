@@ -8,13 +8,28 @@
 #ifndef MAIN_CORE_PLAYER_H_
 #define MAIN_CORE_PLAYER_H_
 
-#include ""
+#include "xasin/mqtt/Handler.h"
 
 namespace LZR {
 
 class Player {
+private:
+
+	void process_data(Xasin::MQTT::MQTT_Packet data);
+
+	int team;
+	int brightness;
+
 public:
-	Player();
+	Xasin::MQTT::Handler &mqtt;
+	const std::string name;
+
+	Player(const std::string name, Xasin::MQTT::Handler &mqtt);
+
+	void init();
+
+	int get_team();
+	int get_brightness();
 };
 
 }

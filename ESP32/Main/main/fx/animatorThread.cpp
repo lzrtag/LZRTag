@@ -18,6 +18,8 @@
 #include "driver/ledc.h"
 #include <cmath>
 
+#include "colorSets.h"
+
 namespace LZR {
 
 using namespace Peripheral;
@@ -137,8 +139,8 @@ void vest_tick() {
 			if(flashInvert ^ (i&1))
 				currentFactor *= 0.3;
 			else {
-				currentFactor += 0.4;
-				vestBufferLayer[i].merge_overlay(0xFFFFFF, 160);
+				currentFactor += 0.5;
+				vestBufferLayer[i].merge_overlay(0xFFFFFF, 90);
 			}
 		}
 
@@ -178,11 +180,12 @@ void animation_thread(void *args) {
 		if(main_weapon_status == NOMINAL) {
 			gunHandler.tick();
 
-			if((xTaskGetTickCount() % (5*600)) > 600)
-				flashEnable = false;
+			currentColors = teamColors[player.get_team()];
 
 			flashEnable  = ((xTaskGetTickCount()/30) & 0b1) == 0;
 			flashInvert = ((xTaskGetTickCount()/20) & 0b10) == 0;
+
+			flashEnable = false;
 
 			vest_tick();
 			vibr_motor_tick();

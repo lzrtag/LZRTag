@@ -14,7 +14,7 @@ const ColorSet teamColors[] = {
 		{ // Team 0 - Inactive/Grey
 			.muzzleFlash = 0x555555,
 			.muzzleHeat  = 0,
-			.vestBase    = 0x666666,
+			.vestBase    = 0x444444,
 			.vestShotEnergy = 0,
 		},
 		{ // Team 1 - Red
