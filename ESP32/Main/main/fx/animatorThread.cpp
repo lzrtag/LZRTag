@@ -24,22 +24,10 @@ namespace LZR {
 
 using namespace Peripheral;
 
-ColorSet currentColors = {
-		.muzzleFlash = Material::PURPLE,
-		.muzzleHeat	 = Material::ORANGE,
-		.vestBase	 = Material::GREEN,
-		.vestShotEnergy	 = Color(0x22FF22),
-};
+ColorSet currentColors = teamColors[1];
 ColorSet bufferedColors = currentColors;
 
-FXSet 	 currentFX = {
-		.minBaseGlow = 200,
-		.maxBaseGlow = 200,
-
-		.waverAmplitude = 0.8,
-		.waverPeriod 	= 1000,
-		.waverPositionShift = -0.2,
-};
+FXSet 	currentFX = brightnessLevels[2];
 
 auto vestBufferLayer = Layer(4);
 
@@ -126,7 +114,7 @@ void vest_tick() {
 	// Generation of vest base color + heatup
 	Color currentVestColor = bufferedColors.vestBase;
 	currentVestColor.bMod(currentFX.minBaseGlow +
-			(currentFX.maxBaseGlow - currentFX.minBaseGlow)*gunHandler.getGunHeat()/255);
+			(currentFX.maxBaseGlow - currentFX.minBaseGlow)*gunHandler.getGunHeat()/255.0);
 
 	vestBufferLayer.fill(currentVestColor);
 
@@ -172,7 +160,7 @@ void animation_thread(void *args) {
 	vestShotAnimator.ptpTug    = 0.015;
 	vestShotAnimator.wrap 	   = true;
 
-	vestShotOverlay.fill(Material::ORANGE);
+	int debugDelay = 0;
 
 	while(true) {
 		status_led_tick();
@@ -181,6 +169,7 @@ void animation_thread(void *args) {
 			gunHandler.tick();
 
 			currentColors = teamColors[player.get_team()];
+			currentFX = brightnessLevels[player.get_brightness()];
 
 			flashEnable  = ((xTaskGetTickCount()/30) & 0b1) == 0;
 			flashInvert = ((xTaskGetTickCount()/20) & 0b10) == 0;
@@ -204,12 +193,26 @@ void animation_thread(void *args) {
 
 		RGBController.update();
 
+		if(debugDelay++ >= 50) {
+			printf("Current colors: %X %X %X %X\n", bufferedColors.muzzleFlash.getPrintable(), bufferedColors.muzzleHeat.getPrintable(),
+					bufferedColors.vestBase.getPrintable(), bufferedColors.vestShotEnergy.getPrintable());
+			printf("Current FX: %d %d - %f %d %f\n", currentFX.minBaseGlow, currentFX.maxBaseGlow,
+					currentFX.waverAmplitude, currentFX.waverPeriod, currentFX.waverPositionShift);
+			printf("Gun heat is: %d\n", gunHandler.getGunHeat());
+			debugDelay = 0;
+		}
+
 		vTaskDelay(10);
 		//vTaskDelayUntil(&lastTick, 10);
 	}
 }
 
 void start_animation_thread() {
+	currentColors = teamColors[1];
+	bufferedColors = currentColors;
+
+	currentFX = brightnessLevels[2];
+
     TaskHandle_t animatorTaskHandle;
     xTaskCreatePinnedToCore(animation_thread, "Animator", 4*1024, nullptr, 10, &animatorTaskHandle, 1);
 }

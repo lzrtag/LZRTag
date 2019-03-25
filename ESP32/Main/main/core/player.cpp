@@ -19,6 +19,8 @@ Player::Player(const std::string name, Xasin::MQTT::Handler &mqtt) :
 
 		if(data.topic == "Team")
 			team = atoi(data.data.data());
+		if(data.topic == "Brightness")
+			brightness = atoi(data.data.data());
 	});
 }
 
@@ -28,7 +30,18 @@ void Player::init() {
 }
 
 int Player::get_team() {
+	if(team < 0)
+		return 0;
+	if(team > 7)
+		return 0;
 	return this->team;
+}
+int Player::get_brightness() {
+	if(brightness < 0)
+		return 0;
+	if(brightness > 3)
+		return 3;
+	return brightness;
 }
 
 }

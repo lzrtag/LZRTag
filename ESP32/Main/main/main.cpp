@@ -74,7 +74,6 @@ void app_main()
 
     uint8_t i=0;
     while(true) {
-    	//LZR::currentColors = LZR::teamColors[i++ % 8];
     	vTaskDelay(10*600);
     	//LZR::IR::send_signal(-1);
     }
