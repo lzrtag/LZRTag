@@ -146,15 +146,39 @@ void take_battery_measurement() {
 			battery.current_capacity());
 }
 
+void setup_ping_req() {
+	mqtt.subscribe_to(player.get_topic_base() + "/System/Ping",
+			[](Xasin::MQTT::MQTT_Packet data) {
+
+		struct {
+			uint32_t batLevel;
+			uint32_t batCapacity;
+			uint32_t ping;
+		} sysData = {
+			.batLevel = battery.current_mv(),
+			.batCapacity = battery.current_capacity(),
+		.ping = uint32_t((xTaskGetTickCount() - *reinterpret_cast<const uint32_t*>(data.data.data()))/0.6)
+		};
+
+		mqtt.publish_to(player.get_topic_base() + "/System", &sysData, sizeof(sysData), 1);
+	});
+}
+
+void send_ping_req() {
+	uint32_t outData = xTaskGetTickCount();
+	mqtt.publish_to(player.get_topic_base() + "/System/Ping", &outData, 4, 0);
+}
+
 void housekeeping_thread(void *args) {
 	TickType_t nextTick;
 
-	// FIXME DEBUG
-//	if(!gpio_get_level(PIN_BAT_CHGING))
-//		main_weapon_status = CHARGING;
+	if(!gpio_get_level(PIN_BAT_CHGING))
+		main_weapon_status = CHARGING;
 
 	while(true) {
 		take_battery_measurement();
+
+		send_ping_req();
 
 		vTaskDelayUntil(&nextTick, 1800);
 	}
@@ -168,6 +192,8 @@ void setup() {
 	setup_io_pins();
 	setup_adc();
 	set_ledc();
+
+	setup_ping_req();
 
 	xTaskCreate(housekeeping_thread, "Housekeeping", 2*1024, nullptr, 10, nullptr);
 
