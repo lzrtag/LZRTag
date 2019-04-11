@@ -44,6 +44,13 @@ module LZRTag
 			def on_mqtt_data(data, topic)
 				case topic[1..topic.length].join("/")
 				when "System"
+					if(data.size == 3*4)
+						parsedData = data.unpack("L<*");
+
+						@battery = parsedData[0].to_f/1000;
+						@ping 	= parsedData[2].to_f;
+					end
+
 					begin
 						info = JSON.parse(data);
 						@heap = info["heap"].to_i;

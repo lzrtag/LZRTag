@@ -17,6 +17,8 @@
 
 #include "AudioHandler.h"
 
+#include "player.h"
+
 using namespace Xasin::Peripheral;
 
 namespace Lasertag {

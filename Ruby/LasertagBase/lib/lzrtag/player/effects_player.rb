@@ -40,6 +40,7 @@ module LZRTag
 			end
 
 			def hit()
+				_pub_to("Hit", @hitConfig[:hitDuration] || 1)
 				_console("displayHit();");
 			end
 

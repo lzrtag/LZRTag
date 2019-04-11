@@ -140,7 +140,7 @@ void init() {
 
 	rmt_rx_config_t rx_config = {};
 	rx_config.filter_en = true;
-	rx_config.filter_ticks_thresh = 255;
+	rx_config.filter_ticks_thresh = 100;
 	rx_config.idle_threshold = TPB * 5;
 	cfg.rx_config = rx_config;
 
@@ -149,7 +149,7 @@ void init() {
 	cfg.gpio_num = PIN_IR_IN;
 
 	ESP_ERROR_CHECK(rmt_config(&cfg));
-	ESP_ERROR_CHECK(rmt_driver_install(RMT_CHANNEL_2, 64, 0));
+	ESP_ERROR_CHECK(rmt_driver_install(RMT_CHANNEL_2, 64*4, 0));
 
 	xTaskCreate(ir_rx_task, "LZR:IR:RX", 2048, nullptr, 5, nullptr);
 

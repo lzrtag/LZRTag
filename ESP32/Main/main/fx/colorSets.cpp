@@ -71,9 +71,9 @@ const FXSet brightnessLevels[] = {
 			.waverPositionShift = 0.5,
 		},
 		{	// Disabled glow
-			.minBaseGlow = 150, .maxBaseGlow = 150,
-			.waverAmplitude = 0.5,
-			.waverPeriod 	= 1000,
+			.minBaseGlow = 140, .maxBaseGlow = 140,
+			.waverAmplitude = 1,
+			.waverPeriod 	= 1300,
 			.waverPositionShift = 0.5,
 		},
 		{
@@ -83,7 +83,7 @@ const FXSet brightnessLevels[] = {
 			.waverPositionShift = 0.2,
 		},
 		{
-			.minBaseGlow = 190, .maxBaseGlow = 255,
+			.minBaseGlow = 230, .maxBaseGlow = 255,
 			.waverAmplitude = 0.3,
 			.waverPeriod = 600,
 			.waverPositionShift = 0.2,

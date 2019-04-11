@@ -75,7 +75,8 @@ void app_main()
     uint8_t i=0;
     while(true) {
     	vTaskDelay(10*600);
-    	//LZR::IR::send_signal(-1);
+
+    	LZR::IR::send_signal(-1);
     }
 
     fflush(stdout);
