@@ -13,7 +13,7 @@
 namespace LZR {
 
 extern const ColorSet 	teamColors[];
-extern const FXSet		brightnessSets[];
+extern const FXSet		brightnessLevels[];
 
 }
 #endif /* MAIN_FX_COLORSETS_H_ */

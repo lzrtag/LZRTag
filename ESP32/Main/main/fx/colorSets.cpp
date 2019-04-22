@@ -61,4 +61,33 @@ const ColorSet teamColors[] = {
 		}
 };
 
+const FXSet brightnessLevels[] = {
+		{	// Idle
+			.minBaseGlow = 130,
+			.maxBaseGlow = 130,
+
+			.waverAmplitude = 0.8,
+			.waverPeriod 	= 2000,
+			.waverPositionShift = 0.5,
+		},
+		{	// Disabled glow
+			.minBaseGlow = 140, .maxBaseGlow = 140,
+			.waverAmplitude = 1,
+			.waverPeriod 	= 1300,
+			.waverPositionShift = 0.5,
+		},
+		{
+			.minBaseGlow = 180, .maxBaseGlow = 200,
+			.waverAmplitude = 0.3,
+			.waverPeriod = 500,
+			.waverPositionShift = 0.2,
+		},
+		{
+			.minBaseGlow = 230, .maxBaseGlow = 255,
+			.waverAmplitude = 0.3,
+			.waverPeriod = 600,
+			.waverPositionShift = 0.2,
+		}
+};
+
 }

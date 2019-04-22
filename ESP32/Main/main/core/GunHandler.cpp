@@ -6,6 +6,7 @@
  */
 
 #include "GunHandler.h"
+#include "setup.h"
 
 #include "../weapons/wyre.h"
 
@@ -92,6 +93,12 @@ void GunHandler::handle_shot() {
 
 	audio.insert_cassette(cGun().shotSounds);
 
+	struct {
+		int32_t currentAmmo;
+		int32_t maxAmmo;
+	} ammoData = {currentAmmo, cGun().maxAmmo};
+	LZR::mqtt.publish_to("Lasertag/Players/"+LZR::player.deviceID+"/Ammo", &ammoData, sizeof(ammoData), 0, true);
+
 	ESP_LOGD(GUN_TAG, "Fired, ammo : %3d", currentAmmo);
 }
 
@@ -105,6 +112,8 @@ void GunHandler::shot_tick() {
 		switch(fireState) {
 		case WAIT_ON_VALID:
 			if(!triggerPressed())
+				break;
+			if(!LZR::player.can_shoot())
 				break;
 			if(currentAmmo < cGun().shotsPerSalve) {
 				if(!emptyClickPlayed) {

@@ -20,26 +20,18 @@
 
 #include "colorSets.h"
 
+#include "sounds.h"
+
 namespace LZR {
 
 using namespace Peripheral;
 
-ColorSet currentColors = {
-		.muzzleFlash = Material::PURPLE,
-		.muzzleHeat	 = Material::ORANGE,
-		.vestBase	 = Material::GREEN,
-		.vestShotEnergy	 = Color(0x22FF22),
-};
+ColorSet currentColors = teamColors[1];
 ColorSet bufferedColors = currentColors;
 
-FXSet 	 currentFX = {
-		.minBaseGlow = 200,
-		.maxBaseGlow = 200,
-
-		.waverAmplitude = 0.8,
-		.waverPeriod 	= 1000,
-		.waverPositionShift = -0.2,
-};
+FXSet 	currentFX = brightnessLevels[2];
+FXSet 	bufferedFX = currentFX;
+float 	lastFXPhase = 0;
 
 auto vestBufferLayer = Layer(4);
 
@@ -106,6 +98,7 @@ void vibr_motor_tick() {
 }
 
 #define COLOR_FADE(cName, alpha) bufferedColors.cName.merge_overlay(currentColors.cName, alpha)
+#define FX_FADE(fxName, alpha)	 bufferedFX.fxName = (bufferedFX.fxName * (1-alpha) + currentFX.fxName * alpha)
 
 void vest_tick() {
 	// Vest color fading
@@ -113,6 +106,12 @@ void vest_tick() {
 	COLOR_FADE(muzzleHeat,  6);
 	COLOR_FADE(vestBase, 	4);
 	COLOR_FADE(vestShotEnergy, 10);
+
+	FX_FADE(minBaseGlow, 0.02);
+	FX_FADE(maxBaseGlow, 0.02);
+	FX_FADE(waverAmplitude, 0.02);
+	FX_FADE(waverPeriod, 0.03);
+	FX_FADE(waverPositionShift, 0.01);
 
 	// Muzzle heatup
 	Color newMuzzleColor = 	bufferedColors.muzzleHeat;
@@ -125,22 +124,24 @@ void vest_tick() {
 
 	// Generation of vest base color + heatup
 	Color currentVestColor = bufferedColors.vestBase;
-	currentVestColor.bMod(currentFX.minBaseGlow +
-			(currentFX.maxBaseGlow - currentFX.minBaseGlow)*gunHandler.getGunHeat()/255);
+	currentVestColor.bMod(bufferedFX.minBaseGlow +
+			(bufferedFX.maxBaseGlow - bufferedFX.minBaseGlow)*gunHandler.getGunHeat()/255.0);
 
 	vestBufferLayer.fill(currentVestColor);
 
 	// Basic vest wavering
+	lastFXPhase += 10 / bufferedFX.waverPeriod;
+
 	for(int i=0; i<vestBufferLayer.length(); i++) {
-		float currentPhase = (xTaskGetTickCount()/float(currentFX.waverPeriod) + i*currentFX.waverPositionShift)*M_PI*2;
-		float currentFactor = 1-currentFX.waverAmplitude/2 + currentFX.waverAmplitude/2*sin(currentPhase);
+		float currentPhase = (lastFXPhase + i*bufferedFX.waverPositionShift)*M_PI*2;
+		float currentFactor = 1-bufferedFX.waverAmplitude/2 + bufferedFX.waverAmplitude/2*sin(currentPhase);
 
 		if(flashEnable) {
 			if(flashInvert ^ (i&1))
 				currentFactor *= 0.3;
 			else {
-				currentFactor += 0.5;
-				vestBufferLayer[i].merge_overlay(0xFFFFFF, 90);
+				currentFactor = 1;
+				vestBufferLayer[i].merge_overlay(0xFFFFFF, 130);
 			}
 		}
 
@@ -172,20 +173,26 @@ void animation_thread(void *args) {
 	vestShotAnimator.ptpTug    = 0.015;
 	vestShotAnimator.wrap 	   = true;
 
-	vestShotOverlay.fill(Material::ORANGE);
-
 	while(true) {
 		status_led_tick();
 
 		if(main_weapon_status == NOMINAL) {
+
+			player.tick();
 			gunHandler.tick();
 
 			currentColors = teamColors[player.get_team()];
+			currentFX = brightnessLevels[player.get_brightness()];
 
-			flashEnable  = ((xTaskGetTickCount()/30) & 0b1) == 0;
-			flashInvert = ((xTaskGetTickCount()/20) & 0b10) == 0;
-
-			flashEnable = false;
+			if(player.is_hit()) {
+				if(player.is_dead())
+					flashEnable = true;
+				else
+					flashEnable  = ((xTaskGetTickCount()/30) & 0b1) == 0;
+				flashInvert = ((xTaskGetTickCount()/20) & 0b10) == 0;
+			}
+			else
+				flashEnable = false;
 
 			vest_tick();
 			vibr_motor_tick();
@@ -210,6 +217,13 @@ void animation_thread(void *args) {
 }
 
 void start_animation_thread() {
+	currentColors = teamColors[1];
+	bufferedColors = currentColors;
+
+	currentFX = brightnessLevels[2];
+
+	Sounds::init();
+
     TaskHandle_t animatorTaskHandle;
     xTaskCreatePinnedToCore(animation_thread, "Animator", 4*1024, nullptr, 10, &animatorTaskHandle, 1);
 }

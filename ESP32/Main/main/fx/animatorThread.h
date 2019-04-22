@@ -30,11 +30,11 @@ struct ColorSet {
 };
 
 struct FXSet {
-	uint8_t minBaseGlow;
-	uint8_t maxBaseGlow;
+	float minBaseGlow;
+	float maxBaseGlow;
 
 	float waverAmplitude;
-	int   waverPeriod;
+	float waverPeriod;
 	float waverPositionShift;
 };
 
