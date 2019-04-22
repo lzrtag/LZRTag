@@ -49,6 +49,7 @@ void ir_rx_try_parse(rmt_item32_t *data, size_t num) {
 	if(num < 2)
 		return;
 
+#pragma pack(1)
 	union {
 		struct {
 			uint8_t start:8;
@@ -58,22 +59,28 @@ void ir_rx_try_parse(rmt_item32_t *data, size_t num) {
 		} bits;
 		uint32_t reg;
 	} dataBoi = {};
+#pragma pack(0)
 
 	uint8_t bitPos = 0;
 	for(uint8_t i=0; i<num; i++) {
-		int sLen = data[i].duration0;
+		int sLen = data[i].duration0 - 0.5*TPB;
 
-		if(sLen%TPB > 0.1*TPB && sLen%TPB < 0.9*TPB)
-			return;
-		for(uint8_t j=0; j<(sLen + 0.2*TPB)/TPB; j++)
+		while((sLen > 0) && (bitPos < 24)) {
 			dataBoi.reg |= (1^data[i].level0) << bitPos++;
+			sLen -= TPB;
+		}
 
-		sLen = data[i].duration1;
+		sLen = data[i].duration1 - 0.5*TPB;
 
-		if(sLen%TPB > 0.1*TPB && sLen%TPB < 0.9*TPB)
-			return;
-		for(uint8_t j=0; j<(sLen + 0.2*TPB)/TPB; j++)
+		while((sLen > 0) && (bitPos < 24)) {
 			dataBoi.reg |= (1^data[i].level1) << bitPos++;
+			sLen -= TPB;
+		}
+
+		if(bitPos >= 24)
+			break;
+		if(data[i].duration0 == 0 || data[i].duration1 == 0)
+			break;
 	}
 
 	ESP_LOGV(lTag, "Raw shot data is: %d", dataBoi.reg);
@@ -81,11 +88,10 @@ void ir_rx_try_parse(rmt_item32_t *data, size_t num) {
 	if(dataBoi.bits.start != 0b1110111)
 		return;
 
-	uint8_t checksum = 0;
-	for(uint8_t block = 0; block<4; block++)
-		checksum ^= 0b1111 & (dataBoi.reg >> (4*block));
+	for(uint8_t block = 2; block<5; block++)
+		dataBoi.bits.checksum -= 0b1111 & (dataBoi.reg >> (4*block));
 
-	if(checksum != 0)
+	if(dataBoi.bits.checksum != 0)
 		return;
 
 	ESP_LOGD(lTag, "Shot recorded. ID: %3d Code: %2d", dataBoi.bits.id, dataBoi.bits.shotCode);
@@ -101,11 +107,11 @@ void ir_rx_task(void *args) {
 
 	while(true) {
 		size_t dataNum = 0;
-		auto headItem = (rmt_item32_t *)xRingbufferReceive(rx_buffer, &dataNum, 5*600);
+		rmt_item32_t *headItem = (rmt_item32_t *)xRingbufferReceive(rx_buffer, &dataNum, 5*600);
 		if(headItem == nullptr)
 			continue;
 
-		ESP_LOGV(lTag, "Got a bit of data!");
+		ESP_LOGD(lTag, "Got a bit of data!");
 		ir_rx_try_parse(headItem, dataNum);
 
 		vRingbufferReturnItem(rx_buffer, headItem);
@@ -124,7 +130,7 @@ void init() {
 
 	tx_cfg.carrier_level = RMT_CARRIER_LEVEL_HIGH;
 	tx_cfg.carrier_en = true;
-	tx_cfg.carrier_duty_percent = 60;
+	tx_cfg.carrier_duty_percent = 40;
 	tx_cfg.carrier_freq_hz = 40000;
 
 	cfg.tx_config = tx_cfg;
@@ -138,20 +144,25 @@ void init() {
 	ESP_ERROR_CHECK(rmt_config(&cfg));
 	ESP_ERROR_CHECK(rmt_driver_install(RMT_CHANNEL_1, 0, 0));
 
+	cfg = {};
+
 	rmt_rx_config_t rx_config = {};
 	rx_config.filter_en = true;
-	rx_config.filter_ticks_thresh = 100;
-	rx_config.idle_threshold = TPB * 5;
+	rx_config.filter_ticks_thresh = 5;
+	rx_config.idle_threshold = TPB * 10;
+
 	cfg.rx_config = rx_config;
 
+	cfg.clk_div = 20;
+	cfg.mem_block_num = 1;
 	cfg.channel  = RMT_CHANNEL_2;
 	cfg.rmt_mode = RMT_MODE_RX;
 	cfg.gpio_num = PIN_IR_IN;
 
 	ESP_ERROR_CHECK(rmt_config(&cfg));
-	ESP_ERROR_CHECK(rmt_driver_install(RMT_CHANNEL_2, 64*4, 0));
+	ESP_ERROR_CHECK(rmt_driver_install(RMT_CHANNEL_2, 1000, 0));
 
-	xTaskCreate(ir_rx_task, "LZR:IR:RX", 2048, nullptr, 5, nullptr);
+	xTaskCreate(ir_rx_task, "LZR:IR:RX", 4096, nullptr, 5, nullptr);
 
 	esp_log_level_set(lTag, ESP_LOG_INFO);
 
@@ -175,12 +186,12 @@ void send_signal(int8_t cCode) {
 			uint8_t check:4;
 		} bits;
 		uint16_t reg;
-	} dataBoi;
+	} dataBoi = {};
 #pragma pack(0)
 
 	if(cCode == -1) {
 		lastShotArbitration++;
-		if(lastShotArbitration == 15)
+		if(lastShotArbitration == 16)
 			lastShotArbitration = 1;
 
 		cCode = lastShotArbitration;
@@ -190,7 +201,7 @@ void send_signal(int8_t cCode) {
 	dataBoi.bits.sID = cCode;
 
 	for(uint8_t i=0; i<3; i++)
-		dataBoi.bits.check ^= 0b1111 & (dataBoi.reg >> i*4);
+		dataBoi.bits.check += 0b1111 & (dataBoi.reg >> (i*4));
 
 	for(uint8_t i=0; i<16; i++)
 		tx_timecodes.push_back((dataBoi.reg & 1<<i) != 0 ? rmt_bit_true : rmt_bit_false);
