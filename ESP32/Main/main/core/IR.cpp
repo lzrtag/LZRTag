@@ -11,6 +11,9 @@
 #include "IR.h"
 #include "../IODefs.h"
 
+#include "cJSON.h"
+#include <cstring>
+
 namespace LZR {
 namespace IR {
 
@@ -41,6 +44,21 @@ void init_rmt_bits() {
 	rmt_bit_false.level0		= false;
 	rmt_bit_false.duration1		= TPB -1;
 	rmt_bit_false.level1		= false;
+}
+
+void send_hit_event(uint8_t pID, uint8_t arbCode) {
+	auto output = cJSON_CreateObject();
+
+	cJSON_AddStringToObject(output, "type", "hit");
+	cJSON_AddNumberToObject(output, "shooterID", pID);
+	cJSON_AddNumberToObject(output, "target", player.get_id());
+	cJSON_AddNumberToObject(output, "arbCode", arbCode);
+
+	char *outStr = cJSON_PrintUnformatted(output);
+
+	mqtt.publish_to("Lasertag/Game/Events", outStr, strlen(outStr));
+
+	cJSON_Delete(output);
 }
 
 void ir_rx_try_parse(rmt_item32_t *data, size_t num) {
@@ -94,6 +112,8 @@ void ir_rx_try_parse(rmt_item32_t *data, size_t num) {
 	if(dataBoi.bits.checksum != 0)
 		return;
 
+
+	send_hit_event(dataBoi.bits.id, dataBoi.bits.shotCode);
 	ESP_LOGD(lTag, "Shot recorded. ID: %3d Code: %2d", dataBoi.bits.id, dataBoi.bits.shotCode);
 }
 
@@ -192,12 +212,12 @@ void send_signal(int8_t cCode) {
 	if(cCode == -1) {
 		lastShotArbitration++;
 		if(lastShotArbitration == 16)
-			lastShotArbitration = 1;
+			lastShotArbitration = 8;
 
 		cCode = lastShotArbitration;
 	}
 
-	dataBoi.bits.pID = 123; // FIXME and replace with MQTT-Assigned value
+	dataBoi.bits.pID = LZR::player.get_id();
 	dataBoi.bits.sID = cCode;
 
 	for(uint8_t i=0; i<3; i++)

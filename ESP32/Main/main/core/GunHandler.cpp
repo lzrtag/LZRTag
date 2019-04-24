@@ -6,7 +6,9 @@
  */
 
 #include "GunHandler.h"
+
 #include "setup.h"
+#include "IR.h"
 
 #include "../weapons/wyre.h"
 
@@ -92,6 +94,8 @@ void GunHandler::handle_shot() {
 	shot_performed = true;
 
 	audio.insert_cassette(cGun().shotSounds);
+
+	LZR::IR::send_signal();
 
 	struct {
 		int32_t currentAmmo;

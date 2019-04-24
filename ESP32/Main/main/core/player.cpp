@@ -25,7 +25,9 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 
 		ESP_LOGD("LZR::Player", "Received %s data!", data.topic.data());
 
-		if(data.topic == "Team")
+		if(data.topic == "ID")
+			ID = atoi(data.data.data());
+		else if(data.topic == "Team")
 			team = atoi(data.data.data());
 		else if(data.topic == "Brightness")
 			brightness = atoi(data.data.data());
@@ -66,6 +68,10 @@ std::string Player::get_topic_base() {
 	return "Lasertag/Players/" + deviceID;
 }
 
+int Player::get_id() {
+	return ID;
+}
+
 int Player::get_team() {
 	if(team < 0)
 		return 0;
@@ -92,6 +98,9 @@ std::string Player::get_name() {
 }
 
 bool Player::can_shoot() {
+	if(ID == 0)
+		return false;
+
 	if(is_dead())
 		return false;
 	if(shotLocked)

@@ -43,6 +43,8 @@ public:
 
 	std::string get_topic_base();
 
+	int get_id();
+
 	int get_team();
 	int get_brightness();
 
