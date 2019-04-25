@@ -15,7 +15,7 @@
 #define FRAME_TICKS F_CPU/F_FRAME
 
 #define START_FRAMES 	8
-#define START_BITS 		0b11101110
+#define START_BITS 		0b1110111
 
 #define DATA_BITS 		12
 

@@ -7,6 +7,8 @@
 
 #include "IR_RX.h"
 
+#include "../Board/VestBlink.h"
+
 namespace IR {
 namespace RX {
 
