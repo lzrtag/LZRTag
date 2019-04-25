@@ -40,13 +40,12 @@ $mqtt = MQTT::SubHandler.new("iot.eclipse.org");
 $myMapsData    = LZRTag::Map::MyMapsParser.new("Rainbow Road.kml");
 $rainbowMapSet = LZRTag::Map::Set.new($mqtt, $myMapsData.generate_zones());
 $rainbowMapSet.centerpoint = [9.716822475785307, 52.38715890804035, 0];
-
-$rainbowMapSet.publish();
+#$rainbowMapSet.publish();
 
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
-#$handler.add_hook(LZRTag::Hook::RandomTeam);
+$handler.add_hook(LZRTag::Hook::RandomTeam);
 $handler.add_hook(LZRTag::Hook::Damager);
 $handler.add_hook(LZRTag::Hook::Regenerator);
 
