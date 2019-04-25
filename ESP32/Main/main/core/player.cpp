@@ -31,7 +31,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			team = atoi(data.data.data());
 		else if(data.topic == "Brightness")
 			brightness = atoi(data.data.data());
-		else if(data.topic == "Heartbeat")
+		else if(data.topic == "FX/Heartbeat")
 			heartbeat = (data.data == "1");
 		else if(data.topic == "Name")
 			name = data.data;
@@ -47,7 +47,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			deadUntil = xTaskGetTickCount() + atof(data.data.data())*600;
 			this->mqtt.publish_to(get_topic_base() + "/Dead", "true", 4, 1, true);
 		}
-		else if(data.topic == "Hit")
+		else if(data.topic == "FX/Hit")
 			hitUntil = xTaskGetTickCount() + atof(data.data.data())*600;
 	});
 }

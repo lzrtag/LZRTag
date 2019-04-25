@@ -46,7 +46,7 @@ void play_audio(std::string aName) {
 }
 
 void init() {
-	mqtt.subscribe_to(player.get_topic_base() + "/Sounds", [](Xasin::MQTT::MQTT_Packet data) {
+	mqtt.subscribe_to(player.get_topic_base() + "/FX/Sound", [](Xasin::MQTT::MQTT_Packet data) {
 		play_audio(data.data);
 	});
 }
