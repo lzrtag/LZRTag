@@ -8,7 +8,7 @@ class DebugHook < LZRTag::Hook::Base
 	end
 
 	def consume_event(evtName, data)
-		return if [:gameTick, :playerRegenerated].include? evtName
+		return if [:gameTick, :playerRegenerated, :gameStarted, :gameStarting].include? evtName
 		puts "Caught event: #{evtName} with data: #{data}";
 
 		super(evtName, data);
@@ -18,8 +18,13 @@ end
 DebugHook.on :playerDisconnected do |player|
 	puts "Yay, player #{player.DeviceID} disconnected!"
 end
-DebugHook.on :playerHurt do |player|
-	player.hit();
+DebugHook.on :playerHurt do |player, fromPlayer|
+	player.sound("HIT");
+	fromPlayer.sound("MINOR SCORE");
+end
+DebugHook.on :playerKilled do |targetPlayer, sourcePlayer|
+	targetPlayer.sound("DEATH");
+	sourcePlayer.sound("KILL SCORE");
 end
 DebugHook.on :playerFullyRegenerated do |player|
 	player.dead = false;
@@ -35,7 +40,7 @@ DebugHook.on :playerEnteredZone do |player, entered|
 	end
 end
 
-$mqtt = MQTT::SubHandler.new("iot.eclipse.org");
+$mqtt = MQTT::SubHandler.new("192.168.251.1");
 
 $myMapsData    = LZRTag::Map::MyMapsParser.new("Rainbow Road.kml");
 $rainbowMapSet = LZRTag::Map::Set.new($mqtt, $myMapsData.generate_zones());
