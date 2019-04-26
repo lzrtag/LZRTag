@@ -38,7 +38,7 @@ fireConfDefaults = {
 fireConf = fireConfDefaults;
 
 -- luacheck: globals updateAmmo attemptShot
-subscribeTo(playerTopic .. "/AmmoSet", 1,
+subscribeTo(playerTopic .. "/Ammo/Set", 1,
 	function(data)
 		data = tonumber(data);
 		if(data) then
@@ -60,7 +60,7 @@ subscribeTo(playerTopic .. "/Team", 1,
 		game.team = tonumber(data) or 7;
 		setVestColor(game.team);
 	end);
-subscribeTo(playerTopic .. "/Brightness", 1,
+subscribeTo(playerTopic .. "/FX/Brightness", 1,
 	function(data)
 		game.brightness = tonumber(data) or 0;
 		if(not(player.dead)) then
@@ -68,7 +68,7 @@ subscribeTo(playerTopic .. "/Brightness", 1,
 		end
 	end);
 
-subscribeTo(playerTopic .. "/Heartbeat", 1,
+subscribeTo(playerTopic .. "/FX/Heartbeat", 1,
 	function(data)
 		setVibratePattern(tonumber(data) or 0);
 	end

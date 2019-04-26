@@ -31,6 +31,17 @@ function killPlayer()
 	end
 end
 
+subscribeTo(playerTopic .. "/GunNo", 0,
+	function(data)
+		data = tonumber(data);
+
+		if(data >= 1) then
+			fireConf.shotLocked = false;
+		else
+			fireConf.shotLocked = true;
+		end
+	end);
+
 subscribeTo(playerTopic .. "/Dead", 0,
 	function(data)
 		data = (data == "true");
@@ -40,6 +51,16 @@ subscribeTo(playerTopic .. "/Dead", 0,
 		elseif(not(data) and (player.dead)) then
 			reviveTimer:unregister();
 			revivePlayer();
+		end
+	end);
+
+subscribeTo(playerTopic .. "Dead/Timed", 0,
+	function(data)
+		data = tonumber(data);
+		if(data) then
+			hitConf.deathDuration = data;
+
+			killPlayer();
 		end
 	end);
 
@@ -60,7 +81,7 @@ function canShoot()
 end
 function updateAmmo(a)
 	player.ammo = a;
-	homeQTT:publish(playerTopic .. "/Ammo", player.ammo, 0, 0);
+	homeQTT:publish(playerTopic .. "/Ammo", struct.pack("L<L<", player.ammo, fireConf.ammoCap), 0, 0);
 end
 function reloadAmmo()
 	if(fireConf.perReloadAmmo == 0) then
@@ -125,7 +146,6 @@ registerUARTCommand(1, 2,
 
 		eP = '{"type":"hit","shooterID":' .. data:byte(1)
 		eP = eP .. ',"target":"' .. playerID .. '","arbCode":' .. data:byte(2)
-		--eP = eP .. ',"time":{"sec":' .. sec .. ',"msec":' .. usec/1000 .. '}}'
 		eP = eP .. '}';
 
 		homeQTT:publish(lasertagTopic .. "/Game/Events", eP, 0, 0);
