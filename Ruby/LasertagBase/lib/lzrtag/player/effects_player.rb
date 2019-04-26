@@ -21,7 +21,7 @@ module LZRTag
 				return if @heartbeat == data;
 				@heartbeat = data;
 
-				_pub_to("FX/Heartbeat", @heartbeat ? 1 : "", retain: true);
+				_pub_to("FX/Heartbeat", @heartbeat ? "1" : "0", retain: true);
 			end
 
 			def fire
@@ -34,11 +34,11 @@ module LZRTag
 			end
 
 			def sound(sName)
-				_pub_to("FX/Sounds", sName);
+				_pub_to("FX/Sound", sName);
 			end
 
 			def hit()
-				_pub_to("FX/Hit", @hitConfig[:hitDuration] || 1)
+				_pub_to("FX/Hit", @hitConfig[:hitDuration] || 0.7)
 				_console("displayHit();");
 			end
 

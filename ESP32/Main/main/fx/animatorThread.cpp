@@ -93,6 +93,8 @@ void vibr_motor_tick() {
 		gpio_set_level(PIN_VBRT, 1);
 	else if(flashEnable && flashInvert)
 		gpio_set_level(PIN_VBRT, 1);
+	else if(player.get_heartbeat() && ((0b101 & (xTaskGetTickCount()/75)) == 0)) 
+		gpio_set_level(PIN_VBRT, 1);
 	else
 		gpio_set_level(PIN_VBRT, 0);
 }

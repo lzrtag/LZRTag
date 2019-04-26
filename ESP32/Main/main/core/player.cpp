@@ -29,7 +29,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			ID = atoi(data.data.data());
 		else if(data.topic == "Team")
 			team = atoi(data.data.data());
-		else if(data.topic == "Brightness")
+		else if(data.topic == "FX/Brightness")
 			brightness = atoi(data.data.data());
 		else if(data.topic == "FX/Heartbeat")
 			heartbeat = (data.data == "1");
