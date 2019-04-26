@@ -32,7 +32,7 @@ module LZRTag
 			def initialize()
 				super();
 
-				@teamWhitelist = (1..7).to_a;
+				@teamWhitelist = (1..6).to_a;
 			end
 
 			def on_hookin(game)
