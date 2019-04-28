@@ -120,7 +120,7 @@ void take_battery_measurement() {
 		vTaskDelay(4);
 	}
 	rawBattery = rawBattery/6;
-	rawBattery = ((3300 * rawBattery)/ 4096) * 3 / 2 * (4195/4130); // TODO Measure proper ADC correction factors
+	rawBattery = ((3300 * rawBattery)/ 4096) * 3/2 * (3853/3691.0); // TODO Measure proper ADC correction factors
 
 	if(battery_sample_pos == -1)
 		battery_samples.fill(rawBattery);
@@ -143,7 +143,7 @@ void take_battery_measurement() {
 	ESP_LOGI("LZR::Core", "%sBattery level: %s%d",
 			battery.current_capacity() < 20 ? LOG_COLOR("33") : "",
 			battery.is_charging ? "^" : "",
-			battery.current_capacity());
+			battery.current_mv());
 }
 
 void setup_ping_req() {
