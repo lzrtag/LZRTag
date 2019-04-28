@@ -26,14 +26,14 @@ namespace LZR {
 
 using namespace Peripheral;
 
-ColorSet currentColors = teamColors[1];
+ColorSet currentColors = teamColors[0];
 ColorSet bufferedColors = currentColors;
 
-FXSet 	currentFX = brightnessLevels[2];
+FXSet 	currentFX = brightnessLevels[0];
 FXSet 	bufferedFX = currentFX;
 float 	lastFXPhase = 0;
 
-auto vestBufferLayer = Layer(4);
+auto vestBufferLayer = Layer(WS2812_NUMBER - 1);
 
 auto vestShotAnimator = ManeAnimator(vestBufferLayer.length());
 auto vestShotOverlay = Layer(vestBufferLayer.length());
@@ -219,10 +219,10 @@ void animation_thread(void *args) {
 }
 
 void start_animation_thread() {
-	currentColors = teamColors[1];
+	currentColors = teamColors[0];
 	bufferedColors = currentColors;
 
-	currentFX = brightnessLevels[2];
+	currentFX = brightnessLevels[0];
 
 	Sounds::init();
 
