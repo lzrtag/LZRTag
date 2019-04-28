@@ -31,18 +31,18 @@ function killPlayer()
 	end
 end
 
-subscribeTo(playerTopic .. "/GunNo", 0,
+subscribeTo(playerTopic .. "/GunNo", 1,
 	function(data)
-		data = tonumber(data);
+		data = (tonumber(data) or 0);
 
-		if(data >= 1) then
+		if(data > 0) then
 			fireConf.shotLocked = false;
 		else
 			fireConf.shotLocked = true;
 		end
 	end);
 
-subscribeTo(playerTopic .. "/Dead", 0,
+subscribeTo(playerTopic .. "/Dead", 1,
 	function(data)
 		data = (data == "true");
 
