@@ -1,4 +1,6 @@
 
+salveCounter = 0;
+
 reviveTimer = tmr.create();
 shotTimer	= tmr.create();
 reloadTimer = tmr.create();
@@ -77,6 +79,10 @@ function canShoot()
 		return false
 	end
 
+	if(salveCounter > 0) then
+		return true;
+	end
+
 	return player.button;
 end
 function updateAmmo(a)
@@ -101,7 +107,14 @@ end
 
 function attemptShot()
 	if(not(canShoot())) then
+		salveCounter = 0;
 		return;
+	end
+
+	if(salveCounter > 0) then
+		salveCounter = salveCounter-1;
+	else
+		salveCounter = fireConf.salveNum-1;
 	end
 
 	fireWeapon();

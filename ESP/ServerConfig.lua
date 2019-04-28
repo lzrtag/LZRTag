@@ -6,7 +6,7 @@ game = {
 
 player = {
 	dead = false,
-	ammo = 0,
+	ammo = 3,
 	shotCooldown = false,
 	marked = false
 }
@@ -24,12 +24,13 @@ hitConfDefaults = {
 hitConf = hitConfDefaults;
 
 fireConfDefaults = {
-	ammoCap 			= 5,
-	perReloadAmmo 	= 5,
+	ammoCap 			= 18,
+	perReloadAmmo 	= 4,
 
-	reloadDelay = 3000,
+	reloadDelay = 2000,
 
-	perShotDelay	= 333,
+	salveNum = 2,
+	perShotDelay	= 150,
 
 	flashBrightness = 10,
 
