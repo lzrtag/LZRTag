@@ -8,6 +8,7 @@ player = {
 	dead = false,
 	ammo = 0,
 	shotCooldown = false,
+	marked = false
 }
 
 hitConfDefaults = {
@@ -37,6 +38,16 @@ fireConfDefaults = {
 }
 fireConf = fireConfDefaults;
 
+function update_vest_brightness()
+	if(player.dead) then
+		setVestBrightness(hitConf.deathBrightness);
+	elseif(player.marked) then
+		setVestBrightness(5);
+	else
+		setVestBrightness(game.brightness);
+	end
+end
+
 -- luacheck: globals updateAmmo attemptShot
 subscribeTo(playerTopic .. "/Ammo/Set", 1,
 	function(data)
@@ -63,9 +74,12 @@ subscribeTo(playerTopic .. "/Team", 1,
 subscribeTo(playerTopic .. "/FX/Brightness", 1,
 	function(data)
 		game.brightness = tonumber(data) or 0;
-		if(not(player.dead)) then
-			setVestBrightness(game.brightness);
+
+		if((game.brightness == 2) or (game.brightness == 3)) then
+			game.brightness = game.brightness + 4;
 		end
+
+		update_vest_brightness();
 	end);
 
 subscribeTo(playerTopic .. "/FX/Heartbeat", 1,
@@ -73,6 +87,11 @@ subscribeTo(playerTopic .. "/FX/Heartbeat", 1,
 		setVibratePattern(tonumber(data) or 0);
 	end
 );
+subscribeTo(playerTopic .. "/FX/Marked", 1,
+	function(data)
+		player.marked = (data == "1");
+		update_vest_brightness();
+	end);
 
 hitConfOptions = {
 	metatable = {

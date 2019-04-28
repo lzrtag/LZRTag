@@ -12,7 +12,7 @@ function revivePlayer()
 		return;
 	end
 	player.dead = false;
-	setVestBrightness(game.brightness);
+	update_vest_brightness();
 	homeQTT:publish(playerTopic .. "/Dead", "", 0, 1);
 end
 function killPlayer()

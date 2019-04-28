@@ -1,5 +1,5 @@
 
-dofile("UARTReceive.lua");
+dofile("UARTReceive.lc");
 
 function setVestBrightness(c)
 	uart.write(0, 200, c);
