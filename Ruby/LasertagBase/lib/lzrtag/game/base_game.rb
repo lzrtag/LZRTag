@@ -13,7 +13,7 @@ module LZRTag
 				@hookList = Array.new();
 				@activeHooks = Array.new();
 
-				@tickTime = 0.3;
+				@tickTime = 1;
 			end
 
 			def _on_start_raw()

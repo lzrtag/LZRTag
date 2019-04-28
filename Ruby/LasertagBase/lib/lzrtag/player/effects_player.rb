@@ -18,9 +18,9 @@ module LZRTag
 			end
 
 			def heartbeat=(data)
-				return if @heartbeat == data;
-				@heartbeat = data;
+				return if (@heartbeat == data);
 
+				@heartbeat = data;
 				_pub_to("FX/Heartbeat", @heartbeat ? "1" : "0", retain: true);
 			end
 

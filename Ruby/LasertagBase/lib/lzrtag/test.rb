@@ -8,10 +8,10 @@ class DebugHook < LZRTag::Hook::Base
 	end
 
 	def consume_event(evtName, data)
+		super(evtName, data);
+
 		return if [:gameTick, :playerRegenerated, :gameStarted, :gameStarting].include? evtName
 		puts "Caught event: #{evtName} with data: #{data}";
-
-		super(evtName, data);
 	end
 end
 
@@ -24,7 +24,7 @@ DebugHook.on :playerHurt do |player, fromPlayer|
 end
 DebugHook.on :playerKilled do |targetPlayer, sourcePlayer|
 	targetPlayer.sound("DEATH");
-	sourcePlayer.sound("KILL SCORE");
+	sourcePlayer.sound("KILL SCORE") if(sourcePlayer)
 end
 DebugHook.on :playerFullyRegenerated do |player|
 	player.dead = false;
@@ -52,7 +52,7 @@ $handler = LZRTag.Handler.new($mqtt);
 $handler.add_hook(DebugHook);
 $handler.add_hook(LZRTag::Hook::RandomTeam);
 $handler.add_hook(LZRTag::Hook::Damager);
-$handler.add_hook(LZRTag::Hook::Regenerator);
+$handler.add_hook(LZRTag::Hook::Regenerator.new(regRate: 5));
 
 cfg = LZRTag::Hook::Configurator.new();
 cfg.fireConfig = {
