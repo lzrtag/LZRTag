@@ -93,7 +93,7 @@ void vibr_motor_tick() {
 		gpio_set_level(PIN_VBRT, 1);
 	else if(flashEnable && flashInvert)
 		gpio_set_level(PIN_VBRT, 1);
-	else if(player.get_heartbeat() && ((0b101 & (xTaskGetTickCount()/75)) == 0)) 
+	else if(player.get_heartbeat() && ((0b101 & (xTaskGetTickCount()/75)) == 0))
 		gpio_set_level(PIN_VBRT, 1);
 	else
 		gpio_set_level(PIN_VBRT, 0);
@@ -103,7 +103,10 @@ void vibr_motor_tick() {
 #define FX_FADE(fxName, alpha)	 bufferedFX.fxName = (bufferedFX.fxName * (1-alpha) + currentFX.fxName * alpha)
 
 void vest_tick() {
+
+	////////////////////
 	// Vest color fading
+	////////////////////
 	COLOR_FADE(muzzleFlash, 13);
 	COLOR_FADE(muzzleHeat,  6);
 	COLOR_FADE(vestBase, 	4);
@@ -115,29 +118,39 @@ void vest_tick() {
 	FX_FADE(waverPeriod, 0.03);
 	FX_FADE(waverPositionShift, 0.01);
 
+	////////////////////
 	// Muzzle heatup
+	////////////////////
 	Color newMuzzleColor = 	bufferedColors.muzzleHeat;
 	newMuzzleColor.bMod(gunHandler.getGunHeat()*0.6);
 
+	////////////////////
 	// Muzzle flash for shots
+	////////////////////
 	if(gunHandler.was_shot_tick())
 		newMuzzleColor.merge_overlay(bufferedColors.muzzleFlash);
 	RGBController.colors[0] = newMuzzleColor;
 
+	////////////////////
 	// Generation of vest base color + heatup
+	////////////////////
 	Color currentVestColor = bufferedColors.vestBase;
 	currentVestColor.bMod(bufferedFX.minBaseGlow +
 			(bufferedFX.maxBaseGlow - bufferedFX.minBaseGlow)*gunHandler.getGunHeat()/255.0);
 
 	vestBufferLayer.fill(currentVestColor);
 
+	////////////////////
 	// Basic vest wavering
+	////////////////////
 	lastFXPhase += 10 / bufferedFX.waverPeriod;
-
 	for(int i=0; i<vestBufferLayer.length(); i++) {
 		float currentPhase = (lastFXPhase + i*bufferedFX.waverPositionShift)*M_PI*2;
 		float currentFactor = 1-bufferedFX.waverAmplitude/2 + bufferedFX.waverAmplitude/2*sin(currentPhase);
 
+		////////
+		// Hit-Flashing
+		////////
 		if(flashEnable) {
 			if(flashInvert ^ (i&1))
 				currentFactor *= 0.3;
@@ -154,10 +167,11 @@ void vest_tick() {
 
 		vestBufferLayer[i].bMod(255 * currentFactor);
 	}
-
 	RGBController.colors.merge_overlay(vestBufferLayer, 1);
 
+	/////////////////////////////////////
 	// Vest shot flaring & wave animation
+	/////////////////////////////////////
 	if(gunHandler.was_shot_tick())
 		vestShotAnimator.points[0].pos = 1;
 	for(int i=3; i!=0; i--)
@@ -179,7 +193,6 @@ void animation_thread(void *args) {
 		status_led_tick();
 
 		if(main_weapon_status == NOMINAL) {
-
 			player.tick();
 			gunHandler.tick();
 
@@ -214,7 +227,6 @@ void animation_thread(void *args) {
 		RGBController.update();
 
 		vTaskDelay(10);
-		//vTaskDelayUntil(&lastTick, 10);
 	}
 }
 
