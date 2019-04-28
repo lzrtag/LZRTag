@@ -34,7 +34,6 @@
 #include "IODefs.h"
 
 #include "BatteryManager.h"
-#include "BLESlaveChannel.h"
 
 #include "AudioHandler.h"
 
@@ -46,9 +45,6 @@
 #include "fx/colorSets.h"
 
 using namespace Peripheral;
-
-auto dataRegisters = Xasin::Communication::RegisterBlock();
-auto testPipe = Xasin::Communication::BLE_SlaveChannel("TestPipe", dataRegisters);
 
 esp_err_t event_handler(void *context, system_event_t *event) {
 	Xasin::MQTT::Handler::try_wifi_reconnect(event);
@@ -68,7 +64,7 @@ void app_main()
     tcpip_adapter_init();
 
     esp_event_loop_init(event_handler, 0);
-    Xasin::MQTT::Handler::start_wifi("Lasertag\0", "\0");
+    Xasin::MQTT::Handler::start_wifi("TP-LINK_84CDC2\0", "f36eebda48\0");
 
     LZR::setup();
 
