@@ -180,6 +180,19 @@ void vest_tick() {
 	vestShotOverlay.fill(bufferedColors.vestShotEnergy);
 	vestShotOverlay.alpha_set(vestShotAnimator.scalarPoints);
 	RGBController.colors.merge_add(vestShotOverlay, 1);
+
+	/////////////////////////////////////
+	// Player color marking
+	/////////////////////////////////////
+	if(player.is_marked()) {
+		int markerPos = xTaskGetTickCount()/80;
+		markerPos %= vestShotOverlay.length()*2 - 2;
+
+		if(markerPos >= vestShotOverlay.length())
+			markerPos = 2*vestShotOverlay.length() - markerPos - 2;
+
+		RGBController.colors[1+markerPos].merge_overlay(0xFFFFFF, 140);
+	}
 }
 
 void animation_thread(void *args) {
