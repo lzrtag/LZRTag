@@ -46,6 +46,7 @@ protected:
 
 	float life;
 	int	ammo;
+	int	maxAmmo;
 
 	QVariantMap position;
 	QList<QString> currentZones;

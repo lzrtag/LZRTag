@@ -7,7 +7,7 @@ LTPlayer::LTPlayer(QString deviceID, QObject *parent) : 	QObject(parent),
 	name(""), icon(""),
 	battery(0), ping(0),
 	team(0),
-	life(0), ammo(0),
+	life(0), ammo(0), maxAmmo(0),
 	position(), currentZones(), zoneData(),
 	deviceID(deviceID)
 {
@@ -71,9 +71,7 @@ int LTPlayer::getAmmo() {
 	return ammo;
 }
 int LTPlayer::getMaxAmmo() {
-	if(fireConfig.contains("ammoCap"))
-		return fireConfig["ammoCap"].toInt();
-	return 5;
+	return maxAmmo;
 }
 
 QPointF LTPlayer::getMapPosition() {

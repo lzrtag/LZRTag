@@ -35,7 +35,7 @@ Item {
 	PositionSource {
 		id: gpsSource
 
-		updateInterval: 1000
+		updateInterval: 3000
 		active: true
 
 		onPositionChanged: {

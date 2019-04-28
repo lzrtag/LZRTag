@@ -69,11 +69,12 @@ void LT_MQTTPlayer::mqtt_processData(QMqttMessage msg) {
 		emit iconChanged();
 	}
 	else if(parameter == "System") {
-		auto jsonDoc = QJsonDocument::fromJson(msg.payload()).object();
-		if(jsonDoc.contains("battery"))
-			battery = jsonDoc["battery"].toVariant().toFloat()/1000;
-		if(jsonDoc.contains("ping"))
-			ping = jsonDoc["ping"].toVariant().toFloat()/1000;
+		int paramArray[3] = {0};
+
+		memcpy(paramArray, msg.payload().data(), sizeof(paramArray));
+
+		battery = paramArray[0]/1000.0;
+		ping	  = paramArray[2];
 
 		emit systemDataChanged();
 	}
@@ -95,7 +96,13 @@ void LT_MQTTPlayer::mqtt_processData(QMqttMessage msg) {
 	}
 	else if(parameter == "Ammo") {
 		auto oldAmmo = ammo;
-		ammo = msg.payload().toInt();
+		int ammoArray[2] = {0, 0};
+
+		memcpy(ammoArray, msg.payload().data(), sizeof(ammoArray));
+
+		ammo = ammoArray[0];
+		maxAmmo = ammoArray[1];
+
 		emit ammoChanged(ammo, oldAmmo);
 	}
 	else if(parameter == "Position") {

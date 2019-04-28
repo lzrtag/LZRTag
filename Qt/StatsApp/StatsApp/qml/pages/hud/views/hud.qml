@@ -43,6 +43,8 @@ GridLayout {
 		Layout.preferredHeight: 0.5;
 		Layout.preferredWidth:  1;
 
+		padding: 3
+
 		Layout.row: 2
 		Layout.column: 1
 
@@ -51,36 +53,13 @@ GridLayout {
 		GridLayout {
 			anchors.fill: parent;
 
-			columns: 3;
-
-			Item {
-				Layout.rowSpan: 2
-				Layout.fillHeight: true
-				Layout.preferredWidth: 30
-
-				Label {
-					width: parent.height
-					height: parent.width
-
-					anchors.centerIn: parent;
-
-					padding: 0
-
-					text: "Criticals"
-					fontSizeMode: Text.Fit
-					font.pixelSize: 300
-					horizontalAlignment: Qt.AlignHCenter
-
-					rotation: -90
-				}
-			}
-
-
+			columns: 2;
 
 			InfoLabel {
 				Layout.fillHeight: true
 				Layout.fillWidth:	 true
-				Layout.margins:  3;
+				Layout.margins:  2;
+				padding: 1;
 
 				Layout.columnSpan: 2;
 
@@ -97,7 +76,8 @@ GridLayout {
 			InfoLabel {
 				Layout.fillHeight: true
 				Layout.fillWidth:	 true
-				Layout.margins:  3;
+				Layout.margins:  2;
+				padding: 1;
 
 				Layout.columnSpan: 2;
 
