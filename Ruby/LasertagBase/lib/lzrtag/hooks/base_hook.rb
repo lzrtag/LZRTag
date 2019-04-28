@@ -40,12 +40,18 @@ module LZRTag
 			def consume_event(evtName, data)
 				if(cbList = self.class.getCBs()[evtName])
 					cbList.each do |cb|
-						instance_exec(*data, &cb);
+						begin
+							instance_exec(*data, &cb);
+						rescue
+						end
 					end
 				end
 				if(cbList = @localCBList[evtName]) then
 					cbList.each do |cb|
-						cb.call(*data);
+						begin
+							cb.call(*data);
+						rescue
+						end
 					end
 				end
 			end
