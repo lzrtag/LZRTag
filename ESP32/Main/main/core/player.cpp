@@ -57,7 +57,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 }
 
 void Player::init() {
-	mqtt.start("mqtt://192.168.6.111", get_topic_base() + "/Connection");
+	mqtt.start("mqtt://192.168.250.1", get_topic_base() + "/Connection");
 	mqtt.set_status("OK");
 }
 

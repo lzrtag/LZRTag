@@ -24,23 +24,23 @@ namespace Weapons {
 #define AC(name) AudioCassette(name, sizeof(name))
 
 const Lasertag::GunSpecs wyre {
-	.maxAmmo = 80,
+	.maxAmmo = 18,
 	.postTriggerTicks = 0,
 	.postTriggerRelease = false,
 
-	.shotsPerSalve = 3,
+	.shotsPerSalve = 2,
 
-	.perShotDelay = 40,
+	.perShotDelay = 90,
 
 	.postShotCooldownTicks = 200,
 	.postShotVibrationTicks = 50,
 
-	.postSalveDelay = 100,
+	.postSalveDelay = 50,
 	.postSalveRelease = false,
 
-	.postShotReloadBlock = 3*600,
-	.postReloadReloadBlock = 600,
-	.perReloadRecharge = 6,
+	.postShotReloadBlock = 5*600,
+	.postReloadReloadBlock = 2*600,
+	.perReloadRecharge = 4,
 
 	.perShotHeatup = 0.02,
 	.perTickCooldown = 0.998,
