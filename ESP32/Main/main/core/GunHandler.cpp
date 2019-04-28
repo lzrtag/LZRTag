@@ -50,7 +50,8 @@ const GunSpecs defaultGun = {
 };
 
 GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
-	:	fireState(WAIT_ON_VALID),
+	:	mqttAmmo(0), lastMQTTPush(0),
+		fireState(WAIT_ON_VALID),
 		reloadState(FULL),
 		shotTick(0), salveCounter(0), lastShotTick(0),
 		emptyClickPlayed(false),
@@ -96,12 +97,6 @@ void GunHandler::handle_shot() {
 	audio.insert_cassette(cGun().shotSounds);
 
 	LZR::IR::send_signal();
-
-	struct {
-		int32_t currentAmmo;
-		int32_t maxAmmo;
-	} ammoData = {currentAmmo, cGun().maxAmmo};
-	LZR::mqtt.publish_to("Lasertag/Players/"+LZR::player.deviceID+"/Ammo", &ammoData, sizeof(ammoData), 0, true);
 
 	ESP_LOGD(GUN_TAG, "Fired, ammo : %3d", currentAmmo);
 }
@@ -230,6 +225,17 @@ void GunHandler::tick() {
 	shot_tick();
 
 	fx_tick();
+
+	if((currentAmmo != mqttAmmo) && (xTaskGetTickCount() > (lastMQTTPush+300))) {
+		struct {
+			int32_t currentAmmo;
+			int32_t maxAmmo;
+		} ammoData = {currentAmmo, cGun().maxAmmo};
+		LZR::mqtt.publish_to("Lasertag/Players/"+LZR::player.deviceID+"/Ammo", &ammoData, sizeof(ammoData), 0, true);
+
+		mqttAmmo = currentAmmo;
+		lastMQTTPush = xTaskGetTickCount();
+	}
 
 	lastTick = xTaskGetTickCount();
 }

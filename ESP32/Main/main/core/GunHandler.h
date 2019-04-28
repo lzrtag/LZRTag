@@ -74,6 +74,8 @@ extern const GunSpecs defaultGun;
 class GunHandler {
 private:
 	int currentAmmo;
+	int mqttAmmo;
+	TickType_t lastMQTTPush;
 
 	FIRE_STATE 		fireState;
 	RELOAD_STATE	reloadState;
