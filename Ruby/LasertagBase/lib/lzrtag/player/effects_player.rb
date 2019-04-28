@@ -24,6 +24,13 @@ module LZRTag
 				_pub_to("FX/Heartbeat", @heartbeat ? "1" : "0", retain: true);
 			end
 
+			def marked=(data)
+				return if (@marked == data);
+
+				@marked = data;
+				_pub_to("FX/Marked", @marked ? "1" : "0", retain: true);
+			end
+
 			def fire
 				_console("fireWeapon();")
 			end
@@ -45,7 +52,7 @@ module LZRTag
 			def clear_all_topics()
 				super();
 
-				["FX/Heartbeat"].each do |t|
+				["FX/Heartbeat", "FX/Marked"].each do |t|
 					_pub_to(t, "", retain: true)
 				end
 			end
