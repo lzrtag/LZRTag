@@ -22,6 +22,7 @@ private:
 	int team;
 	int brightness;
 
+	bool isMarked;
 	bool heartbeat;
 
 	std::string name;
@@ -48,6 +49,7 @@ public:
 	int get_team();
 	int get_brightness();
 
+	bool is_marked();
 	bool get_heartbeat();
 
 	std::string get_name();

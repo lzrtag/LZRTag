@@ -14,7 +14,7 @@ namespace LZR {
 
 Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 	ID(0),
-	team(0), brightness(0), heartbeat(false),
+	team(0), brightness(0), isMarked(false), heartbeat(false),
 	name(""),
 	deadUntil(0), hitUntil(0),
 	currentGun(0), shotLocked(false),
@@ -31,6 +31,10 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			team = atoi(data.data.data());
 		else if(data.topic == "FX/Brightness")
 			brightness = atoi(data.data.data());
+		else if(data.topic == "GunNo")
+			shotLocked = !(data.data == "1");
+		else if(data.topic == "FX/Marked")
+			isMarked = (data.data == "1");
 		else if(data.topic == "FX/Heartbeat")
 			heartbeat = (data.data == "1");
 		else if(data.topic == "Name")
@@ -53,7 +57,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 }
 
 void Player::init() {
-	mqtt.start("mqtt://192.168.250.1", get_topic_base() + "/Connection");
+	mqtt.start("mqtt://192.168.6.111", get_topic_base() + "/Connection");
 	mqtt.set_status("OK");
 }
 
@@ -88,6 +92,10 @@ int Player::get_brightness() {
 	if(brightness > 3)
 		return 3;
 	return brightness;
+}
+
+bool Player::is_marked() {
+	return isMarked;
 }
 bool Player::get_heartbeat() {
 	return heartbeat;
