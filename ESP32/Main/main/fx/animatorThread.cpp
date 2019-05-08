@@ -226,7 +226,7 @@ void animation_thread(void *args) {
 			vibr_motor_tick();
 		}
 		else {
-			RGBController.fill(0);
+			RGBController.colors.fill(0);
 			gpio_set_level(PIN_VBRT, false);
 		}
 

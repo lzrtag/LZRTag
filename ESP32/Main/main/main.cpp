@@ -66,6 +66,8 @@ void app_main()
     esp_event_loop_init(event_handler, 0);
     Xasin::MQTT::Handler::start_wifi("Lasertag\0", "\0");
 
+    LZR::audioManager.volumeMod = 200;
+
     LZR::setup();
 
     while(true) {
