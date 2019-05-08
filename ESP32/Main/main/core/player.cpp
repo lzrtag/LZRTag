@@ -13,11 +13,11 @@
 namespace LZR {
 
 Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
-	ID(0),
-	team(0), brightness(0), isMarked(false), heartbeat(false),
+	ID(3),
+	team(4), brightness(2), isMarked(false), heartbeat(false),
 	name(""),
 	deadUntil(0), hitUntil(0),
-	currentGun(0), shotLocked(false),
+	currentGun(2), shotLocked(0),
 	mqtt(mqtt), deviceID(devID) {
 
 	mqtt.subscribe_to("Lasertag/Players/" + deviceID + "/#",
@@ -31,8 +31,10 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			team = atoi(data.data.data());
 		else if(data.topic == "FX/Brightness")
 			brightness = atoi(data.data.data());
-		else if(data.topic == "GunNo")
-			shotLocked = !(data.data == "1");
+		else if(data.topic == "GunNo") {
+			currentGun = atoi(data.data.data());
+			shotLocked = currentGun <= 0;
+		}
 		else if(data.topic == "FX/Marked")
 			isMarked = (data.data == "1");
 		else if(data.topic == "FX/Heartbeat")
@@ -115,6 +117,9 @@ bool Player::can_shoot() {
 		return false;
 
 	return true;
+}
+int Player::get_gun_num() {
+	return currentGun;
 }
 
 bool Player::is_dead() {

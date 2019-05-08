@@ -11,6 +11,8 @@
 #include "IR.h"
 
 #include "../weapons/wyre.h"
+#include "../weapons/mylin.h"
+#include "../weapons/zinger.h"
 
 #include "empty_click.h"
 
@@ -60,7 +62,6 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 		gunHeat(0),
 		triggerPin(trgPin),
 		shot_performed(false),
-		currentGun(nullptr),
 		audio(audio) {
 
 	currentAmmo = cGun().maxAmmo;
@@ -71,10 +72,17 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 }
 
 const GunSpecs &GunHandler::cGun() {
-	if(currentGun == nullptr)
+	int gNum = LZR::player.get_gun_num();
+	if(gNum == 0 || gNum > 3)
 		return LZR::Weapons::wyre;
 
-	return *currentGun;
+	GunSpecs const * gunSets[] = {
+			&LZR::Weapons::wyre,
+			&LZR::Weapons::mylin,
+			&LZR::Weapons::zinger,
+	};
+
+	return *gunSets[gNum-1];
 }
 
 bool GunHandler::triggerPressed() {

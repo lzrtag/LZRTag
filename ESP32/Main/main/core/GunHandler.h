@@ -101,8 +101,6 @@ private:
 	void reload_tick();
 	void fx_tick();
 
-	GunSpecs const *currentGun;
-
 public:
 	AudioHandler &audio;
 

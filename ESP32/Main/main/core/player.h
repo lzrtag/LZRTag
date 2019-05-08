@@ -30,7 +30,7 @@ private:
 	TickType_t deadUntil;
 	TickType_t hitUntil;
 
-	uint8_t currentGun;
+	int 	currentGun;
 	bool	shotLocked;
 
 public:
@@ -55,6 +55,7 @@ public:
 	std::string get_name();
 
 	bool can_shoot();
+	int  get_gun_num();
 
 	bool is_dead();
 	bool is_hit();
