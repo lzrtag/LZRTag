@@ -32,12 +32,6 @@ enum FIRE_STATE {
 	POST_SALVE_RELEASE
 };
 
-enum RELOAD_STATE {
-	FULL,
-	POST_SHOT_WAIT,
-	POST_RELOAD_WAIT
-};
-
 #define GUN_TAG "LZR::Gun"
 
 class GunSpecs {
@@ -70,16 +64,12 @@ public:
 	CassetteCollection	cooldownSounds;
 };
 
-extern const GunSpecs defaultGun;
-
 class GunHandler {
 private:
-	int currentAmmo;
 	int mqttAmmo;
 	TickType_t lastMQTTPush;
 
 	FIRE_STATE 		fireState;
-	RELOAD_STATE	reloadState;
 
 	TickType_t shotTick;
 	int salveCounter;

@@ -15,6 +15,7 @@
 #include "../weapons/zinger.h"
 
 #include "empty_click.h"
+#include "reload_full.h"
 
 #define LOG_LOCAL_LEVEL ESP_LOG_INFO
 #include "esp_log.h"
@@ -22,40 +23,11 @@
 namespace Lasertag {
 
 const AudioCassette emptyClick(empty_click, sizeof(empty_click));
-
-const GunSpecs defaultGun = {
-	.maxAmmo = 50,
-	.currentAmmo = 50,
-
-	.postTriggerTicks   = 0,
-	.postTriggerRelease = false,
-
-	.shotsPerSalve = 1,
-
-	.perShotDelay   = 70,
-
-	.postShotCooldownTicks = 600,
-	.postShotVibrationTicks = 35,
-
-	.postSalveDelay = 200,
-	.postSalveRelease = false,
-
-	.postShotReloadBlock =   600,
-	.postReloadReloadBlock = 60,
-	.perReloadRecharge = 5,
-
-	.perShotHeatup 	 = 0.007,
-	.perTickCooldown = 0.9985,
-
-	.chargeSounds	= CassetteCollection(),
-	.shotSounds 	= CassetteCollection(),
-	.cooldownSounds = CassetteCollection(),
-};
+const AudioCassette reloadFull(reload_full, sizeof(reload_full));
 
 GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 	:	mqttAmmo(0), lastMQTTPush(0),
 		fireState(WAIT_ON_VALID),
-		reloadState(FULL),
 		shotTick(0), salveCounter(0), lastShotTick(0),
 		emptyClickPlayed(false),
 		reloadTick(0),
@@ -64,8 +36,6 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 		triggerPin(trgPin),
 		shot_performed(false),
 		audio(audio) {
-
-	currentAmmo = cGun().maxAmmo;
 
 	gpio_set_direction(triggerPin, GPIO_MODE_INPUT);
 	gpio_set_pull_mode(triggerPin, GPIO_PULLUP_ONLY);
@@ -91,14 +61,13 @@ bool GunHandler::triggerPressed() {
 }
 
 void GunHandler::handle_shot() {
-	currentAmmo--;
+	cGun().currentAmmo--;
 	gunHeat += cGun().perShotHeatup;
 
 	fireState = POST_SHOT_DELAY;
 	shotTick  = xTaskGetTickCount() + (cGun().perShotDelay*(95 + esp_random()%10))/100;
 	lastShotTick = xTaskGetTickCount();
 
-	reloadState = POST_SHOT_WAIT;
 	reloadTick  = xTaskGetTickCount() + cGun().postShotReloadBlock;
 
 	shot_performed = true;
@@ -107,7 +76,7 @@ void GunHandler::handle_shot() {
 
 	LZR::IR::send_signal();
 
-	ESP_LOGD(GUN_TAG, "Fired, ammo : %3d", currentAmmo);
+	ESP_LOGD(GUN_TAG, "Fired, ammo : %3d", cGun().currentAmmo);
 }
 
 void GunHandler::shot_tick() {
@@ -123,7 +92,7 @@ void GunHandler::shot_tick() {
 				break;
 			if(!LZR::player.can_shoot())
 				break;
-			if(currentAmmo < cGun().shotsPerSalve) {
+			if(cGun().currentAmmo < cGun().shotsPerSalve) {
 				if(!emptyClickPlayed) {
 					audio.insert_cassette(emptyClick);
 					emptyClickPlayed = true;
@@ -132,24 +101,23 @@ void GunHandler::shot_tick() {
 				break;
 			}
 
-			if(cGun().postTriggerTicks != 0) {
+			if(cGun().postTriggerTicks != 0)
 				audio.insert_cassette(cGun().chargeSounds);
-			}
 
 			shotTick  = xTaskGetTickCount() + cGun().postTriggerTicks;
-			fireState = POST_TRIGGER_DELAY;
-
-		case POST_TRIGGER_DELAY:
-			if(xTaskGetTickCount() < shotTick)
-				break;
 			fireState = POST_TRIGGER_RELEASE;
 
 		case POST_TRIGGER_RELEASE:
-			if(!triggerPressed() || !cGun().postTriggerRelease) {
+			if(triggerPressed() && cGun().postTriggerRelease)
+				break;
+
+			fireState = POST_TRIGGER_DELAY;
+
+		case POST_TRIGGER_DELAY:
+			if(xTaskGetTickCount() >= shotTick) {
 				salveCounter = cGun().shotsPerSalve;
 				handle_shot();
 			}
-		break;
 
 		case POST_SHOT_DELAY:
 			if(xTaskGetTickCount() < shotTick)
@@ -160,27 +128,24 @@ void GunHandler::shot_tick() {
 				break;
 			}
 
-			fireState = POST_SALVE_DELAY;
+			fireState = POST_SALVE_RELEASE;
 			shotTick = xTaskGetTickCount() + cGun().postSalveDelay;
 
-		case POST_SALVE_DELAY:
-			if(xTaskGetTickCount() < shotTick)
-				break;
-
-			fireState = POST_SALVE_RELEASE;
-
 		case POST_SALVE_RELEASE:
-			if(!triggerPressed() || !cGun().postSalveRelease) {
+			if(triggerPressed() && cGun().postSalveRelease)
+				break;
+			fireState = POST_SALVE_DELAY;
+
+		case POST_SALVE_DELAY:
+			if(xTaskGetTickCount() >= shotTick) {
 				fireState = WAIT_ON_VALID;
 				fireStateChanged = true;
 
 				if(!triggerPressed() && !cGun().postSalveRelease && !cGun().postTriggerRelease) {
-					puts("Cooldown!");
-					if(gunHeat > 0.2)
+					if(gunHeat > 0.4)
 						audio.insert_cassette(cGun().cooldownSounds);
 				}
 			}
-		break;
 		}
 	}
 
@@ -189,19 +154,19 @@ void GunHandler::shot_tick() {
 }
 
 void GunHandler::reload_tick() {
-	if(currentAmmo >= cGun().maxAmmo)
+	if(cGun().currentAmmo >= cGun().maxAmmo)
 		return;
 
 	if(reloadTick > xTaskGetTickCount())
 		return;
 
-	currentAmmo += cGun().perReloadRecharge;
-	if(currentAmmo >= cGun().maxAmmo) {
-		audio.insert_cassette(cGun().chargeSounds);
-		currentAmmo = cGun().maxAmmo;
+	cGun().currentAmmo += cGun().perReloadRecharge;
+	if(cGun().currentAmmo >= cGun().maxAmmo) {
+		audio.insert_cassette(reloadFull);
+		cGun().currentAmmo = cGun().maxAmmo;
 	}
 
-	ESP_LOGD(GUN_TAG, "Reloaded, ammo: %3d", currentAmmo);
+	ESP_LOGD(GUN_TAG, "Reloaded, ammo: %3d", cGun().currentAmmo);
 
 	reloadTick = xTaskGetTickCount() + cGun().postReloadReloadBlock;
 }
@@ -235,14 +200,14 @@ void GunHandler::tick() {
 
 	fx_tick();
 
-	if((currentAmmo != mqttAmmo) && (xTaskGetTickCount() > (lastMQTTPush+300))) {
+	if((cGun().currentAmmo != mqttAmmo) && (xTaskGetTickCount() > (lastMQTTPush+300))) {
 		struct {
 			int32_t currentAmmo;
 			int32_t maxAmmo;
-		} ammoData = {currentAmmo, cGun().maxAmmo};
+		} ammoData = {cGun().currentAmmo, cGun().maxAmmo};
 		LZR::mqtt.publish_to("Lasertag/Players/"+LZR::player.deviceID+"/Ammo", &ammoData, sizeof(ammoData), 0, true);
 
-		mqttAmmo = currentAmmo;
+		mqttAmmo = cGun().currentAmmo;
 		lastMQTTPush = xTaskGetTickCount();
 	}
 
