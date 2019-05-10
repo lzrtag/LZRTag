@@ -1,11 +1,11 @@
-/* Hello World Example
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
+/*
+ * main.cpp
+ *
+ *  Refined on: 10.05.2019
+ *      Author: xasin
+ *
+ *  Enjoy the nerdness!
+ */
 
 #include <stdio.h>
 #include <cmath>
@@ -17,32 +17,9 @@
 #include "nvs_flash.h"
 #include "esp_event_loop.h"
 
-#include "esp_sleep.h"
-#include "esp_pm.h"
-#include "esp32/pm.h"
-
-#include "driver/gpio.h"
-#include "driver/rtc_io.h"
-#include "driver/ledc.h"
-
 #include "esp_log.h"
 
-#include "xasin/mqtt/Handler.h"
-
 #include "core/setup.h"
-
-#include "IODefs.h"
-
-#include "BatteryManager.h"
-
-#include "AudioHandler.h"
-
-#include "NeoController.h"
-#include "fx/animatorThread.h"
-
-#include "core/IR.h"
-
-#include "fx/colorSets.h"
 
 using namespace Peripheral;
 
