@@ -14,13 +14,6 @@ namespace LZR {
 
 using namespace Peripheral;
 
-enum MarkMode {
-	NONE,
-	FLASH,
-	DFLASH,
-	SCAN
-};
-
 struct ColorSet {
 	Color muzzleFlash;
 	Color muzzleHeat;

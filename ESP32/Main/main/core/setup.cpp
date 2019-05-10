@@ -113,6 +113,8 @@ void setup_audio() {
 
 std::array<uint16_t, 20> battery_samples;
 int8_t battery_sample_pos = -1;
+TickType_t lastBatteryUpdate = 0;
+
 void take_battery_measurement() {
 	uint32_t rawBattery = 0;
 	for(int i=0; i<6; i++) {
@@ -140,10 +142,14 @@ void take_battery_measurement() {
 	if(battery.current_capacity() < 5 && !battery.is_charging)
 		main_weapon_status = DISCHARGED;
 
-	ESP_LOGI("LZR::Core", "%sBattery level: %s%d",
-			battery.current_capacity() < 20 ? LOG_COLOR("33") : "",
-			battery.is_charging ? "^" : "",
-			battery.current_mv());
+	if(xTaskGetTickCount() > (30*600 + lastBatteryUpdate)) {
+		ESP_LOGI("LZR::Core", "%sBattery level: %s%d",
+				battery.current_capacity() < 20 ? LOG_COLOR("33") : "",
+				battery.is_charging ? "^" : "",
+				battery.current_mv());
+
+		lastBatteryUpdate = xTaskGetTickCount();
+	}
 }
 
 void setup_ping_req() {

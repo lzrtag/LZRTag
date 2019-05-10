@@ -5,7 +5,7 @@
  *      Author: xasin
  */
 
-#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
+#define LOG_LOCAL_LEVEL ESP_LOG_INFO
 #include "esp_log.h"
 
 #include "IR.h"
@@ -54,7 +54,8 @@ void send_hit_event(uint8_t pID, uint8_t arbCode) {
 	cJSON_AddStringToObject(output, "target", player.deviceID.data());
 	cJSON_AddNumberToObject(output, "arbCode", arbCode);
 
-	char *outStr = cJSON_PrintUnformatted(output);
+	char outStr[100] = {};
+	cJSON_PrintPreallocated(output, outStr, 100, false);
 
 	mqtt.publish_to("Lasertag/Game/Events", outStr, strlen(outStr));
 
