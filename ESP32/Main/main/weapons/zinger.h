@@ -13,7 +13,7 @@
 namespace LZR {
 namespace Weapons {
 
-const extern Lasertag::GunSpecs zinger;
+extern Lasertag::GunSpecs zinger;
 
 }
 }

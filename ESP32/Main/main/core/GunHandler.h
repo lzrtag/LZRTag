@@ -43,6 +43,7 @@ enum RELOAD_STATE {
 class GunSpecs {
 public:
 	int  maxAmmo;
+	int  currentAmmo;
 
 	int  postTriggerTicks;
 	bool postTriggerRelease;
@@ -104,7 +105,7 @@ private:
 public:
 	AudioHandler &audio;
 
-	GunSpecs const &cGun();
+	GunSpecs &cGun();
 
 	GunHandler(gpio_num_t trgtPin, AudioHandler &audio);
 

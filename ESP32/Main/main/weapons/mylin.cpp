@@ -16,8 +16,10 @@ namespace Weapons {
 
 #define AC(name) AudioCassette(name, sizeof(name))
 
-const Lasertag::GunSpecs mylin {
+Lasertag::GunSpecs mylin {
 	.maxAmmo = 8,
+	.currentAmmo = 8,
+
 	.postTriggerTicks = 108,
 	.postTriggerRelease = false,
 
@@ -50,4 +52,3 @@ const Lasertag::GunSpecs mylin {
 
 }
 }
-

@@ -25,6 +25,7 @@ const AudioCassette emptyClick(empty_click, sizeof(empty_click));
 
 const GunSpecs defaultGun = {
 	.maxAmmo = 50,
+	.currentAmmo = 50,
 
 	.postTriggerTicks   = 0,
 	.postTriggerRelease = false,
@@ -71,12 +72,12 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 	gpio_pullup_en(triggerPin);
 }
 
-const GunSpecs &GunHandler::cGun() {
+GunSpecs &GunHandler::cGun() {
 	int gNum = LZR::player.get_gun_num();
 	if(gNum == 0 || gNum > 3)
 		return LZR::Weapons::wyre;
 
-	GunSpecs const * gunSets[] = {
+	GunSpecs * gunSets[] = {
 			&LZR::Weapons::wyre,
 			&LZR::Weapons::mylin,
 			&LZR::Weapons::zinger,

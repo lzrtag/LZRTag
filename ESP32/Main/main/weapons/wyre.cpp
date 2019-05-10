@@ -23,8 +23,10 @@ namespace Weapons {
 
 #define AC(name) AudioCassette(name, sizeof(name))
 
-const Lasertag::GunSpecs wyre {
+Lasertag::GunSpecs wyre {
 	.maxAmmo = 18,
+	.currentAmmo = 18,
+
 	.postTriggerTicks = 0,
 	.postTriggerRelease = false,
 

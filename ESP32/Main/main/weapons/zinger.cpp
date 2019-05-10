@@ -17,8 +17,10 @@ namespace Weapons {
 
 #define AC(name) AudioCassette(name, sizeof(name))
 
-const Lasertag::GunSpecs zinger {
+Lasertag::GunSpecs zinger {
 	.maxAmmo = 30,
+	.currentAmmo = 30,
+
 	.postTriggerTicks = 0,
 	.postTriggerRelease = false,
 
