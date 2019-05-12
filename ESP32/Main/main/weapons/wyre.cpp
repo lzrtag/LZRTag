@@ -23,6 +23,12 @@ namespace Weapons {
 
 #define AC(name) AudioCassette(name, sizeof(name))
 
+// Effective shot rate:
+// 18*90 + 9*50 + 3000 + 4*1200 = 9870 Ticks
+// 548 Ticks per shot
+// Rate: 1.09422Hz
+// DPS Val: 0.9138
+
 Lasertag::GunSpecs wyre {
 	.maxAmmo = 18,
 	.currentAmmo = 18,

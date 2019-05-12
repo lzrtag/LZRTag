@@ -6,7 +6,6 @@ require_relative 'base_player.rb'
 module LZRTag
 	module Player
 		class Hardware < Base
-
 			attr_reader :team
 			attr_reader :brightness
 
@@ -40,6 +39,14 @@ module LZRTag
 				@zoneIDs  = Hash.new();
 
 				@battery = 0; @ping = 0; @heap = 0;
+
+				# These values are configured for a DPS ~1, equal to all weapons
+				# Including reload timings and other penalties
+				@GunDamageMultipliers = [
+					0.9138,
+					1.85,
+					0.6166,
+				];
 
 				@fireConfig = MQTT::TXHash.new(@mqtt, "Lasertag/Players/#{@DeviceID}/FireConf")
 				@hitConfig  = MQTT::TXHash.new(@mqtt, "Lasertag/Players/#{@DeviceID}/HitConf")
@@ -152,6 +159,12 @@ module LZRTag
 
 				@gunNo = n;
 				_pub_to("GunNo", n, retain: true);
+			end
+
+			def gunDamage(number = nil)
+				number = @gunNo if(number.nil?)
+
+				return @GunDamageMultipliers[number-1] || 1;
 			end
 
 			def fireConfig=(h)

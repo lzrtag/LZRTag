@@ -84,25 +84,32 @@ module LZRTag
 		end
 
 		class Damager < Base
-			def initialize(dmgPerShot: 40, friendlyFire: false, hitThreshold: 10)
+			def initialize(dmgPerShot: 40, useDamageMultiplier: true, friendlyFire: false, hitThreshold: 10)
 				super();
 
 				@dmgPerShot = dmgPerShot;
+				@useDamageMultiplier = useDamageMultiplier;
 				@friendlyFire = friendlyFire;
-				@dmgDead = dmgDead;
+				@hitThreshold = hitThreshold
 			end
 
 			def process_raw_hit(hitPlayer, sourcePlayer)
 				unless(@friendlyFire)
 					return false if hitPlayer.team == sourcePlayer.team
 				end
-				return false if(hitPlayer.dead && (hitPlayer.life < hitThreshold));
+				return false if(hitPlayer.dead && (hitPlayer.life < @hitThreshold));
 
 				return true;
 			end
 
 			on :playerHit do |hitPlayer, sourcePlayer|
-				hitPlayer.damage_by(@dmgPerShot, sourcePlayer);
+				shotMultiplier = 1;
+
+				if((@useDamageMultiplier) && (!sourcePlayer.nil?))
+					shotMultiplier = sourcePlayer.gunDamage();
+				end
+
+				hitPlayer.damage_by(@dmgPerShot * shotMultiplier, sourcePlayer);
 				hitPlayer.hit();
 			end
 		end

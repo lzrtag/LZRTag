@@ -17,6 +17,12 @@ namespace Weapons {
 
 #define AC(name) AudioCassette(name, sizeof(name))
 
+// Effective shot rate:
+// 30*70 + 3000 + 30*200  = 11100 Ticks
+// 370 Ticks per shot, avg.
+// Rate: 1.6216Hz
+// DPS Multiplicator: 0.61666
+
 Lasertag::GunSpecs zinger {
 	.maxAmmo = 30,
 	.currentAmmo = 30,

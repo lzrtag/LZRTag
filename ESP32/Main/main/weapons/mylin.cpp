@@ -16,6 +16,12 @@ namespace Weapons {
 
 #define AC(name) AudioCassette(name, sizeof(name))
 
+// Effective shot rate:
+// 8*108 + 8*100 + 8*30 + 1800 + 8*600 = 8504 Ticks
+// 1063 Ticks per shot
+// Rate: 0.5644Hz
+// DPS Multiplicator: 1.7716
+
 Lasertag::GunSpecs mylin {
 	.maxAmmo = 8,
 	.currentAmmo = 8,
