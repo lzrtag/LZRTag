@@ -84,7 +84,7 @@ module LZRTag
 		end
 
 		class Damager < Base
-			def initialize(dmgPerShot: 40, friendlyFire: false, dmgDead: false)
+			def initialize(dmgPerShot: 40, friendlyFire: false, hitThreshold: 10)
 				super();
 
 				@dmgPerShot = dmgPerShot;
@@ -96,9 +96,7 @@ module LZRTag
 				unless(@friendlyFire)
 					return false if hitPlayer.team == sourcePlayer.team
 				end
-				if((!@dmgDead) && (hitPlayer.life == 0))
-					return false
-				end
+				return false if(hitPlayer.dead && (hitPlayer.life < hitThreshold));
 
 				return true;
 			end
