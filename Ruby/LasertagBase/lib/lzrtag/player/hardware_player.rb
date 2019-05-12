@@ -55,7 +55,7 @@ module LZRTag
 						@ping 	= parsedData[2].to_f;
 					end
 				when "Dead"
-					dead = (data == "true")
+					dead = (data == "1")
 					return if @dead == dead;
 					@dead = dead;
 
@@ -122,7 +122,7 @@ module LZRTag
 
 				@deathChangeTime = Time.now();
 
-				_pub_to "Dead", @dead ? "true" : "false", retain: true;
+				_pub_to "Dead", @dead ? "1" : "0", retain: true;
 				@handler.send_event(@dead ? :playerKilled : :playerRevived, self, player);
 			end
 			def dead=(d)

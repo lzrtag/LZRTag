@@ -54,10 +54,10 @@ module LZRTag
 				nLife = @life - amount;
 				nLife = [0, nLife].max;
 
+				@lastDamageTime = Time.now();
+
 				if(nLife != @life)
 					@life = nLife;
-
-					@lastDamageTime = Time.now();
 
 					@handler.send_event :playerHurt, self, sourcePlayer, oLife - @life;
 					_pub_to("HP", @life.to_s, retain: true);

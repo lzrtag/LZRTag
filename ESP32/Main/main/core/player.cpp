@@ -42,12 +42,14 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 		else if(data.topic == "Name")
 			name = data.data;
 		else if(data.topic == "Dead") {
-			if(data.data == "true") {
-				if(deadUntil == 0)
+			if((data.data.size() != 0) && (data.data == "1")) {
+				if(deadUntil == 0) {
 					deadUntil = portMAX_DELAY;
+				}
 			}
-			else
+			else {
 				deadUntil = 0;
+			}
 		}
 		else if(data.topic == "Dead/Timed") {
 			deadUntil = xTaskGetTickCount() + atof(data.data.data())*600;
@@ -64,9 +66,9 @@ void Player::init() {
 }
 
 void Player::tick() {
-	if(deadUntil != 0 && xTaskGetTickCount() > deadUntil) {
+	if((deadUntil != 0) && (xTaskGetTickCount() > deadUntil)) {
 		deadUntil = 0;
-		mqtt.publish_to(get_topic_base()+"/Dead", "", 0, 1, true);
+		mqtt.publish_to(get_topic_base()+"/Dead", "0", 0, 1, true);
 	}
 }
 

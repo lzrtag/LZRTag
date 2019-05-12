@@ -15,7 +15,7 @@ function revivePlayer()
 	end
 	player.dead = false;
 	update_vest_brightness();
-	homeQTT:publish(playerTopic .. "/Dead", "", 0, 1);
+	homeQTT:publish(playerTopic .. "/Dead", "0", 0, 1);
 end
 function killPlayer()
 	if(player.dead) then
@@ -46,7 +46,7 @@ subscribeTo(playerTopic .. "/GunNo", 1,
 
 subscribeTo(playerTopic .. "/Dead", 1,
 	function(data)
-		data = (data == "true");
+		data = (data == "1");
 
 		if((data) and (not player.dead)) then
 			killPlayer();
