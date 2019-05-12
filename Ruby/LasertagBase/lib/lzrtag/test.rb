@@ -67,7 +67,7 @@ $handler.start_game(LZRTag::Game::Base.new($handler));
 
 $handler.each do |pl|
 	pl.ammo = 100;
-	pl.gunNo = 3;
+	pl.gunNo = 2;
 end
 
 while(true) do
