@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
 	s.name        = 'LZRTag_base'
-	s.version     = '0.0.2'
-	s.date        = '2019-01-01'
+	s.version     = '1.0.0'
+	s.date        = '2019-05-12'
 	s.summary     = "Base classes for Xasin's LZRTag system"
 	s.authors     = ["Xasin"]
 	s.files       = [ 	"lib/lzrtag.rb",
