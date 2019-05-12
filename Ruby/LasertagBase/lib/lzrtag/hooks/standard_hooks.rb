@@ -96,8 +96,8 @@ module LZRTag
 				unless(@friendlyFire)
 					return false if hitPlayer.team == sourcePlayer.team
 				end
-				unless(@dmgDead)
-					return false if hitPlayer.dead
+				if((!@dmgDead) && (hitPlayer.life == 0))
+					return false
 				end
 
 				return true;

@@ -122,7 +122,7 @@ module LZRTag
 
 				@deathChangeTime = Time.now();
 
-				_pub_to "Dead", @dead ? "true" : "", retain: true;
+				_pub_to "Dead", @dead ? "true" : "false", retain: true;
 				@handler.send_event(@dead ? :playerKilled : :playerRevived, self, player);
 			end
 			def dead=(d)
@@ -148,7 +148,7 @@ module LZRTag
 					raise ArgumentError, "Gun ID needs to be a positive integer!"
 				end
 
-				return if(@gunNo = n)
+				return if(@gunNo == n)
 
 				@gunNo = n;
 				_pub_to("GunNo", n, retain: true);

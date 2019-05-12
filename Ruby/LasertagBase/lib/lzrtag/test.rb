@@ -51,8 +51,8 @@ $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
 $handler.add_hook(LZRTag::Hook::RandomTeam);
-$handler.add_hook(LZRTag::Hook::Damager);
-$handler.add_hook(LZRTag::Hook::Regenerator.new(regRate: 5));
+$handler.add_hook(LZRTag::Hook::Damager.new(dmgPerShot: 25));
+$handler.add_hook(LZRTag::Hook::Regenerator.new(regRate: 7, regDelay: 3, autoReviveThreshold: 21));
 
 cfg = LZRTag::Hook::Configurator.new();
 cfg.fireConfig = {
@@ -66,8 +66,8 @@ sleep 4
 $handler.start_game(LZRTag::Game::Base.new($handler));
 
 $handler.each do |pl|
-	pl.fireConfig[:shotLocked] = false;
 	pl.ammo = 100;
+	pl.gunNo = 3;
 end
 
 while(true) do
