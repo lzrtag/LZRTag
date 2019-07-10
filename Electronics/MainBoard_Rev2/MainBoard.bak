@@ -285,8 +285,8 @@ V_SENSE
 Wire Wire Line
 	6900 4400 6550 4400
 Wire Wire Line
-	6550 3000 6800 3000
-Text Label 6800 3000 2    50   ~ 0
+	6550 3000 6900 3000
+Text Label 6900 3000 2    50   ~ 0
 VBRT
 Text Label 7725 2800 0    50   ~ 0
 VBRT
@@ -305,7 +305,7 @@ L Device:R_Small R2
 U 1 1 5C2F2FEB
 P 7875 3475
 F 0 "R2" V 7725 3450 50  0000 C CNN
-F 1 "2.2k" V 7800 3475 50  0000 C CNN
+F 1 "220R" V 7800 3475 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 7875 3475 50  0001 C CNN
 F 3 "~" H 7875 3475 50  0001 C CNN
 	1    7875 3475
@@ -316,7 +316,7 @@ L Device:R_Small R3
 U 1 1 5C2F305A
 P 7875 3675
 F 0 "R3" V 7800 3650 50  0000 C CNN
-F 1 "2.2k" V 7950 3675 50  0000 C CNN
+F 1 "220R" V 7950 3675 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 7875 3675 50  0001 C CNN
 F 3 "~" H 7875 3675 50  0001 C CNN
 	1    7875 3675
@@ -423,12 +423,12 @@ Wire Wire Line
 Text Label 6800 2500 2    50   ~ 0
 IR_IN
 Wire Wire Line
-	6550 3300 6800 3300
+	6550 3300 6900 3300
 Wire Wire Line
-	6550 3400 6800 3400
-Text Label 6800 3300 2    50   ~ 0
+	6550 3400 6900 3400
+Text Label 6900 3300 2    50   ~ 0
 SDA
-Text Label 6800 3400 2    50   ~ 0
+Text Label 6900 3400 2    50   ~ 0
 SCL
 $Comp
 L Device:R_Small R6
@@ -599,8 +599,12 @@ Text Label 4300 4250 2    50   ~ 0
 CHG_STAT
 Wire Wire Line
 	2600 3575 2600 4325
-Text Label 6650 4275 0    50   ~ 0
+Text Label 6900 4300 2    50   ~ 0
 BCLK
-Text Label 6550 3100 0    50   ~ 0
+Text Label 6900 3100 2    50   ~ 0
 LRCLK
+Wire Wire Line
+	6550 4300 6900 4300
+Wire Wire Line
+	6550 3100 6900 3100
 $EndSCHEMATC
