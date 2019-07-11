@@ -422,10 +422,6 @@ Wire Wire Line
 	6550 2500 6800 2500
 Text Label 6800 2500 2    50   ~ 0
 IR_IN
-Wire Wire Line
-	6550 3300 6900 3300
-Wire Wire Line
-	6550 3400 6900 3400
 Text Label 6900 3300 2    50   ~ 0
 SDA
 Text Label 6900 3400 2    50   ~ 0
@@ -607,4 +603,12 @@ Wire Wire Line
 	6550 4300 6900 4300
 Wire Wire Line
 	6550 3100 6900 3100
+Text GLabel 6925 3300 2    50   Input ~ 0
+SDA
+Text GLabel 6925 3400 2    50   Input ~ 0
+SCL
+Wire Wire Line
+	6550 3400 6925 3400
+Wire Wire Line
+	6550 3300 6925 3300
 $EndSCHEMATC

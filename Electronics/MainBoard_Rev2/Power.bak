@@ -31,52 +31,21 @@ Text Notes 4775 3700 0    50   ~ 0
 Should have built-in protection!\n
 Wire Wire Line
 	4650 3350 4650 3100
-$Comp
-L Battery_Management:MCP73832-2-OT U50
-U 1 1 5C2BB48E
-P 3850 3100
-F 0 "U50" H 3850 3578 50  0000 C CNN
-F 1 "MCP73832-2-OT" H 3850 3487 50  0000 C CNN
-F 2 "Package_TO_SOT_SMD:SOT-23-5" H 3900 2850 50  0001 L CIN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001984g.pdf" H 3700 3050 50  0001 C CNN
-F 4 "MCP73832T-2ACI/OTCT-ND" H 3850 3100 50  0001 C CNN "Digi-Key"
-F 5 "MCP73832T-2ACI/OT" H 3850 3100 50  0001 C CNN "MPN"
-	1    3850 3100
-	1    0    0    -1  
-$EndComp
-$Comp
-L Regulator_Linear:SPX3819M5-L-3-3 U51
-U 1 1 5C2BB82E
-P 6850 3050
-F 0 "U51" H 6850 3392 50  0000 C CNN
-F 1 "SPX3819M5-L-3-3" H 6850 3301 50  0000 C CNN
-F 2 "Package_TO_SOT_SMD:SOT-23-5" H 6850 3375 50  0001 C CNN
-F 3 "https://www.exar.com/content/document.ashx?id=22106&languageid=1033&type=Datasheet&partnumber=SPX3819&filename=SPX3819.pdf&part=SPX3819" H 6850 3050 50  0001 C CNN
-F 4 "1016-1873-1-ND" H 6850 3050 50  0001 C CNN "Digi-Key"
-F 5 "SPX3819M5-L-3-3/TR" H 6850 3050 50  0001 C CNN "MPN"
-	1    6850 3050
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
-	3450 3200 3450 3350
-Wire Wire Line
-	3450 3600 3850 3600
-Wire Wire Line
-	3850 3600 3850 3400
+	3425 4650 3425 4500
 Wire Wire Line
 	4650 3650 4650 3750
 $Comp
 L power:GND #PWR0107
 U 1 1 5C2BBAFA
-P 3850 3600
-F 0 "#PWR0107" H 3850 3350 50  0001 C CNN
-F 1 "GND" H 3855 3427 50  0000 C CNN
-F 2 "" H 3850 3600 50  0001 C CNN
-F 3 "" H 3850 3600 50  0001 C CNN
-	1    3850 3600
+P 3425 4650
+F 0 "#PWR0107" H 3425 4400 50  0001 C CNN
+F 1 "GND" H 3430 4477 50  0000 C CNN
+F 2 "" H 3425 4650 50  0001 C CNN
+F 3 "" H 3425 4650 50  0001 C CNN
+	1    3425 4650
 	1    0    0    -1  
 $EndComp
-Connection ~ 3850 3600
 $Comp
 L power:GND #PWR0108
 U 1 1 5C2BBB67
@@ -91,23 +60,13 @@ $EndComp
 Wire Wire Line
 	6850 3600 6850 3500
 Wire Wire Line
-	6550 2950 6550 3050
-Wire Wire Line
-	4250 3000 4450 3000
-Wire Wire Line
 	4450 3000 4450 3100
 Wire Wire Line
 	4450 3100 4650 3100
 Text HLabel 3100 2800 0    50   Input ~ 0
 CHG_In
 Wire Wire Line
-	3100 2800 3400 2800
-Text HLabel 4250 3450 3    50   Input ~ 0
-CHG_Stat
-Wire Wire Line
-	4250 3450 4250 3200
-Wire Wire Line
-	7150 2950 7450 2950
+	3100 2800 3425 2800
 $Comp
 L power:+3.3V #PWR0109
 U 1 1 5C2BC187
@@ -130,7 +89,6 @@ F 3 "~" H 7450 3100 50  0001 C CNN
 	1    7450 3100
 	1    0    0    -1  
 $EndComp
-Connection ~ 7450 2950
 Wire Wire Line
 	7450 2950 7600 2950
 Wire Wire Line
@@ -140,7 +98,6 @@ Wire Wire Line
 Connection ~ 6850 3500
 Wire Wire Line
 	6850 3500 6850 3350
-NoConn ~ 7150 3050
 $Comp
 L Transistor_FET:IRLML6402 QPWR1
 U 1 1 5C2C82E7
@@ -157,17 +114,11 @@ $EndComp
 Wire Wire Line
 	5700 3100 5800 3100
 Wire Wire Line
-	6550 3100 6550 3050
-Connection ~ 6550 3050
+	3425 2800 3425 2625
 Wire Wire Line
-	3400 2800 3400 2550
-Wire Wire Line
-	3400 2550 4850 2550
+	3425 2550 4850 2550
 Wire Wire Line
 	5500 2550 5500 2800
-Connection ~ 3400 2800
-Wire Wire Line
-	3400 2800 3850 2800
 $Comp
 L Device:R_Small R52
 U 1 1 5C2C9651
@@ -318,50 +269,10 @@ Text Label 5800 4100 3    50   ~ 0
 B_Raw+
 Text Label 4575 3100 3    50   ~ 0
 B_Raw+
-$Comp
-L Device:R_Small R50
-U 1 1 5C2DE6C8
-P 3250 3200
-F 0 "R50" V 3446 3200 50  0000 C CNN
-F 1 "2.2k" V 3355 3200 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" H 3250 3200 50  0001 C CNN
-F 3 "~" H 3250 3200 50  0001 C CNN
-	1    3250 3200
-	0    -1   -1   0   
-$EndComp
-$Comp
-L Device:R_Small R51
-U 1 1 5C2DE73B
-P 3450 3450
-F 0 "R51" H 3509 3496 50  0000 L CNN
-F 1 "10k" H 3509 3405 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" H 3450 3450 50  0001 C CNN
-F 3 "~" H 3450 3450 50  0001 C CNN
-	1    3450 3450
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
-	3450 3600 3450 3550
-Wire Wire Line
-	3350 3200 3450 3200
-Connection ~ 3450 3200
-Wire Wire Line
-	3150 3200 3075 3200
-Text HLabel 3075 3200 0    50   Input ~ 0
+	2925 3700 2850 3700
+Text HLabel 2850 3700 0    50   Input ~ 0
 FastCHG_En
-$Comp
-L Device:L_Core_Ferrite_Small L50
-U 1 1 5C2E485E
-P 6125 3100
-F 0 "L50" V 5947 3100 50  0000 C CNN
-F 1 "100uH" V 6038 3100 50  0000 C CNN
-F 2 "Inductor_SMD:L_6.3x6.3_H3" H 6125 3100 50  0001 C CNN
-F 3 "~" H 6125 3100 50  0001 C CNN
-F 4 "587-2105-1-ND" V 6125 3100 50  0001 C CNN "Digi-Key"
-F 5 "NR6028T101M" V 6125 3100 50  0001 C CNN "MPN"
-	1    6125 3100
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	6025 3100 5900 3100
 Connection ~ 5800 3100
@@ -390,7 +301,141 @@ Wire Wire Line
 	6225 3100 6375 3100
 Wire Wire Line
 	6375 3200 6375 3100
+Wire Wire Line
+	3425 2800 3425 3000
+Connection ~ 3425 2800
+$Comp
+L dk_PMIC-Voltage-Regulators-Linear:AP2114H-3_3TRG1 U50
+U 1 1 5D266C28
+P 6950 2850
+F 0 "U50" H 6900 3137 60  0000 C CNN
+F 1 "AP2114H-3_3TRG1" H 6900 3031 60  0000 C CNN
+F 2 "digikey-footprints:SOT-223" H 7150 3050 60  0001 L CNN
+F 3 "https://www.diodes.com/assets/Datasheets/AP2114.pdf" H 7150 3150 60  0001 L CNN
+F 4 "AP2114H-3.3TRG1DICT-ND" H 7150 3250 60  0001 L CNN "Digi-Key_PN"
+F 5 "AP2114H-3.3TRG1" H 7150 3350 60  0001 L CNN "MPN"
+F 6 "Integrated Circuits (ICs)" H 7150 3450 60  0001 L CNN "Category"
+F 7 "PMIC - Voltage Regulators - Linear" H 7150 3550 60  0001 L CNN "Family"
+F 8 "https://www.diodes.com/assets/Datasheets/AP2114.pdf" H 7150 3650 60  0001 L CNN "DK_Datasheet_Link"
+F 9 "/product-detail/en/diodes-incorporated/AP2114H-3.3TRG1/AP2114H-3.3TRG1DICT-ND/4505142" H 7150 3750 60  0001 L CNN "DK_Detail_Page"
+F 10 "IC REG LINEAR 3.3V 1A SOT223" H 7150 3850 60  0001 L CNN "Description"
+F 11 "Diodes Incorporated" H 7150 3950 60  0001 L CNN "Manufacturer"
+F 12 "Active" H 7150 4050 60  0001 L CNN "Status"
+	1    6950 2850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6375 3100 6375 2850
+Wire Wire Line
+	6375 2850 6450 2850
 Connection ~ 6375 3100
 Wire Wire Line
-	6375 3100 6550 3100
+	7350 2850 7350 2950
+Wire Wire Line
+	7450 2950 7350 2950
+Connection ~ 7450 2950
+Connection ~ 7350 2950
+$Comp
+L Battery_Management:LP3947 U51
+U 1 1 5D2733BC
+P 3525 3700
+F 0 "U51" H 3525 4578 50  0000 C CNN
+F 1 "LP3947" H 3200 4300 50  0000 C CNN
+F 2 "Package_SON:WSON-14-1EP_4.0x4.0mm_P0.5mm_EP2.6x2.6mm" H 4725 3050 50  0001 C CNN
+F 3 "http://www.ti.com/lit/ds/symlink/lp3947.pdf" H 3425 3900 50  0001 C CNN
+	1    3525 3700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:L_Core_Ferrite_Small L?
+U 1 1 5D26A5A4
+P 6125 3100
+F 0 "L?" V 5947 3100 50  0000 C CNN
+F 1 "445-3654-1-ND" V 6038 3100 50  0000 C CNN
+F 2 "Inductor_SMD:L_1210_3225Metric" H 6125 3100 50  0001 C CNN
+F 3 "~" H 6125 3100 50  0001 C CNN
+	1    6125 3100
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4125 3400 4125 3000
+NoConn ~ 4125 3900
+Wire Wire Line
+	3425 4500 3625 4500
+Wire Wire Line
+	3625 4500 3625 4400
+Connection ~ 3425 4500
+Wire Wire Line
+	3425 4500 3425 4400
+NoConn ~ 2925 3400
+NoConn ~ 2925 3500
+NoConn ~ 2925 3200
+Connection ~ 4125 3000
+Wire Wire Line
+	4125 3000 4225 3000
+Wire Wire Line
+	3625 3000 4125 3000
+$Comp
+L Device:C_Small C53
+U 1 1 5D275BE8
+P 4225 3150
+F 0 "C53" H 4317 3196 50  0000 L CNN
+F 1 "10uF" H 4317 3105 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 4225 3150 50  0001 C CNN
+F 3 "~" H 4225 3150 50  0001 C CNN
+	1    4225 3150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4225 3000 4225 3050
+Connection ~ 4225 3000
+Wire Wire Line
+	4225 3000 4450 3000
+$Comp
+L power:GND #PWR?
+U 1 1 5D2764A1
+P 4225 3250
+F 0 "#PWR?" H 4225 3000 50  0001 C CNN
+F 1 "GND" H 4230 3077 50  0000 C CNN
+F 2 "" H 4225 3250 50  0001 C CNN
+F 3 "" H 4225 3250 50  0001 C CNN
+	1    4225 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C_Small C54
+U 1 1 5D27ADB3
+P 3325 2625
+F 0 "C54" V 3096 2625 50  0000 C CNN
+F 1 "1uF" V 3187 2625 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 3325 2625 50  0001 C CNN
+F 3 "~" H 3325 2625 50  0001 C CNN
+	1    3325 2625
+	0    1    1    0   
+$EndComp
+Connection ~ 3425 2625
+Wire Wire Line
+	3425 2625 3425 2550
+$Comp
+L power:GND #PWR?
+U 1 1 5D27AEC9
+P 3175 2625
+F 0 "#PWR?" H 3175 2375 50  0001 C CNN
+F 1 "GND" V 3180 2497 50  0000 R CNN
+F 2 "" H 3175 2625 50  0001 C CNN
+F 3 "" H 3175 2625 50  0001 C CNN
+	1    3175 2625
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3175 2625 3225 2625
+NoConn ~ 2925 3800
+Text GLabel 2825 4100 0    50   Input ~ 0
+SDA
+Text GLabel 2825 4000 0    50   Input ~ 0
+SCL
+Wire Wire Line
+	2825 4000 2925 4000
+Wire Wire Line
+	2825 4100 2925 4100
 $EndSCHEMATC
