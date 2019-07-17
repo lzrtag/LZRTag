@@ -245,9 +245,9 @@ F 3 "" H 8500 4350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6550 4000 6900 4000
-Text Label 6900 4000 2    50   ~ 0
-AUDIO
+	6550 4000 7100 4000
+Text Label 7100 4000 2    50   ~ 0
+AUDIO_DATA
 Text Label 7725 3000 0    50   ~ 0
 AUDIO
 Wire Wire Line
@@ -276,14 +276,14 @@ Wire Wire Line
 	9000 4650 8500 4650
 Text Label 8500 4650 0    50   ~ 0
 LED_2
-Text Label 6900 4400 2    50   ~ 0
+Text Label 6925 4400 2    50   ~ 0
 V_SENSE
 Wire Wire Line
 	3900 4350 4300 4350
 Text Label 4300 4350 2    50   ~ 0
 V_SENSE
 Wire Wire Line
-	6900 4400 6550 4400
+	6925 4400 6550 4400
 Wire Wire Line
 	6550 3000 6800 3000
 Text Label 6800 3000 2    50   ~ 0
@@ -555,8 +555,8 @@ F 3 "~" H 1600 6650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6550 3700 6925 3700
-Text Label 6925 3700 2    50   ~ 0
+	6550 3700 6975 3700
+Text Label 6975 3700 2    50   ~ 0
 CONN_IND
 Wire Wire Line
 	7775 4000 7375 4000
@@ -599,4 +599,12 @@ Text Label 4300 4250 2    50   ~ 0
 CHG_STAT
 Wire Wire Line
 	2600 3575 2600 4325
+Wire Wire Line
+	6550 4300 7075 4300
+Text Label 7075 4300 2    50   ~ 0
+AUDIO_BLCK
+Wire Wire Line
+	6550 3100 7050 3100
+Text Label 7050 3100 2    50   ~ 0
+AUDIO_LRCK
 $EndSCHEMATC
