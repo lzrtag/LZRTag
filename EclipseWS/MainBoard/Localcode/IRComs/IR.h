@@ -14,13 +14,12 @@
 #define IR_TICKS F_CPU/F_IR
 #define FRAME_TICKS F_CPU/F_FRAME
 
-#define START_FRAMES 	7
+#define START_FRAMES 	8
 #define START_BITS 		0b1110111
 
 #define DATA_BITS 		12
 
-#define CHECKSUM_FRAMES 2
-#define CHECKSUM_START_VAL 0b11
+#define CHECKSUM_FRAMES 4
 
 namespace IR {
 
@@ -33,7 +32,8 @@ enum IRStates {
 
 struct ShotPacket {
 	uint8_t playerID;
-	uint8_t shotID;
+	uint8_t shotID:4;
+	uint8_t checksum:4;
 };
 
 void init(void (*msCallback)());

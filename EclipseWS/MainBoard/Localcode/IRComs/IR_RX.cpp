@@ -15,7 +15,7 @@ void (* RXCallback)(ShotPacket rxData) = 0;
 IRStates 	RXState 		= IDLE;
 uint8_t 	segmentPosition = 0;
 uint16_t 	data			= 0;
-uint8_t 	checksum		= CHECKSUM_START_VAL;
+uint8_t 	checksum		= 0;
 
 bool getPinRX() {
 	return (PINB & 1) == 0;
@@ -40,7 +40,7 @@ void stopRX() {
 	RXState = IDLE;
 	segmentPosition = 0;
 	data			= 0;
-	checksum		= CHECKSUM_START_VAL;
+	checksum		= 0;
 }
 
 void adjustTiming() {
@@ -50,9 +50,8 @@ void adjustTiming() {
 		tempOCR1B -= FRAME_TICKS;
 	OCR1B = tempOCR1B;
 
-	if(RXState == IDLE) {
+	if(RXState == IDLE)
 		startRX();
-	}
 }
 
 void update() {
@@ -75,15 +74,16 @@ void update() {
 	break;
 
 	case DATA:
-		if(RXInput) {
+		if(RXInput)
 			data |= (1<< segmentPosition);
-			checksum++;
-		}
 		segmentPosition++;
 
 		if(segmentPosition == DATA_BITS) {
 			segmentPosition = 0;
 			RXState = CHECKSUM;
+
+			for(uint8_t i=0; i<3; i++)
+				checksum += 0xF & (data >> (i*4));
 		}
 	break;
 

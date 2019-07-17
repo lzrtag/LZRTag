@@ -1,8 +1,8 @@
 
-dofile("PlayerData.lua");
+dofile("PlayerData.lc");
 playerTopic = lasertagTopic .. "/Players/"..playerID;
 
-dofile("MQTTConnect.lua");
+dofile("MQTTConnect.lc");
 
 StartSymbol = string.byte("!");
 
@@ -38,15 +38,15 @@ tmr.create():alarm(2000, tmr.ALARM_SINGLE,
 
 					onMQTTConnect(
 						function()
-							dofile("ConsoleRedir.lua");
+							dofile("ConsoleRedir.lc");
 
 							if(not(SAFEMODE)) then
 								file.open("BOOT_SAFECHECK","w"):close();
 
-								dofile("MQTTPing.lua");
-								dofile("Lasertag.lua");
-								dofile("ServerConfig.lua")
-								dofile("FireHandling.lua");
+								dofile("MQTTPing.lc");
+								dofile("Lasertag.lc");
+								dofile("ServerConfig.lc")
+								dofile("FireHandling.lc");
 
 								tmr.create():alarm(1500, tmr.ALARM_SINGLE,
 									function()

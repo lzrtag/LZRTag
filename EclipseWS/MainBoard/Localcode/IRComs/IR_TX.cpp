@@ -15,7 +15,7 @@ namespace TX {
 IRStates 	TXState = IDLE;
 uint8_t 	segmentPosition = 0;
 uint16_t 	data			= 0;
-uint8_t 	checksum		= CHECKSUM_START_VAL;
+uint8_t 	checksum		= 0;
 
 void setIRLED(bool state) {
 	if(state)
@@ -29,6 +29,11 @@ void startTX(ShotPacket TXData) {
 		return;
 
 	data = *(uint16_t *)&TXData;
+
+	for(uint8_t i=0; i<3; i++) {
+		checksum += 0xF & (data >> (4*i));
+	}
+
 	TXState = START;
 }
 void stopTX() {
@@ -38,7 +43,7 @@ void stopTX() {
 
 	segmentPosition = 0;
 	data			= 0;
-	checksum		= CHECKSUM_START_VAL;
+	checksum		= 0;
 }
 
 
@@ -56,10 +61,8 @@ void update() {
 	break;
 
 	case DATA:
-		if((data >> (segmentPosition++)) & 1) {
+		if((data >> (segmentPosition++)) & 1)
 			setIRLED(true);
-			checksum += 1;
-		}
 		else
 			setIRLED(false);
 

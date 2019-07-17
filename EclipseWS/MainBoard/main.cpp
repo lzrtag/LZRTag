@@ -20,7 +20,7 @@
 #include "Localcode/IRComs/IR_RX.h"
 #include "Localcode/IRComs/IR_TX.h"
 
-#include "Localcode/ESPComs/ESPUART.h"
+#include "Libcode/Communication/ESPUart/ESPUART.h"
 
 volatile bool hasBeenShot = false;
 
@@ -38,7 +38,7 @@ struct BuzzCommand {
 	uint16_t endFreq;
 };
 void playPing() {
-	BuzzCommand buzzCommand = *(BuzzCommand*)&ESPComs::Endpoint::pubBuffer;
+	BuzzCommand buzzCommand = *reinterpret_cast<BuzzCommand*>(&ESPComs::Endpoint::pubBuffer);
 
 	Board::Buzzer::sweep(buzzCommand.startFreq, buzzCommand.endFreq, buzzCommand.length);
 }
@@ -62,7 +62,7 @@ void handleShots() {
 		Board::Buzzer::sweep(3000, 1000, 150);
 		IR::TX::startTX({playerID, currentShotID++});
 		if(currentShotID == 16)
-			currentShotID = 1;
+			currentShotID = 8;
 	}
 }
 ESPComs::Endpoint ShootCommandEP(0, &ESPComs::Endpoint::pubBuffer, 1, handleShots);

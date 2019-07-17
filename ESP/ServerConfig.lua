@@ -6,8 +6,9 @@ game = {
 
 player = {
 	dead = false,
-	ammo = 0,
+	ammo = 3,
 	shotCooldown = false,
+	marked = false
 }
 
 hitConfDefaults = {
@@ -23,12 +24,13 @@ hitConfDefaults = {
 hitConf = hitConfDefaults;
 
 fireConfDefaults = {
-	ammoCap 			= 5,
-	perReloadAmmo 	= 5,
+	ammoCap 			= 18,
+	perReloadAmmo 	= 4,
 
-	reloadDelay = 3000,
+	reloadDelay = 2000,
 
-	perShotDelay	= 333,
+	salveNum = 2,
+	perShotDelay	= 150,
 
 	flashBrightness = 10,
 
@@ -37,8 +39,18 @@ fireConfDefaults = {
 }
 fireConf = fireConfDefaults;
 
+function update_vest_brightness()
+	if(player.dead) then
+		setVestBrightness(hitConf.deathBrightness);
+	elseif(player.marked) then
+		setVestBrightness(5);
+	else
+		setVestBrightness(game.brightness);
+	end
+end
+
 -- luacheck: globals updateAmmo attemptShot
-subscribeTo(playerTopic .. "/AmmoSet", 1,
+subscribeTo(playerTopic .. "/Ammo/Set", 1,
 	function(data)
 		data = tonumber(data);
 		if(data) then
@@ -60,19 +72,27 @@ subscribeTo(playerTopic .. "/Team", 1,
 		game.team = tonumber(data) or 7;
 		setVestColor(game.team);
 	end);
-subscribeTo(playerTopic .. "/Brightness", 1,
+subscribeTo(playerTopic .. "/FX/Brightness", 1,
 	function(data)
 		game.brightness = tonumber(data) or 0;
-		if(not(player.dead)) then
-			setVestBrightness(game.brightness);
+
+		if((game.brightness == 2) or (game.brightness == 3)) then
+			game.brightness = game.brightness + 4;
 		end
+
+		update_vest_brightness();
 	end);
 
-subscribeTo(playerTopic .. "/Heartbeat", 1,
+subscribeTo(playerTopic .. "/FX/Heartbeat", 1,
 	function(data)
 		setVibratePattern(tonumber(data) or 0);
 	end
 );
+subscribeTo(playerTopic .. "/FX/Marked", 1,
+	function(data)
+		player.marked = (data == "1");
+		update_vest_brightness();
+	end);
 
 hitConfOptions = {
 	metatable = {

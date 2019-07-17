@@ -9,12 +9,7 @@ pubString = "";
 subscribeTo(pingTopic .. "/PingOut", 0,
 	function(data)
 		currentPing = tmr.now() - tonumber(data);
-
-		pubString = '{"heap":' .. node.heap();
-		pubString = pubString .. ',"battery":' .. adc.readvdd33(0);
-		pubString = pubString .. ',"ping":' .. currentPing .. '}';
-
-		homeQTT:publish(sysInfoTopic, pubString, 0, 0);
+		homeQTT:publish(sysInfoTopic, struct.pack("L<L<L<", adc.readvdd33(0), 0, currentPing/1000), 0, 0);
 	end
 );
 

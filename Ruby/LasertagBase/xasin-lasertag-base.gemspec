@@ -23,7 +23,8 @@ Gem::Specification.new do |s|
 	'https://github.com/XasWorks/LZRTag/'
 	s.license     = 'GPL-3.0'
 
-	s.add_runtime_dependency "mqtt", ">= 0.5.0"
+	s.add_runtime_dependency "mqtt-sub_handler", ">= 0.1.4"
+	s.add_runtime_dependency "xml-simple"
 	s.add_runtime_dependency "json"
 
 	s.add_development_dependency "minitest"

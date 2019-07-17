@@ -13,6 +13,8 @@ module LZRTag
 			attr_reader :dead, :deathChangeTime
 
 			attr_reader :ammo
+			attr_reader :maxAmmo
+			attr_reader :gunNo
 
 			attr_reader :position
 			attr_reader :zoneIDs
@@ -31,6 +33,8 @@ module LZRTag
 				@deathChangeTime = Time.now();
 
 				@ammo = 0;
+				@maxAmmo = 0;
+				@gunNo = 0;
 
 				@position = {x: 0, y: 0}
 				@zoneIDs  = Hash.new();
@@ -44,12 +48,11 @@ module LZRTag
 			def on_mqtt_data(data, topic)
 				case topic[1..topic.length].join("/")
 				when "System"
-					begin
-						info = JSON.parse(data);
-						@heap = info["heap"].to_i;
-						@battery = info["battery"].to_f
-						@ping = info["ping"].to_f/1000
-					rescue
+					if(data.size == 3*4)
+						parsedData = data.unpack("L<*");
+
+						@battery = parsedData[0].to_f/1000;
+						@ping 	= parsedData[2].to_f;
 					end
 				when "Dead"
 					dead = (data == "true")
@@ -60,7 +63,11 @@ module LZRTag
 
 					@handler.send_event(@dead ? :playerKilled : :playerRevived, self);
 				when "Ammo"
-					@ammo = data.to_i;
+					return if(data.size != 8)
+
+					outData = data.unpack("L<*");
+					@ammo = outData[0];
+					@maxAmmo = outData[1];
 				when "Position"
 					begin
 						@position = JSON.parse(data, symbolize_names: true);
@@ -87,7 +94,7 @@ module LZRTag
 
 			def team=(n)
 				n = n.to_i;
-				raise ArgumentError, "Team out of range (must be between 0 and 255)" unless !n.nil? and n <= 255 and n >= 0;
+				raise ArgumentError, "Team out of range (must be between 0 and 255)" unless n <= 255 and n >= 0;
 
 				return if @team == n;
 				oldT = @team;
@@ -99,11 +106,11 @@ module LZRTag
 			end
 			def brightness=(n)
 				n = n.to_i;
-				raise ArgumentError, "Brightness out of range (must be between 0 and 7 or nil)" unless !n.nil? and n <= 7 and n >= 0;
+				raise ArgumentError, "Brightness out of range (must be between 0 and 7)" unless n <= 7 and n >= 0;
 				return if @brightness == n;
 
 				@brightness = n;
-				_pub_to "Brightness", @brightness, retain: true;
+				_pub_to "FX/Brightness", @brightness, retain: true;
 
 				@brightness;
 			end
@@ -115,7 +122,7 @@ module LZRTag
 
 				@deathChangeTime = Time.now();
 
-				_pub_to "Dead", @dead ? "true" : "", retain: true;
+				_pub_to "Dead", @dead ? "true" : "false", retain: true;
 				@handler.send_event(@dead ? :playerKilled : :playerRevived, self, player);
 			end
 			def dead=(d)
@@ -133,7 +140,18 @@ module LZRTag
 
 				@ammo = n;
 
-				_pub_to("AmmoSet", n);
+				_pub_to("Ammo/Set", n);
+			end
+
+			def gunNo=(n)
+				unless (n.is_a?(Integer) and (n >= 0))
+					raise ArgumentError, "Gun ID needs to be a positive integer!"
+				end
+
+				return if(@gunNo == n)
+
+				@gunNo = n;
+				_pub_to("GunNo", n, retain: true);
 			end
 
 			def fireConfig=(h)
@@ -146,7 +164,7 @@ module LZRTag
 			def clear_all_topics()
 				super();
 
-				[	"Dead", "Brightness", "Team",
+				[	"Dead", "GunNo", "FX/Brightness", "Team",
 					"HitConf", "FireConf"].each do |t|
 					_pub_to(t, "", retain: true);
 				end
