@@ -28,7 +28,7 @@ Peripheral::NeoController RGBController = Peripheral::NeoController(PIN_WS2812_O
 
 Xasin::MQTT::Handler mqtt = Xasin::MQTT::Handler();
 
-LZR::Player player = LZR::Player("RevThree", mqtt);
+LZR::Player player = LZR::Player("", mqtt);
 Lasertag::GunHandler gunHandler = Lasertag::GunHandler(PIN_TRIGR, audioManager);
 
 void setup_io_pins() {

@@ -10,15 +10,31 @@
 
 #include "esp_log.h"
 
+#include "../../LZROptions.h"
+
 namespace LZR {
 
 Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
-	ID(3),
-	team(4), brightness(2), isMarked(false), heartbeat(false),
+	ID(0),
+	team(0), brightness(0), isMarked(false), heartbeat(false),
 	name(""),
 	deadUntil(0), hitUntil(0),
-	currentGun(2), shotLocked(0),
+	currentGun(0), shotLocked(0),
 	mqtt(mqtt), deviceID(devID) {
+
+	if(devID == "") {
+		uint8_t smacc[6] = {};
+
+		char macStr[14] = {};
+
+		esp_read_mac(smacc, ESP_MAC_WIFI_STA);
+
+		sprintf(macStr, "%2X.%2X.%2X.%2X.%2X.%2X",
+			smacc[0], smacc[1], smacc[2],
+		 	smacc[3], smacc[4], smacc[5]);
+
+		deviceID = macStr;
+	}
 
 	mqtt.subscribe_to("Lasertag/Players/" + deviceID + "/#",
 			[this](Xasin::MQTT::MQTT_Packet data) {
@@ -59,7 +75,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 }
 
 void Player::init() {
-	mqtt.start("mqtt://192.168.250.1", get_topic_base() + "/Connection");
+	mqtt.start(MQTT_SERVER_ADDR, get_topic_base() + "/Connection");
 	mqtt.set_status("OK");
 }
 

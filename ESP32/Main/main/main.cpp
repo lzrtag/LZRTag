@@ -21,6 +21,8 @@
 
 #include "core/setup.h"
 
+#include "../LZROptions.h"
+
 using namespace Peripheral;
 
 esp_err_t event_handler(void *context, system_event_t *event) {
@@ -41,7 +43,7 @@ void app_main()
     tcpip_adapter_init();
 
     esp_event_loop_init(event_handler, 0);
-    Xasin::MQTT::Handler::start_wifi("Lasertag\0", "\0");
+    Xasin::MQTT::Handler::start_wifi(WIFI_STATION_SSID, WIFI_STATION_PASSWD);
 
     LZR::audioManager.volumeMod = 200;
 
