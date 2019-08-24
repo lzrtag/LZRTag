@@ -40,12 +40,7 @@ DebugHook.on :playerEnteredZone do |player, entered|
 	end
 end
 
-$mqtt = MQTT::SubHandler.new("192.168.251.1");
-
-$myMapsData    = LZRTag::Map::MyMapsParser.new("Rainbow Road.kml");
-$rainbowMapSet = LZRTag::Map::Set.new($mqtt, $myMapsData.generate_zones());
-$rainbowMapSet.centerpoint = [9.716822475785307, 52.38715890804035, 0];
-#$rainbowMapSet.publish();
+$mqtt = MQTT::SubHandler.new("mqtt://localhost");
 
 $handler = LZRTag.Handler.new($mqtt);
 
