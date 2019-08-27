@@ -29,7 +29,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 
 		esp_read_mac(smacc, ESP_MAC_WIFI_STA);
 
-		sprintf(macStr, "%2X.%2X.%2X.%2X.%2X.%2X",
+		sprintf(macStr, "%02X.%02X.%02X.%02X.%02X.%02X",
 			smacc[0], smacc[1], smacc[2],
 		 	smacc[3], smacc[4], smacc[5]);
 
