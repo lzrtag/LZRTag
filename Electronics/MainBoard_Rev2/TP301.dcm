@@ -1,0 +1,7 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP WS2812B_5mm
+D 5mm leaded WS2812 LED
+$ENDCMP
+#
+#End Doc Library
