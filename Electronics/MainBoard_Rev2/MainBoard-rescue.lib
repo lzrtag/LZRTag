@@ -1,0 +1,53 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# COM-12999-dk_Addressable-Specialty
+#
+DEF COM-12999-dk_Addressable-Specialty D 0 40 Y Y 1 F N
+F0 "D" -300 300 60 H V C CNN
+F1 "COM-12999-dk_Addressable-Specialty" 300 -300 60 H V C CNN
+F2 "digikey-footprints:LED_RGB_WP154A4SUREQBFZGC" 200 200 60 H I L CNN
+F3 "https://cdn.sparkfun.com/datasheets/Components/LED/COM-12877.pdf" 200 300 60 H I L CNN
+F4 "1568-1214-ND" 200 400 60 H I L CNN "Digi-Key_PN"
+F5 "COM-12999" 200 500 60 H I L CNN "MPN"
+F6 "Optoelectronics" 200 600 60 H I L CNN "Category"
+F7 "Addressable, Specialty" 200 700 60 H I L CNN "Family"
+F8 "https://cdn.sparkfun.com/datasheets/Components/LED/COM-12877.pdf" 200 800 60 H I L CNN "DK_Datasheet_Link"
+F9 "/product-detail/en/sparkfun-electronics/COM-12999/1568-1214-ND/5673800" 200 900 60 H I L CNN "DK_Detail_Page"
+F10 "ADDRESS LED DISC SER RGB 5MM 5PC" 200 1000 60 H I L CNN "Description"
+F11 "SparkFun Electronics" 200 1100 60 H I L CNN "Manufacturer"
+F12 "Active" 200 1200 60 H I L CNN "Status"
+DRAW
+S -300 200 200 -200 0 1 0 f
+X DIN 1 -500 0 200 R 50 50 1 1 I
+X VDD 2 -100 400 200 D 50 50 1 1 W
+X GND 3 -100 -400 200 U 50 50 1 1 W
+X DOUT 4 400 0 200 L 50 50 1 1 O
+ENDDRAW
+ENDDEF
+#
+# MAX98357A-XasParts
+#
+DEF MAX98357A-XasParts AMP 0 40 Y Y 1 F N
+F0 "AMP" 250 1000 50 H V C CNN
+F1 "MAX98357A-XasParts" 350 900 50 H V C CNN
+F2 "" 100 -350 50 H I C CNN
+F3 "" 100 -350 50 H I C CNN
+DRAW
+S 350 850 -200 -150 0 1 0 f
+X DIN 1 -400 100 200 R 50 50 1 1 I
+X OUT- 10 550 350 200 L 50 50 1 1 w
+X GND 11 100 -350 200 U 50 50 1 1 W
+X LRCLK 14 -400 300 200 R 50 50 1 1 I
+X GND 15 200 -350 200 U 50 50 1 1 W
+X BCLK 16 -400 200 200 R 50 50 1 1 I
+X GAIN 2 -400 450 200 R 50 50 1 1 I
+X GND 3 0 -350 200 U 50 50 1 1 W
+X ~MODE 4 -400 550 200 R 50 50 1 1 I
+X Vdd 7 -50 1050 200 D 50 50 1 1 W
+X Vdd 8 50 1050 200 D 50 50 1 1 W
+X OUT+ 9 550 450 200 L 50 50 1 1 w
+ENDDRAW
+ENDDEF
+#
+#End Library

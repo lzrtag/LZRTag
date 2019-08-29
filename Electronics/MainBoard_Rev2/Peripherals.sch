@@ -503,9 +503,11 @@ Wire Wire Line
 Wire Wire Line
 	1875 3500 2075 3500
 $Comp
-L dk_Addressable-Specialty:COM-12999 D1
+L MainBoard-rescue:COM-12999-dk_Addressable-Specialty D1
 U 1 1 5D2A09E9
 P 2575 3500
+AR Path="/5D2A09E9" Ref="D1"  Part="1" 
+AR Path="/5C2D6974/5D2A09E9" Ref="D1"  Part="1" 
 F 0 "D1" H 2025 3900 60  0000 L CNN
 F 1 "COM-12999" H 2775 3025 60  0000 L CNN
 F 2 "digikey-footprints:LED_RGB_WP154A4SUREQBFZGC" H 2775 3700 60  0001 L CNN
@@ -525,4 +527,40 @@ $EndComp
 Wire Wire Line
 	2975 3500 3125 3500
 Connection ~ 3125 3500
+$Comp
+L Connector:Conn_01x04_Male J4
+U 1 1 5D685BA0
+P 3800 6325
+F 0 "J4" H 3906 6603 50  0000 C CNN
+F 1 "Conn_01x04_Male" H 3906 6512 50  0000 C CNN
+F 2 "MainBoard_Rev2:nav_switch_COM_08184" H 3800 6325 50  0001 C CNN
+F 3 "~" H 3800 6325 50  0001 C CNN
+	1    3800 6325
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0145
+U 1 1 5D6A22BA
+P 4250 6325
+F 0 "#PWR0145" H 4250 6075 50  0001 C CNN
+F 1 "GND" V 4255 6197 50  0000 R CNN
+F 2 "" H 4250 6325 50  0001 C CNN
+F 3 "" H 4250 6325 50  0001 C CNN
+	1    4250 6325
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4000 6325 4250 6325
+Text HLabel 4300 6225 2    50   Input ~ 0
+BACK
+Text HLabel 4300 6425 2    50   Input ~ 0
+FWD
+Text HLabel 4300 6525 2    50   Input ~ 0
+DOWN
+Wire Wire Line
+	4000 6225 4300 6225
+Wire Wire Line
+	4000 6425 4300 6425
+Wire Wire Line
+	4000 6525 4300 6525
 $EndSCHEMATC

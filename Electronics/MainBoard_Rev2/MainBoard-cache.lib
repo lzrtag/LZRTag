@@ -27,6 +27,32 @@ X Pin_4 4 -200 -200 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
+# Connector_Conn_01x04_Male
+#
+DEF Connector_Conn_01x04_Male J 0 40 Y N 1 F N
+F0 "J" 0 200 50 H V C CNN
+F1 "Connector_Conn_01x04_Male" 0 -300 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+$FPLIST
+ Connector*:*_1x??_*
+$ENDFPLIST
+DRAW
+S 34 -195 0 -205 1 1 6 F
+S 34 -95 0 -105 1 1 6 F
+S 34 5 0 -5 1 1 6 F
+S 34 105 0 95 1 1 6 F
+P 2 1 1 6 50 -200 34 -200 N
+P 2 1 1 6 50 -100 34 -100 N
+P 2 1 1 6 50 0 34 0 N
+P 2 1 1 6 50 100 34 100 N
+X Pin_1 1 200 100 150 L 50 50 1 1 P
+X Pin_2 2 200 0 150 L 50 50 1 1 P
+X Pin_3 3 200 -100 150 L 50 50 1 1 P
+X Pin_4 4 200 -200 150 L 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
 # Connector_DB9_Female
 #
 DEF Connector_DB9_Female J 0 40 Y N 1 F N
@@ -66,6 +92,23 @@ X 6 6 -300 300 150 R 50 50 1 1 P
 X 7 7 -300 100 150 R 50 50 1 1 P
 X 8 8 -300 -100 150 R 50 50 1 1 P
 X 9 9 -300 -300 150 R 50 50 1 1 P
+ENDDRAW
+ENDDEF
+#
+# Connector_TestPoint
+#
+DEF Connector_TestPoint TP 0 30 N N 1 F N
+F0 "TP" 0 270 50 H V C CNN
+F1 "Connector_TestPoint" 0 200 50 H V C CNN
+F2 "" 200 0 50 H I C CNN
+F3 "" 200 0 50 H I C CNN
+$FPLIST
+ Pin*
+ Test*
+$ENDFPLIST
+DRAW
+C 0 130 30 0 1 0 N
+X 1 1 0 0 100 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
@@ -258,45 +301,6 @@ X K2 4 300 -100 150 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# Device_L_Core_Ferrite_Small
-#
-DEF Device_L_Core_Ferrite_Small L 0 10 N N 1 F N
-F0 "L" 50 40 50 H V L CNN
-F1 "Device_L_Core_Ferrite_Small" 50 -50 50 H V L CNN
-F2 "" 0 0 50 H I C CNN
-F3 "" 0 0 50 H I C CNN
-$FPLIST
- Choke_*
- *Coil*
- Inductor_*
- L_*
-$ENDFPLIST
-DRAW
-A 0 -60 20 -899 899 0 1 0 N 0 -80 0 -40
-A 0 -20 20 -899 899 0 1 0 N 0 -40 0 0
-A 0 20 20 -899 899 0 1 0 N 0 0 0 40
-A 0 60 20 -899 899 0 1 0 N 0 40 0 80
-P 2 0 1 0 30 -75 30 -65 N
-P 2 0 1 0 30 -55 30 -45 N
-P 2 0 1 0 30 -35 30 -25 N
-P 2 0 1 0 30 -15 30 -5 N
-P 2 0 1 0 30 5 30 15 N
-P 2 0 1 0 30 25 30 35 N
-P 2 0 1 0 30 45 30 55 N
-P 2 0 1 0 30 65 30 75 N
-P 2 0 1 0 40 -65 40 -75 N
-P 2 0 1 0 40 -45 40 -55 N
-P 2 0 1 0 40 -25 40 -35 N
-P 2 0 1 0 40 -5 40 -15 N
-P 2 0 1 0 40 15 40 5 N
-P 2 0 1 0 40 35 40 25 N
-P 2 0 1 0 40 55 40 45 N
-P 2 0 1 0 40 75 40 65 N
-X ~ 1 0 100 20 D 50 50 1 1 P
-X ~ 2 0 -100 20 U 50 50 1 1 P
-ENDDRAW
-ENDDEF
-#
 # Device_Q_NPN_BEC
 #
 DEF Device_Q_NPN_BEC Q 0 0 Y N 1 F N
@@ -347,36 +351,6 @@ DRAW
 S -30 70 30 -70 0 1 8 N
 X ~ 1 0 100 30 D 50 50 1 1 P
 X ~ 2 0 -100 30 U 50 50 1 1 P
-ENDDRAW
-ENDDEF
-#
-# Device_Rotary_Encoder
-#
-DEF Device_Rotary_Encoder SW 0 10 Y N 1 F N
-F0 "SW" 0 260 50 H V C CNN
-F1 "Device_Rotary_Encoder" 0 -260 50 H V C CNN
-F2 "" -150 160 50 H I C CNN
-F3 "" 0 260 50 H I C CNN
-$FPLIST
- RotaryEncoder*
-$ENDFPLIST
-DRAW
-A -15 -2 108 -899 899 0 1 10 N -15 -110 -15 105
-C -150 0 10 0 1 0 F
-C -15 0 75 0 1 10 N
-S -200 200 200 -200 0 1 10 f
-P 2 0 1 10 -25 -70 -25 70 N
-P 2 0 1 10 -15 -70 -15 70 N
-P 2 0 1 10 -5 70 -5 -70 N
-P 3 0 1 0 -200 -100 -150 -100 -150 -80 N
-P 3 0 1 0 -200 100 -150 100 -150 80 N
-P 3 0 1 10 10 -120 -20 -110 5 -95 N
-P 3 0 1 10 10 115 -20 105 5 90 N
-P 4 0 1 0 -200 0 -150 0 -150 -40 -130 -80 N
-P 4 0 1 0 -170 0 -150 0 -150 40 -130 80 N
-X A A -300 100 100 R 50 50 1 1 P
-X B B -300 -100 100 R 50 50 1 1 P
-X C C -300 0 100 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
@@ -461,6 +435,55 @@ X VDD 1 0 300 100 D 50 50 1 1 W
 X DOUT 2 300 0 100 L 50 50 1 1 O
 X VSS 3 0 -300 100 U 50 50 1 1 W
 X DIN 4 -300 0 100 R 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+# MainBoard-rescue_COM-12999-dk_Addressable-Specialty
+#
+DEF MainBoard-rescue_COM-12999-dk_Addressable-Specialty D 0 40 Y Y 1 F N
+F0 "D" -300 300 60 H V C CNN
+F1 "MainBoard-rescue_COM-12999-dk_Addressable-Specialty" 300 -300 60 H V C CNN
+F2 "digikey-footprints:LED_RGB_WP154A4SUREQBFZGC" 200 200 60 H I L CNN
+F3 "https://cdn.sparkfun.com/datasheets/Components/LED/COM-12877.pdf" 200 300 60 H I L CNN
+F4 "1568-1214-ND" 200 400 60 H I L CNN "Digi-Key_PN"
+F5 "COM-12999" 200 500 60 H I L CNN "MPN"
+F6 "Optoelectronics" 200 600 60 H I L CNN "Category"
+F7 "Addressable, Specialty" 200 700 60 H I L CNN "Family"
+F8 "https://cdn.sparkfun.com/datasheets/Components/LED/COM-12877.pdf" 200 800 60 H I L CNN "DK_Datasheet_Link"
+F9 "/product-detail/en/sparkfun-electronics/COM-12999/1568-1214-ND/5673800" 200 900 60 H I L CNN "DK_Detail_Page"
+F10 "ADDRESS LED DISC SER RGB 5MM 5PC" 200 1000 60 H I L CNN "Description"
+F11 "SparkFun Electronics" 200 1100 60 H I L CNN "Manufacturer"
+F12 "Active" 200 1200 60 H I L CNN "Status"
+DRAW
+S -300 200 200 -200 0 1 0 f
+X DIN 1 -500 0 200 R 50 50 1 1 I
+X VDD 2 -100 400 200 D 50 50 1 1 W
+X GND 3 -100 -400 200 U 50 50 1 1 W
+X DOUT 4 400 0 200 L 50 50 1 1 O
+ENDDRAW
+ENDDEF
+#
+# MainBoard-rescue_MAX98357A-XasParts
+#
+DEF MainBoard-rescue_MAX98357A-XasParts AMP 0 40 Y Y 1 F N
+F0 "AMP" 250 1000 50 H V C CNN
+F1 "MainBoard-rescue_MAX98357A-XasParts" 350 900 50 H V C CNN
+F2 "" 100 -350 50 H I C CNN
+F3 "" 100 -350 50 H I C CNN
+DRAW
+S 350 850 -200 -150 0 1 0 f
+X DIN 1 -400 100 200 R 50 50 1 1 I
+X OUT- 10 550 350 200 L 50 50 1 1 w
+X GND 11 100 -350 200 U 50 50 1 1 W
+X LRCLK 14 -400 300 200 R 50 50 1 1 I
+X GND 15 200 -350 200 U 50 50 1 1 W
+X BCLK 16 -400 200 200 R 50 50 1 1 I
+X GAIN 2 -400 450 200 R 50 50 1 1 I
+X GND 3 0 -350 200 U 50 50 1 1 W
+X ~MODE 4 -400 550 200 R 50 50 1 1 I
+X Vdd 7 -50 1050 200 D 50 50 1 1 W
+X Vdd 8 50 1050 200 D 50 50 1 1 W
+X OUT+ 9 550 450 200 L 50 50 1 1 w
 ENDDRAW
 ENDDEF
 #
@@ -672,55 +695,6 @@ P 4 0 1 0 130 -15 115 10 145 10 130 -15 N
 X G 1 -200 0 100 R 50 50 1 1 I
 X S 2 100 -200 100 U 50 50 1 1 P
 X D 3 100 200 100 D 50 50 1 1 P
-ENDDRAW
-ENDDEF
-#
-# XasParts_MAX98357A
-#
-DEF XasParts_MAX98357A AMP 0 40 Y Y 1 F N
-F0 "AMP" 250 1000 50 H V C CNN
-F1 "XasParts_MAX98357A" 350 900 50 H V C CNN
-F2 "" 100 -350 50 H I C CNN
-F3 "" 100 -350 50 H I C CNN
-DRAW
-S 350 850 -200 -150 0 1 0 f
-X DIN 1 -400 100 200 R 50 50 1 1 I
-X OUT- 10 550 350 200 L 50 50 1 1 w
-X GND 11 100 -350 200 U 50 50 1 1 W
-X LRCLK 14 -400 300 200 R 50 50 1 1 I
-X GND 15 200 -350 200 U 50 50 1 1 W
-X BCLK 16 -400 200 200 R 50 50 1 1 I
-X GAIN 2 -400 450 200 R 50 50 1 1 I
-X GND 3 0 -350 200 U 50 50 1 1 W
-X ~MODE 4 -400 550 200 R 50 50 1 1 I
-X Vdd 7 -50 1050 200 D 50 50 1 1 W
-X Vdd 8 50 1050 200 D 50 50 1 1 W
-X OUT+ 9 550 450 200 L 50 50 1 1 w
-ENDDRAW
-ENDDEF
-#
-# dk_Addressable-Specialty_COM-12999
-#
-DEF dk_Addressable-Specialty_COM-12999 D 0 40 Y Y 1 F N
-F0 "D" -300 300 60 H V C CNN
-F1 "dk_Addressable-Specialty_COM-12999" 300 -300 60 H V C CNN
-F2 "digikey-footprints:LED_RGB_WP154A4SUREQBFZGC" 200 200 60 H I L CNN
-F3 "https://cdn.sparkfun.com/datasheets/Components/LED/COM-12877.pdf" 200 300 60 H I L CNN
-F4 "1568-1214-ND" 200 400 60 H I L CNN "Digi-Key_PN"
-F5 "COM-12999" 200 500 60 H I L CNN "MPN"
-F6 "Optoelectronics" 200 600 60 H I L CNN "Category"
-F7 "Addressable, Specialty" 200 700 60 H I L CNN "Family"
-F8 "https://cdn.sparkfun.com/datasheets/Components/LED/COM-12877.pdf" 200 800 60 H I L CNN "DK_Datasheet_Link"
-F9 "/product-detail/en/sparkfun-electronics/COM-12999/1568-1214-ND/5673800" 200 900 60 H I L CNN "DK_Detail_Page"
-F10 "ADDRESS LED DISC SER RGB 5MM 5PC" 200 1000 60 H I L CNN "Description"
-F11 "SparkFun Electronics" 200 1100 60 H I L CNN "Manufacturer"
-F12 "Active" 200 1200 60 H I L CNN "Status"
-DRAW
-S -300 200 200 -200 0 1 0 f
-X DIN 1 -500 0 200 R 50 50 1 1 I
-X VDD 2 -100 400 200 D 50 50 1 1 W
-X GND 3 -100 -400 200 U 50 50 1 1 W
-X DOUT 4 400 0 200 L 50 50 1 1 O
 ENDDRAW
 ENDDEF
 #

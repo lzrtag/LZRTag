@@ -120,17 +120,6 @@ $EndComp
 Wire Wire Line
 	5950 1750 5950 1800
 $Comp
-L Device:C C1
-U 1 1 5C2D5556
-P 6400 1600
-F 0 "C1" V 6148 1600 50  0000 C CNN
-F 1 "10uF" V 6239 1600 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 6438 1450 50  0001 C CNN
-F 3 "~" H 6400 1600 50  0001 C CNN
-	1    6400 1600
-	0    1    1    0   
-$EndComp
-$Comp
 L Device:C_Small C2
 U 1 1 5C2D560A
 P 6400 1800
@@ -141,8 +130,6 @@ F 3 "~" H 6400 1800 50  0001 C CNN
 	1    6400 1800
 	0    -1   -1   0   
 $EndComp
-Wire Wire Line
-	6250 1600 6250 1800
 Wire Wire Line
 	6250 1800 5950 1800
 Connection ~ 5950 1800
@@ -155,8 +142,6 @@ Wire Wire Line
 	6500 1800 6550 1800
 Wire Wire Line
 	6725 1800 6725 1875
-Wire Wire Line
-	6550 1600 6550 1800
 Connection ~ 6550 1800
 Wire Wire Line
 	6550 1800 6725 1800
@@ -183,6 +168,9 @@ F4 "BTN_In" I L 8050 2725 50
 F5 "Vibrate" I L 8050 2800 50 
 F6 "IR_OUT" I L 8050 2925 50 
 F7 "Audio_In" I L 8050 3000 50 
+F8 "BACK" I R 9575 2550 50 
+F9 "FWD" I R 9575 2625 50 
+F10 "DOWN" I R 9575 2700 50 
 $EndSheet
 Wire Wire Line
 	2800 3575 2600 3575
@@ -272,8 +260,6 @@ Text Label 9850 2900 2    50   ~ 0
 LED_2
 Wire Wire Line
 	9575 2900 9850 2900
-Wire Wire Line
-	9000 4650 8500 4650
 Text Label 8500 4650 0    50   ~ 0
 LED_2
 Text Label 6900 4400 2    50   ~ 0
@@ -410,8 +396,6 @@ F 3 "~" H 5250 1575 50  0001 C CNN
 	1    5250 1575
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	9000 4750 8500 4750
 Text Label 8500 4750 0    50   ~ 0
 IR_IN
 Text Label 8500 4850 0    50   ~ 0
@@ -612,7 +596,7 @@ Wire Wire Line
 Wire Wire Line
 	6550 3300 6925 3300
 $Comp
-L XasParts:MAX98357A AMP1
+L MainBoard-rescue:MAX98357A-XasParts AMP1
 U 1 1 5D27DFC9
 P 3925 6250
 F 0 "AMP1" H 4375 6250 50  0000 L CNN
@@ -622,8 +606,6 @@ F 3 "" H 4025 5900 50  0001 C CNN
 	1    3925 6250
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	3875 5200 3925 5200
 Wire Wire Line
 	3925 5200 3925 5075
 Connection ~ 3925 5200
@@ -672,9 +654,6 @@ Text Label 3200 6150 0    50   ~ 0
 AUDIO
 Wire Wire Line
 	3525 5700 3525 5200
-Wire Wire Line
-	3525 5200 3875 5200
-Connection ~ 3875 5200
 $Comp
 L power:GND #PWR0119
 U 1 1 5D29AF62
@@ -712,10 +691,10 @@ F 3 "" H 3325 5200 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:C C?
+L Device:C C5
 U 1 1 5D67DBF1
 P 6400 1150
-F 0 "C?" V 6148 1150 50  0000 C CNN
+F 0 "C5" V 6148 1150 50  0000 C CNN
 F 1 "47uF" V 6239 1150 50  0000 C CNN
 F 2 "Capacitor_SMD:C_1206_3216Metric" H 6438 1000 50  0001 C CNN
 F 3 "~" H 6400 1150 50  0001 C CNN
@@ -723,9 +702,96 @@ F 3 "~" H 6400 1150 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	6250 1150 6250 1600
-Connection ~ 6250 1600
+	3525 5200 3925 5200
+$Comp
+L Device:R_Small R1
+U 1 1 5D6959C1
+P 8875 4650
+F 0 "R1" V 8900 4725 50  0000 C CNN
+F 1 "220" V 8900 4575 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 8875 4650 50  0001 C CNN
+F 3 "~" H 8875 4650 50  0001 C CNN
+	1    8875 4650
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R7
+U 1 1 5D695A6F
+P 8875 4750
+F 0 "R7" V 8925 4825 50  0000 C CNN
+F 1 "220" V 8925 4675 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 8875 4750 50  0001 C CNN
+F 3 "~" H 8875 4750 50  0001 C CNN
+	1    8875 4750
+	0    1    1    0   
+$EndComp
 Wire Wire Line
-	6550 1150 6550 1600
-Connection ~ 6550 1600
+	8975 4750 9000 4750
+Wire Wire Line
+	8975 4650 9000 4650
+Wire Wire Line
+	8500 4650 8775 4650
+Wire Wire Line
+	8500 4750 8775 4750
+Wire Wire Line
+	6550 2800 7025 2800
+Wire Wire Line
+	6550 3800 7025 3800
+Wire Wire Line
+	6550 3900 7025 3900
+Text Label 7025 2800 2    50   ~ 0
+CTRL_BACK
+Text Label 7025 3800 2    50   ~ 0
+CTRL_FWD
+Text Label 7025 3900 2    50   ~ 0
+CTRL_DOWN
+Wire Wire Line
+	9575 2550 10175 2550
+Text Label 10175 2550 2    50   ~ 0
+CTRL_BACK
+Text Label 10175 2625 2    50   ~ 0
+CTRL_FWD
+Text Label 10175 2700 2    50   ~ 0
+CTRL_DOWN
+Wire Wire Line
+	10175 2700 9575 2700
+Wire Wire Line
+	10175 2625 9575 2625
+$Comp
+L Connector:TestPoint TP1
+U 1 1 5D6C79CC
+P 3200 5950
+F 0 "TP1" V 3175 6550 50  0000 C CNN
+F 1 "TestPoint" V 3175 6300 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_2.0x2.0mm" H 3400 5950 50  0001 C CNN
+F 3 "~" H 3400 5950 50  0001 C CNN
+	1    3200 5950
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:TestPoint TP2
+U 1 1 5D6C7B05
+P 3200 6050
+F 0 "TP2" V 3175 6650 50  0000 C CNN
+F 1 "TestPoint" V 3175 6400 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_2.0x2.0mm" H 3400 6050 50  0001 C CNN
+F 3 "~" H 3400 6050 50  0001 C CNN
+	1    3200 6050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:TestPoint TP3
+U 1 1 5D6C7BE2
+P 3200 6150
+F 0 "TP3" V 3175 6750 50  0000 C CNN
+F 1 "TestPoint" V 3175 6500 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_2.0x2.0mm" H 3400 6150 50  0001 C CNN
+F 3 "~" H 3400 6150 50  0001 C CNN
+	1    3200 6150
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	6550 1150 6550 1800
+Wire Wire Line
+	6250 1150 6250 1800
 $EndSCHEMATC

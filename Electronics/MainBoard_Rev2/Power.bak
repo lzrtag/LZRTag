@@ -79,20 +79,16 @@ $EndComp
 $Comp
 L Device:C C52
 U 1 1 5C2BC1E8
-P 7450 3100
-F 0 "C52" H 7565 3146 50  0000 L CNN
-F 1 "10uF" H 7565 3055 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 7488 2950 50  0001 C CNN
-F 3 "~" H 7450 3100 50  0001 C CNN
-	1    7450 3100
+P 7450 3250
+F 0 "C52" H 7565 3296 50  0000 L CNN
+F 1 "10uF" H 7565 3205 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 7488 3100 50  0001 C CNN
+F 3 "~" H 7450 3250 50  0001 C CNN
+	1    7450 3250
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
 	7450 2950 7600 2950
-Wire Wire Line
-	7450 3250 7450 3500
-Wire Wire Line
-	7450 3500 6850 3500
 Connection ~ 6850 3500
 Wire Wire Line
 	6850 3500 6850 3350
@@ -173,18 +169,14 @@ Connection ~ 5500 2550
 $Comp
 L Device:C C50
 U 1 1 5C2CB5FD
-P 5900 3300
-F 0 "C50" H 6015 3346 50  0000 L CNN
-F 1 "10uF" H 6015 3255 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 5938 3150 50  0001 C CNN
-F 3 "~" H 5900 3300 50  0001 C CNN
-	1    5900 3300
+P 6350 3300
+F 0 "C50" H 6465 3346 50  0000 L CNN
+F 1 "10uF" H 6465 3255 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 6388 3150 50  0001 C CNN
+F 3 "~" H 6350 3300 50  0001 C CNN
+	1    6350 3300
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	6375 3400 6375 3500
-Wire Wire Line
-	6375 3500 6850 3500
 $Comp
 L Device:R_Small R55
 U 1 1 5C2CBFA2
@@ -256,34 +248,7 @@ Text Label 5800 4100 3    50   ~ 0
 B_Raw+
 Text Label 4575 3100 3    50   ~ 0
 B_Raw+
-Wire Wire Line
-	6025 3100 5900 3100
 Connection ~ 5800 3100
-$Comp
-L Device:C_Small C51
-U 1 1 5C2E8D17
-P 6375 3300
-F 0 "C51" H 6467 3346 50  0000 L CNN
-F 1 "150nF" H 6467 3255 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 6375 3300 50  0001 C CNN
-F 3 "~" H 6375 3300 50  0001 C CNN
-	1    6375 3300
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5900 3150 5900 3100
-Connection ~ 5900 3100
-Wire Wire Line
-	5900 3100 5800 3100
-Wire Wire Line
-	5900 3450 5900 3500
-Wire Wire Line
-	5900 3500 6375 3500
-Connection ~ 6375 3500
-Wire Wire Line
-	6225 3100 6375 3100
-Wire Wire Line
-	6375 3200 6375 3100
 Wire Wire Line
 	3425 2800 3425 3000
 Connection ~ 3425 2800
@@ -308,21 +273,7 @@ F 12 "Active" H 7150 4050 60  0001 L CNN "Status"
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6375 3100 6375 2850
-Wire Wire Line
 	6375 2850 6450 2850
-Connection ~ 6375 3100
-$Comp
-L Device:L_Core_Ferrite_Small L1
-U 1 1 5D26A5A4
-P 6125 3100
-F 0 "L1" V 5947 3100 50  0000 C CNN
-F 1 "445-3654-1-ND" V 6038 3100 50  0000 C CNN
-F 2 "Inductor_SMD:L_1210_3225Metric" H 6125 3100 50  0001 C CNN
-F 3 "~" H 6125 3100 50  0001 C CNN
-	1    6125 3100
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	4125 3000 4225 3000
 $Comp
@@ -379,12 +330,7 @@ F 3 "" H 3175 2625 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	3175 2625 3225 2625
-Wire Wire Line
-	7350 2850 7450 2850
-Wire Wire Line
-	7450 2850 7450 2950
 Connection ~ 7450 2950
-NoConn ~ 7350 2950
 $Comp
 L dk_PMIC-Battery-Chargers:MAX1555EZK_T U4
 U 1 1 5D2797BC
@@ -420,10 +366,10 @@ Wire Wire Line
 Wire Wire Line
 	4000 3400 4000 3750
 $Comp
-L Device:D_Zener_ALT D?
+L Device:D_Zener_ALT D8
 U 1 1 5D685547
 P 7875 3225
-F 0 "D?" V 7829 3304 50  0000 L CNN
+F 0 "D8" V 7829 3304 50  0000 L CNN
 F 1 "D_Zener_ALT" V 7920 3304 50  0000 L CNN
 F 2 "Diode_SMD:D_SOD-123F" H 7875 3225 50  0001 C CNN
 F 3 "~" H 7875 3225 50  0001 C CNN
@@ -432,13 +378,36 @@ F 4 "F7701CT-ND" H 7875 3225 50  0001 C CNN "DigiKey"
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	7450 3500 7875 3500
-Wire Wire Line
 	7875 3500 7875 3375
-Connection ~ 7450 3500
 Wire Wire Line
 	7600 2950 7875 2950
 Wire Wire Line
 	7875 2950 7875 3075
 Connection ~ 7600 2950
+Wire Wire Line
+	6375 2850 6375 3100
+Wire Wire Line
+	6350 3500 6850 3500
+Wire Wire Line
+	5800 3100 6350 3100
+Wire Wire Line
+	6350 3100 6350 3150
+Connection ~ 6350 3100
+Wire Wire Line
+	6350 3100 6375 3100
+Wire Wire Line
+	6350 3450 6350 3500
+Wire Wire Line
+	6850 3500 7450 3500
+Wire Wire Line
+	7450 2950 7450 3100
+Wire Wire Line
+	7450 3400 7450 3500
+Connection ~ 7450 3500
+Wire Wire Line
+	7450 3500 7875 3500
+Wire Wire Line
+	7350 2950 7450 2950
+NoConn ~ 7350 2850
+NoConn ~ 3575 3000
 $EndSCHEMATC
