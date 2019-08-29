@@ -10,24 +10,25 @@ module LZRTag
 				super(*data);
 			end
 
-			def override_brightness(level, duration)
-				raise ArgumentError unless level.is_a? Integer and duration.is_a? Numeric
-				_console("overrideVest(#{(duration*1000).to_i},#{level});");
-			end
-			def stop_brightness_override()
-				_console("overrideVest(0, 0);");
-			end
-
 			def vibrate(duration)
 				raise ArgumentError, "Vibration-duration out of range (between 0 and 65.536)" unless duration.is_a? Numeric and duration <= 65.536 and duration >= 0
 				_console("vibrate(#{(duration*1000).to_i});");
+
+				_pub_to("FX/Vibrate", duration);
 			end
 
 			def heartbeat=(data)
-				return if @heartbeat == data;
-				@heartbeat = data;
+				return if (@heartbeat == data);
 
-				_pub_to("Heartbeat", @heartbeat ? 1 : 0, retain: true);
+				@heartbeat = data;
+				_pub_to("FX/Heartbeat", @heartbeat ? "1" : "0", retain: true);
+			end
+
+			def marked=(data)
+				return if (@marked == data);
+
+				@marked = data;
+				_pub_to("FX/Marked", @marked ? "1" : "0", retain: true);
 			end
 
 			def fire
@@ -39,14 +40,19 @@ module LZRTag
 				_console("ping(#{startF},#{endF},#{(duration*1000).to_i});");
 			end
 
+			def sound(sName)
+				_pub_to("FX/Sound", sName);
+			end
+
 			def hit()
+				_pub_to("FX/Hit", @hitConfig[:hitDuration] || 0.7)
 				_console("displayHit();");
 			end
 
 			def clear_all_topics()
 				super();
 
-				["Heartbeat"].each do |t|
+				["FX/Heartbeat", "FX/Marked"].each do |t|
 					_pub_to(t, "", retain: true)
 				end
 			end

@@ -1,6 +1,6 @@
 
-playerID 		= "White";
-invertButton 	= true;
+playerID 		= "Red";
+invertButton 	= false;
 
-serverURL 		= 'xasin.hopto.org'
+serverURL 		= '192.168.250.1'
 lasertagTopic	= 'Lasertag'

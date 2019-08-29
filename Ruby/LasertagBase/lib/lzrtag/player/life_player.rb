@@ -50,11 +50,11 @@ module LZRTag
 					raise ArgumentError, "sourcePlayer needs to be a Player::Base!"
 				end
 
-				@lastDamageTime = Time.now();
-
 				oLife = @life;
 				nLife = @life - amount;
 				nLife = [0, nLife].max;
+
+				@lastDamageTime = Time.now();
 
 				if(nLife != @life)
 					@life = nLife;
