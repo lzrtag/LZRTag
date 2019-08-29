@@ -711,4 +711,21 @@ F 3 "" H 3325 5200 50  0001 C CNN
 	1    3325 5200
 	0    1    1    0   
 $EndComp
+$Comp
+L Device:C C?
+U 1 1 5D67DBF1
+P 6400 1150
+F 0 "C?" V 6148 1150 50  0000 C CNN
+F 1 "47uF" V 6239 1150 50  0000 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric" H 6438 1000 50  0001 C CNN
+F 3 "~" H 6400 1150 50  0001 C CNN
+	1    6400 1150
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6250 1150 6250 1600
+Connection ~ 6250 1600
+Wire Wire Line
+	6550 1150 6550 1600
+Connection ~ 6550 1600
 $EndSCHEMATC

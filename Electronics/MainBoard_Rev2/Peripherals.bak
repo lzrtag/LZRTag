@@ -503,10 +503,10 @@ Wire Wire Line
 Wire Wire Line
 	1875 3500 2075 3500
 $Comp
-L dk_Addressable-Specialty:COM-12999 D?
+L dk_Addressable-Specialty:COM-12999 D1
 U 1 1 5D2A09E9
 P 2575 3500
-F 0 "D?" H 2025 3900 60  0000 L CNN
+F 0 "D1" H 2025 3900 60  0000 L CNN
 F 1 "COM-12999" H 2775 3025 60  0000 L CNN
 F 2 "digikey-footprints:LED_RGB_WP154A4SUREQBFZGC" H 2775 3700 60  0001 L CNN
 F 3 "https://cdn.sparkfun.com/datasheets/Components/LED/COM-12877.pdf" H 2775 3800 60  0001 L CNN
