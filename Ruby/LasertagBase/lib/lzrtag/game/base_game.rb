@@ -13,7 +13,7 @@ module LZRTag
 				@hookList = Array.new();
 				@activeHooks = Array.new();
 
-				@tickTime = 0.3;
+				@tickTime = 1;
 			end
 
 			def _on_start_raw()
@@ -25,6 +25,10 @@ module LZRTag
 			end
 
 			def on_start()
+				@handler.each do |pl|
+					pl.sound("GAME START");
+				end
+
 				3.times do
 					@handler.each do |pl|
 						pl.noise();
