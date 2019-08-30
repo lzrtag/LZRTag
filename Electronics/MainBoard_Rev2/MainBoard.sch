@@ -433,10 +433,6 @@ F 3 "~" H 8025 4850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	8225 4850 9000 4850
-Wire Wire Line
-	8025 4950 9000 4950
-Wire Wire Line
 	8025 4750 8025 4650
 Wire Wire Line
 	8025 4650 8125 4650
@@ -521,17 +517,6 @@ F 1 "MountingHole" H 1700 6380 50  0000 L CNN
 F 2 "Symbol:OSHW-Logo_5.7x6mm_SilkScreen" H 1600 6425 50  0001 C CNN
 F 3 "~" H 1600 6425 50  0001 C CNN
 	1    1600 6425
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole H5
-U 1 1 5C311B5D
-P 1600 6650
-F 0 "H5" H 1700 6696 50  0000 L CNN
-F 1 "MountingHole" H 1700 6605 50  0000 L CNN
-F 2 "MainBoard_Rev2:QR_Link" H 1600 6650 50  0001 C CNN
-F 3 "~" H 1600 6650 50  0001 C CNN
-	1    1600 6650
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -794,4 +779,49 @@ Wire Wire Line
 	6550 1150 6550 1800
 Wire Wire Line
 	6250 1150 6250 1800
+$Comp
+L Connector:Conn_01x02_Male J5
+U 1 1 5D694850
+P 4925 5900
+F 0 "J5" H 4898 5780 50  0000 R CNN
+F 1 "Conn_01x02_Male" H 4898 5871 50  0000 R CNN
+F 2 "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" H 4925 5900 50  0001 C CNN
+F 3 "~" H 4925 5900 50  0001 C CNN
+	1    4925 5900
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4475 5800 4725 5800
+Wire Wire Line
+	4475 5900 4725 5900
+$Comp
+L Device:R_Small R8
+U 1 1 5D69D2A7
+P 8875 4850
+F 0 "R8" V 8925 4925 50  0000 C CNN
+F 1 "220" V 8925 4775 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 8875 4850 50  0001 C CNN
+F 3 "~" H 8875 4850 50  0001 C CNN
+	1    8875 4850
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R9
+U 1 1 5D69D35B
+P 8875 4950
+F 0 "R9" V 8925 5025 50  0000 C CNN
+F 1 "220" V 8925 4875 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 8875 4950 50  0001 C CNN
+F 3 "~" H 8875 4950 50  0001 C CNN
+	1    8875 4950
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	8975 4850 9000 4850
+Wire Wire Line
+	8975 4950 9000 4950
+Wire Wire Line
+	8775 4850 8225 4850
+Wire Wire Line
+	8775 4950 8025 4950
 $EndSCHEMATC
