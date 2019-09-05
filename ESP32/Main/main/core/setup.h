@@ -8,7 +8,7 @@
 #ifndef MAIN_SETUP_H_
 #define MAIN_SETUP_H_
 
-#include "BatteryManager.h"
+#include "xasin/BatteryManager.h"
 
 #include "AudioHandler.h"
 #include "NeoController.h"
