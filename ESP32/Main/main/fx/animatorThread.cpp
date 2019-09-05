@@ -22,6 +22,8 @@
 
 #include "sounds.h"
 
+#include "patterns/ShotFlicker.h"
+
 namespace LZR {
 
 using namespace Peripheral;
@@ -35,8 +37,7 @@ float 	lastFXPhase = 0;
 
 auto vestBufferLayer = Layer(WS2812_NUMBER - 1);
 
-auto vestShotAnimator = ManeAnimator(vestBufferLayer.length());
-auto vestShotOverlay = Layer(vestBufferLayer.length());
+auto vestShotPattern = FX::ShotFlicker(vestBufferLayer.length());
 
 bool flashEnable = false;
 bool flashInvert = false;
@@ -172,36 +173,13 @@ void vest_tick() {
 	/////////////////////////////////////
 	// Vest shot flaring & wave animation
 	/////////////////////////////////////
-	if(gunHandler.was_shot_tick())
-		vestShotAnimator.points[0].pos = 1;
-	for(int i=3; i!=0; i--)
-		vestShotAnimator.tick();
-
-	vestShotOverlay.fill(bufferedColors.vestShotEnergy);
-	vestShotOverlay.alpha_set(vestShotAnimator.scalarPoints);
-	RGBController.colors.merge_add(vestShotOverlay, 1);
-
-	/////////////////////////////////////
-	// Player color marking
-	/////////////////////////////////////
-	if(player.is_marked()) {
-		int markerPos = xTaskGetTickCount()/80;
-		markerPos %= vestShotOverlay.length()*2 - 2;
-
-		if(markerPos >= vestShotOverlay.length())
-			markerPos = 2*vestShotOverlay.length() - markerPos - 2;
-
-		RGBController.colors[1+markerPos].merge_overlay(0xFFFFFF, 140);
+	vestShotPattern.tick();
+	for(int i=1; i<RGBController.length; i++) {
+		vestShotPattern.apply_color_at(RGBController[i], i-1);
 	}
 }
 
 void animation_thread(void *args) {
-	vestShotAnimator.baseTug   = 0.0013;
-	vestShotAnimator.basePoint = 0.0;
-	vestShotAnimator.dampening = 0.94;
-	vestShotAnimator.ptpTug    = 0.015;
-	vestShotAnimator.wrap 	   = true;
-
 	while(true) {
 		status_led_tick();
 
