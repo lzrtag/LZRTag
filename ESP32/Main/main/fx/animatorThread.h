@@ -34,6 +34,8 @@ struct FXSet {
 extern ColorSet currentColors;
 extern FXSet 	currentFX;
 
+extern ColorSet bufferedColors;
+
 void start_animation_thread();
 }
 
