@@ -14,7 +14,7 @@ namespace Weapons {
 #include "mylin_fire.h"
 #include "wyre_cooldown.h"
 
-#define AC(name) AudioCassette(name, sizeof(name))
+#define AC(name) AudioCassette(name, sizeof(name), 60000)
 
 // Effective shot rate:
 // 8*108 + 8*100 + 8*30 + 1800 + 8*600 = 8504 Ticks
