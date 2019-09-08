@@ -10,7 +10,7 @@
 namespace LZR {
 namespace FX {
 
-BasePattern::BasePattern() {
+BasePattern::BasePattern() : enabled(true) {
 }
 
 BasePattern::~BasePattern() {
