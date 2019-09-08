@@ -23,6 +23,7 @@
 #include "sounds.h"
 
 #include "patterns/ShotFlicker.h"
+#include "patterns/VestPattern.h"
 
 namespace LZR {
 
@@ -38,6 +39,19 @@ float 	lastFXPhase = 0;
 auto vestBufferLayer = Layer(WS2812_NUMBER - 1);
 
 auto vestShotPattern = FX::ShotFlicker(vestBufferLayer.length());
+
+auto testColorFlicker = FX::VestPattern();
+auto testGFlicker = FX::VestPattern();
+auto testRFlicker = FX::VestPattern();
+
+auto basePatternFlicker = FX::VestPattern();
+
+std::vector<FX::VestPattern*> testPatterns = {
+		&testColorFlicker,
+		&testGFlicker,
+		&testRFlicker,
+		&basePatternFlicker,
+};
 
 bool flashEnable = false;
 bool flashInvert = false;
@@ -139,44 +153,28 @@ void vest_tick() {
 	currentVestColor.bMod(bufferedFX.minBaseGlow +
 			(bufferedFX.maxBaseGlow - bufferedFX.minBaseGlow)*gunHandler.getGunHeat()/255.0);
 
-	vestBufferLayer.fill(currentVestColor);
+	basePatternFlicker.overlayColor = currentVestColor;
+
+	RGBController.colors.fill(0, 1, -1);
 
 	////////////////////
 	// Basic vest wavering
 	////////////////////
+	testColorFlicker.tick();
+
 	lastFXPhase += 10 / bufferedFX.waverPeriod;
 	for(int i=0; i<vestBufferLayer.length(); i++) {
-		float currentPhase = (lastFXPhase + i*bufferedFX.waverPositionShift)*M_PI*2;
-		float currentFactor = 1-bufferedFX.waverAmplitude/2 + bufferedFX.waverAmplitude/2*sin(currentPhase);
-
-		////////
-		// Hit-Flashing
-		////////
-		if(flashEnable) {
-			if(flashInvert ^ (i&1))
-				currentFactor *= 0.3;
-			else {
-				currentFactor = 1;
-				vestBufferLayer[i].merge_overlay(0xFFFFFF, 130);
-			}
-		}
-
-		if(currentFactor < 0)
-			currentFactor = 0;
-		if(currentFactor > 1)
-			currentFactor = 1;
-
-		vestBufferLayer[i].bMod(255 * currentFactor);
+		for(auto pattern : testPatterns)
+			pattern->apply_color_at(RGBController.colors[i+1], i);
 	}
-	RGBController.colors.merge_overlay(vestBufferLayer, 1);
 
 	/////////////////////////////////////
 	// Vest shot flaring & wave animation
 	/////////////////////////////////////
-	vestShotPattern.tick();
-	for(int i=1; i<RGBController.length; i++) {
-		vestShotPattern.apply_color_at(RGBController[i], i-1);
-	}
+//	vestShotPattern.tick();
+//	for(int i=1; i<RGBController.length; i++) {
+//		vestShotPattern.apply_color_at(RGBController.colors[i], i-1);
+//	}
 }
 
 void animation_thread(void *args) {
@@ -228,6 +226,33 @@ void start_animation_thread() {
 	currentFX = brightnessLevels[0];
 
 	Sounds::init();
+
+	testColorFlicker.overlayColor = Material::BLUE;
+	testGFlicker.overlayColor = Material::GREEN;
+	testRFlicker.overlayColor = Material::RED;
+
+	for(int i=0; i<3; i++) {
+		auto &tP = *testPatterns[i];
+		tP.pattern_shift = 255;
+		tP.timefunc_shift =  i * tP.timefunc_period / 9;
+		tP.pattern_period = 4*255;
+		tP.pattern_p2_length = 3*255;
+
+		tP.pattern_trap_percent = (0.2) * (1<<16);
+
+		tP.overlay = false;
+
+		tP.overlayColor.alpha = 20;
+	}
+
+	auto &bP = basePatternFlicker;
+	bP.time_func = FX::time_func_t::LINEAR;
+	bP.timefunc_period = 2000;
+	bP.timefunc_p1_period = 2000;
+
+	bP.pattern_func = FX::pattern_func_t::SINE;
+	bP.pattern_period = -3*255;
+	bP.pattern_p1_length = 3*255;
 
     TaskHandle_t animatorTaskHandle;
     xTaskCreatePinnedToCore(animation_thread, "Animator", 4*1024, nullptr, 10, &animatorTaskHandle, 1);
