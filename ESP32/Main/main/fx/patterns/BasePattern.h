@@ -15,6 +15,8 @@ namespace FX {
 
 class BasePattern {
 public:
+	bool enabled;
+
 	BasePattern();
 	virtual ~BasePattern();
 

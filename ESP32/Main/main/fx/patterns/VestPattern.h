@@ -16,7 +16,7 @@ namespace FX {
 enum class pattern_func_t {
 	SINE,
 	TRAPEZ,
-	CHASE_TRAPEZ,
+//	CHASE_TRAPEZ,
 };
 enum class time_func_t {
 	LINEAR,
@@ -40,6 +40,7 @@ public:
 	int32_t timefunc_period;
 	int32_t timefunc_p1_period;
 	int32_t timefunc_trap_percent;
+	int32_t timefunc_shift;
 
 	pattern_func_t pattern_func;
 	int32_t sine_center;
@@ -47,13 +48,19 @@ public:
 
 	int32_t 	pattern_period;
 	int32_t 	pattern_p1_length;
+	int32_t		pattern_p2_length;
 	uint16_t 	pattern_trap_percent;
+	int32_t		pattern_shift;
 
 	Peripheral::Color overlayColor;
+	bool overlay;
 
 	VestPattern();
 
-	void apply_color_to(Peripheral::Color &tgt, float pos);
+	void tick();
+	void apply_color_at(Peripheral::Color &tgt, float pos);
+
+	void set_5050_trapez(int32_t ticks, float fillPercent);
 };
 
 } /* namespace FX */
