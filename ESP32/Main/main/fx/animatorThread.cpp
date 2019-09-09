@@ -11,7 +11,6 @@
 #include "freertos/task.h"
 
 #include "../core/setup.h"
-#include "../IODefs.h"
 
 #include "ManeAnimator.h"
 
@@ -34,24 +33,13 @@ ColorSet bufferedColors = currentColors;
 
 FXSet 	currentFX = brightnessLevels[0];
 FXSet 	bufferedFX = currentFX;
-float 	lastFXPhase = 0;
 
-auto vestBufferLayer = Layer(WS2812_NUMBER - 1);
+pattern_mode_t target_pattern_mode = IDLE;
+pattern_mode_t current_pattern_mode = OFF;
 
-auto vestShotPattern = FX::ShotFlicker(vestBufferLayer.length());
+auto vestShotPattern = FX::ShotFlicker(VEST_LEDS);
 
-auto testColorFlicker = FX::VestPattern();
-auto testGFlicker = FX::VestPattern();
-auto testRFlicker = FX::VestPattern();
-
-auto basePatternFlicker = FX::VestPattern();
-
-std::vector<FX::VestPattern*> testPatterns = {
-		&testColorFlicker,
-		&testGFlicker,
-		&testRFlicker,
-		&basePatternFlicker,
-};
+std::vector<FX::VestPattern> modePatterns = {};
 
 bool flashEnable = false;
 bool flashInvert = false;
@@ -68,7 +56,6 @@ void set_bat_pwr(uint8_t level, uint8_t brightness = 255) {
 }
 
 void status_led_tick() {
-
 	float conIndB = 0;
 	float batBrightness = 1;
 
@@ -114,6 +101,85 @@ void vibr_motor_tick() {
 		gpio_set_level(PIN_VBRT, 0);
 }
 
+void switch_to_mode(pattern_mode_t pMode) {
+	modePatterns.clear();
+
+	switch(pMode) {
+	default: break;
+
+	case IDLE: {
+		modePatterns.emplace_back();
+		auto &ip = modePatterns[0];
+
+		ip.overlayColor = Color(0x666666);
+		ip.pattern_func = FX::pattern_func_t::TRAPEZ;
+		ip.pattern_period = 255*(VEST_LEDS);
+		ip.pattern_p2_length = ip.pattern_period;
+
+		ip.pattern_p1_length = 2*255;
+		ip.pattern_trap_percent = 0.5 * (1<<16);
+
+		ip.sine_amplitude = 0.25*(1<<16);
+
+		ip.time_func = FX::time_func_t::LINEAR;
+		ip.timefunc_p1_period = 600 * 8;
+		ip.timefunc_period = ip.timefunc_p1_period;
+	break;
+	}
+
+	case TEAM_SELECT:
+		for(int i=0; i<3; i++) {
+			modePatterns.emplace_back();
+			auto &iP = modePatterns[i];
+
+			iP.overlayColor = Color::HSV(120 * i);
+			iP.overlayColor.bMod(140);
+			iP.overlayColor.alpha = 160;
+
+			iP.pattern_func = FX::pattern_func_t::TRAPEZ;
+			iP.pattern_p1_length = 2.5*255;
+			iP.pattern_period = 255*(VEST_LEDS + 4);
+			iP.pattern_trap_percent = (1<<16) * 0.6;
+
+			iP.pattern_shift = 2*255;
+			iP.pattern_p2_length = 255*(VEST_LEDS + 4);
+			iP.pattern_trap_percent = 0.3*(1<<16);
+
+			iP.set_5050_trapez(5*600, 0.26);
+			iP.timefunc_shift = i * iP.timefunc_period / 10;
+		}
+	break;
+	}
+
+	current_pattern_mode = pMode;
+}
+
+void mode_tick() {
+	if(target_pattern_mode != current_pattern_mode)
+		switch_to_mode(target_pattern_mode);
+
+	switch(current_pattern_mode) {
+	case OFF: break;
+	case IDLE: break;
+
+	case TEAM_SELECT: {
+		Color tColor = bufferedColors.vestBase;
+		tColor.bMod(60);
+		RGBController.colors.fill(tColor, 1, -1);
+	break;
+	}
+
+	case ACTIVE: break; // TODO
+	}
+
+	for(auto pattern : modePatterns) {
+		pattern.tick();
+
+		for(int i=0; i<RGBController.length-1; i++)
+			pattern.apply_color_at(RGBController.colors[i+1], i);
+	}
+}
+
 #define COLOR_FADE(cName, alpha) bufferedColors.cName.merge_overlay(currentColors.cName, alpha)
 #define FX_FADE(fxName, alpha)	 bufferedFX.fxName = (bufferedFX.fxName * (1-alpha) + currentFX.fxName * alpha)
 
@@ -153,28 +219,21 @@ void vest_tick() {
 	currentVestColor.bMod(bufferedFX.minBaseGlow +
 			(bufferedFX.maxBaseGlow - bufferedFX.minBaseGlow)*gunHandler.getGunHeat()/255.0);
 
-	basePatternFlicker.overlayColor = currentVestColor;
-
+	// Reset of all colors
 	RGBController.colors.fill(0, 1, -1);
 
 	////////////////////
 	// Basic vest wavering
-	////////////////////
-	testColorFlicker.tick();
-
-	lastFXPhase += 10 / bufferedFX.waverPeriod;
-	for(int i=0; i<vestBufferLayer.length(); i++) {
-		for(auto pattern : testPatterns)
-			pattern->apply_color_at(RGBController.colors[i+1], i);
-	}
+	///////////////////
+	mode_tick();
 
 	/////////////////////////////////////
 	// Vest shot flaring & wave animation
 	/////////////////////////////////////
-//	vestShotPattern.tick();
-//	for(int i=1; i<RGBController.length; i++) {
-//		vestShotPattern.apply_color_at(RGBController.colors[i], i-1);
-//	}
+	vestShotPattern.tick();
+	for(int i=1; i<RGBController.length; i++) {
+		vestShotPattern.apply_color_at(RGBController.colors[i], i-1);
+	}
 }
 
 void animation_thread(void *args) {
@@ -226,33 +285,6 @@ void start_animation_thread() {
 	currentFX = brightnessLevels[0];
 
 	Sounds::init();
-
-	testColorFlicker.overlayColor = Material::BLUE;
-	testGFlicker.overlayColor = Material::GREEN;
-	testRFlicker.overlayColor = Material::RED;
-
-	for(int i=0; i<3; i++) {
-		auto &tP = *testPatterns[i];
-		tP.pattern_shift = 255;
-		tP.timefunc_shift =  i * tP.timefunc_period / 9;
-		tP.pattern_period = 4*255;
-		tP.pattern_p2_length = 3*255;
-
-		tP.pattern_trap_percent = (0.2) * (1<<16);
-
-		tP.overlay = false;
-
-		tP.overlayColor.alpha = 20;
-	}
-
-	auto &bP = basePatternFlicker;
-	bP.time_func = FX::time_func_t::LINEAR;
-	bP.timefunc_period = 2000;
-	bP.timefunc_p1_period = 2000;
-
-	bP.pattern_func = FX::pattern_func_t::SINE;
-	bP.pattern_period = -3*255;
-	bP.pattern_p1_length = 3*255;
 
     TaskHandle_t animatorTaskHandle;
     xTaskCreatePinnedToCore(animation_thread, "Animator", 4*1024, nullptr, 10, &animatorTaskHandle, 1);
