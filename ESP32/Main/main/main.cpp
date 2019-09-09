@@ -21,6 +21,8 @@
 
 #include "core/setup.h"
 
+#include "fx/animatorThread.h"
+
 using namespace Peripheral;
 
 esp_err_t event_handler(void *context, system_event_t *event) {
@@ -49,6 +51,8 @@ void app_main()
 
     while(true) {
     	vTaskDelay(10*600);
+
+    	LZR::target_pattern_mode = LZR::TEAM_SELECT;
     }
 
     fflush(stdout);
