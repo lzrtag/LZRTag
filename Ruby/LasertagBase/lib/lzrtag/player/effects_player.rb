@@ -28,7 +28,11 @@ module LZRTag
 				return if (@marked == data);
 
 				@marked = data;
-				_pub_to("FX/Marked", @marked ? "1" : "0", retain: true);
+				if data.is_a? Numeric
+					_pub_to("FX/Marked", @marked.to_s, retain: true)
+				else
+					_pub_to("FX/Marked", "", retain: true)
+				end
 			end
 
 			def fire
@@ -44,9 +48,8 @@ module LZRTag
 				_pub_to("FX/Sound", sName);
 			end
 
-			def hit()
-				_pub_to("FX/Hit", @hitConfig[:hitDuration] || 0.7)
-				_console("displayHit();");
+			def hit(hitLength = nil)
+				_pub_to("FX/Hit", hitLength || @hitConfig[:hitDuration] || 0.7)
 			end
 
 			def clear_all_topics()

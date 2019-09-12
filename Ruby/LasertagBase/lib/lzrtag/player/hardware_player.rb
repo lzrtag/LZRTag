@@ -101,7 +101,7 @@ module LZRTag
 
 			def team=(n)
 				n = n.to_i;
-				raise ArgumentError, "Team out of range (must be between 0 and 255)" unless n <= 255 and n >= 0;
+				raise ArgumentError, "Team out of range (must be between 0 and 7)" unless n <= 7 and n >= 0;
 
 				return if @team == n;
 				oldT = @team;

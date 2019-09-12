@@ -25,6 +25,8 @@ private:
 	int brightness;
 
 	bool isMarked;
+	uint32_t markerColor;
+
 	bool heartbeat;
 
 	std::string name;
@@ -51,7 +53,9 @@ public:
 	int get_team();
 	pattern_mode_t get_brightness();
 
-	bool is_marked();
+	bool 		is_marked();
+	uint32_t 	get_marked_color();
+
 	bool get_heartbeat();
 
 	std::string get_name();
