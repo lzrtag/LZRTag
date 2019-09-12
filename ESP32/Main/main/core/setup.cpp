@@ -139,8 +139,15 @@ void take_battery_measurement() {
 	battery.set_voltage(battery_avg / battery_samples.size());
 	battery.is_charging = !gpio_get_level(PIN_BAT_CHGING);
 
-	if(battery.current_capacity() < 5 && !battery.is_charging)
+	if(battery.current_capacity() < 99 && !battery.is_charging) {
 		main_weapon_status = DISCHARGED;
+
+		if(main_weapon_status == NOMINAL) {
+			ESP_LOGE("LZR::Core", "Battery critically low, shutting down!");
+			vTaskDelay(3);
+			esp_restart();
+		}
+	}
 
 	if(xTaskGetTickCount() > (30*600 + lastBatteryUpdate)) {
 		ESP_LOGI("LZR::Core", "%sBattery level: %s%d",
@@ -190,6 +197,14 @@ void housekeeping_thread(void *args) {
 	}
 }
 
+void shutdown_system() {
+	LZR::FX::target_mode = LZR::OFF;
+	vTaskDelay(100);
+
+	esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
+	esp_deep_sleep_start();
+}
+
 void setup() {
 	power_config();
 
@@ -199,24 +214,36 @@ void setup() {
 	setup_adc();
 	set_ledc();
 
-	setup_ping_req();
+	IR::init();
 
 	xTaskCreate(housekeeping_thread, "Housekeeping", 2*1024, nullptr, 10, nullptr);
 
-	vTaskDelay(10);
-
-	IR::init();
 	setup_audio();
 
-	player.init();
-
-	vTaskDelay(10);
-
 	start_animation_thread();
+
+    LZR::FX::target_mode = LZR::BATTERY_LEVEL;
+    vTaskDelay(200);
+
+    if(main_weapon_status == DISCHARGED) {
+    	ESP_LOGE("LZR::Core", "Battery low, sleeping!");
+
+    	vTaskDelay(3*600);
+    	shutdown_system();
+    }
+
+	player.init();
+    vTaskDelay(3*600);
+    LZR::FX::target_mode = LZR::PLAYER_DECIDED;
+
+
+	setup_ping_req();
+
+	vTaskDelay(50);
 
 	if(main_weapon_status == INITIALIZING)
 		main_weapon_status = NOMINAL;
 
-	puts("Initialisation finished!");
+	ESP_LOGI("LZR::Core", "Init finished");
 }
 }
