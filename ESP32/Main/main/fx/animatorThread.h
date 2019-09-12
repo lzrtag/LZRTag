@@ -34,14 +34,28 @@ struct FXSet {
 	float waverPositionShift;
 };
 
-enum pattern_mode_t {
+enum pattern_mode_t : uint16_t {
 	OFF,
+	BATTERY_LEVEL,
+	CONNECTING,
+
+	PLAYER_DECIDED,
+
 	IDLE,
 	TEAM_SELECT,
+	DEAD,
 	ACTIVE,
+
+	PATTERN_MODE_MAX, // Not to be used, just a placeholder
 };
 
-extern pattern_mode_t target_pattern_mode;
+
+namespace FX {
+	extern volatile pattern_mode_t target_mode;
+
+	void mode_tick();
+	void init();
+}
 
 extern ColorSet currentColors;
 extern FXSet 	currentFX;
