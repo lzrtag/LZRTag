@@ -11,6 +11,8 @@
 #include "freertos/FreeRTOS.h"
 #include "xasin/mqtt/Handler.h"
 
+#include "../fx/animatorThread.h"
+
 namespace LZR {
 
 class Player {
@@ -47,7 +49,7 @@ public:
 	int get_id();
 
 	int get_team();
-	int get_brightness();
+	pattern_mode_t get_brightness();
 
 	bool is_marked();
 	bool get_heartbeat();

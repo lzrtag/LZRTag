@@ -61,7 +61,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 }
 
 void Player::init() {
-	mqtt.start("mqtt://192.168.250.1", get_topic_base() + "/Connection");
+	mqtt.start("mqtt://192.168.6.111", get_topic_base() + "/Connection");
 	mqtt.set_status("OK");
 }
 
@@ -87,15 +87,21 @@ int Player::get_team() {
 		return 0;
 	return this->team;
 }
-int Player::get_brightness() {
+
+pattern_mode_t Player::get_brightness() {
+	if(mqtt.is_disconnected())
+		return pattern_mode_t::CONNECTING;
+
 	if(is_dead())
-		return 1;
+		return pattern_mode_t::DEAD;
 
 	if(brightness < 0)
-		return 0;
-	if(brightness > 3)
-		return 3;
-	return brightness;
+		return pattern_mode_t::IDLE;
+	if(brightness > (pattern_mode_t::PATTERN_MODE_MAX - pattern_mode_t::IDLE))
+		return pattern_mode_t::ACTIVE;
+
+	return static_cast<pattern_mode_t>(brightness + pattern_mode_t::IDLE);
+
 }
 
 bool Player::is_marked() {
