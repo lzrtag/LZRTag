@@ -49,6 +49,7 @@ void app_main()
     Xasin::MQTT::Handler::start_wifi("Lasertag\0", "\0");
 
     while(true) {
+    	vTaskDelay(10*600);
     }
 
     fflush(stdout);

@@ -139,14 +139,18 @@ void take_battery_measurement() {
 	battery.set_voltage(battery_avg / battery_samples.size());
 	battery.is_charging = !gpio_get_level(PIN_BAT_CHGING);
 
-	if(battery.current_capacity() < 99 && !battery.is_charging) {
-		main_weapon_status = DISCHARGED;
-
+	// Small debounce for battery percentage
+	auto bMin = 5;
+	if(main_weapon_status == NOMINAL)
+		bMin = 1;
+	if(battery.current_capacity() < bMin && !battery.is_charging) {
 		if(main_weapon_status == NOMINAL) {
 			ESP_LOGE("LZR::Core", "Battery critically low, shutting down!");
 			vTaskDelay(3);
 			esp_restart();
 		}
+
+		main_weapon_status = DISCHARGED;
 	}
 
 	if(xTaskGetTickCount() > (30*600 + lastBatteryUpdate)) {
@@ -231,18 +235,20 @@ void setup() {
     	vTaskDelay(3*600);
     	shutdown_system();
     }
+    else if(main_weapon_status == CHARGING) {
+    	ESP_LOGI("LZR::Core", "Charging detected, entering CHG mode");
 
-	player.init();
-    vTaskDelay(3*600);
-    LZR::FX::target_mode = LZR::PLAYER_DECIDED;
+    	LZR::FX::target_mode = LZR::CHARGE;
+    }
+    else {
+    	player.init();
+        vTaskDelay(3*600);
+        LZR::FX::target_mode = LZR::PLAYER_DECIDED;
 
+    	setup_ping_req();
 
-	setup_ping_req();
-
-	vTaskDelay(50);
-
-	if(main_weapon_status == INITIALIZING)
-		main_weapon_status = NOMINAL;
+    	main_weapon_status = NOMINAL;
+    }
 
 	ESP_LOGI("LZR::Core", "Init finished");
 }
