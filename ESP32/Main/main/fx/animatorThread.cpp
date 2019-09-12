@@ -34,15 +34,15 @@ ColorSet bufferedColors = currentColors;
 FXSet 	currentFX = brightnessLevels[0];
 FXSet 	bufferedFX = currentFX;
 
-pattern_mode_t target_pattern_mode = IDLE;
-pattern_mode_t current_pattern_mode = OFF;
-
 auto vestShotPattern = FX::ShotFlicker(VEST_LEDS);
+auto vestHitMarker 	 = FX::VestPattern();
+auto vestDeathMarker = FX::VestPattern();
 
-std::vector<FX::VestPattern> modePatterns = {};
-
-bool flashEnable = false;
-bool flashInvert = false;
+std::vector<FX::BasePattern*> vestPatterns = {
+		&vestShotPattern,
+		&vestHitMarker,
+		&vestDeathMarker,
+};
 
 void set_bat_pwr(uint8_t level, uint8_t brightness = 255) {
 	uint8_t gLevel = 255 - pow(255 - 2.55*level, 2)/255;
@@ -53,6 +53,29 @@ void set_bat_pwr(uint8_t level, uint8_t brightness = 255) {
 	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
 	ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
 
+}
+
+void setup_vest_patterns() {
+	vestHitMarker.pattern_func = FX::pattern_func_t::TRAPEZ;
+	vestHitMarker.pattern_p1_length = 1.3*255;
+	vestHitMarker.pattern_period = 255*VEST_LEDS;
+	vestHitMarker.pattern_p2_length = 255*VEST_LEDS;
+	vestHitMarker.pattern_trap_percent = (1<<16) * 0.3;
+
+	vestHitMarker.time_func = FX::time_func_t::LINEAR;
+	vestHitMarker.timefunc_p1_period = 0.5*600;
+	vestHitMarker.timefunc_period = vestHitMarker.timefunc_p1_period;
+
+	vestHitMarker.overlayColor = Color(0xFFFFFF);
+	vestHitMarker.overlayColor.alpha = 50;
+
+	vestDeathMarker = vestHitMarker;
+	vestDeathMarker.pattern_period  = 2*255;
+	vestDeathMarker.pattern_p2_length = 1*255;
+	vestDeathMarker.overlayColor.alpha = 80;
+
+	vestDeathMarker.timefunc_period = 0.2*600;
+	vestDeathMarker.timefunc_p1_period = 0.2*600;
 }
 
 void status_led_tick() {
@@ -90,94 +113,20 @@ void status_led_tick() {
 	set_bat_pwr(battery.current_capacity(), batBrightness*255);
 }
 
+TickType_t vibr_motor_count = 0;
 void vibr_motor_tick() {
+	vibr_motor_count++;
+
 	if(gunHandler.timeSinceLastShot() <= gunHandler.cGun().postShotVibrationTicks)
 		gpio_set_level(PIN_VBRT, 1);
-	else if(flashEnable && flashInvert)
+	else if(player.is_hit() && player.is_dead() && (vibr_motor_count & 0b1))
+		gpio_set_level(PIN_VBRT, 1);
+	else if((vibr_motor_count & 0b1010) == 0 && player.is_hit())
 		gpio_set_level(PIN_VBRT, 1);
 	else if(player.get_heartbeat() && ((0b101 & (xTaskGetTickCount()/75)) == 0))
 		gpio_set_level(PIN_VBRT, 1);
 	else
 		gpio_set_level(PIN_VBRT, 0);
-}
-
-void switch_to_mode(pattern_mode_t pMode) {
-	modePatterns.clear();
-
-	switch(pMode) {
-	default: break;
-
-	case IDLE: {
-		modePatterns.emplace_back();
-		auto &ip = modePatterns[0];
-
-		ip.overlayColor = Color(0x666666);
-		ip.pattern_func = FX::pattern_func_t::TRAPEZ;
-		ip.pattern_period = 255*(VEST_LEDS);
-		ip.pattern_p2_length = ip.pattern_period;
-
-		ip.pattern_p1_length = 2*255;
-		ip.pattern_trap_percent = 0.5 * (1<<16);
-
-		ip.sine_amplitude = 0.25*(1<<16);
-
-		ip.time_func = FX::time_func_t::LINEAR;
-		ip.timefunc_p1_period = 600 * 8;
-		ip.timefunc_period = ip.timefunc_p1_period;
-	break;
-	}
-
-	case TEAM_SELECT:
-		for(int i=0; i<3; i++) {
-			modePatterns.emplace_back();
-			auto &iP = modePatterns[i];
-
-			iP.overlayColor = Color::HSV(120 * i);
-			iP.overlayColor.bMod(140);
-			iP.overlayColor.alpha = 160;
-
-			iP.pattern_func = FX::pattern_func_t::TRAPEZ;
-			iP.pattern_p1_length = 2.5*255;
-			iP.pattern_period = 255*(VEST_LEDS + 4);
-			iP.pattern_trap_percent = (1<<16) * 0.6;
-
-			iP.pattern_shift = 2*255;
-			iP.pattern_p2_length = 255*(VEST_LEDS + 4);
-			iP.pattern_trap_percent = 0.3*(1<<16);
-
-			iP.set_5050_trapez(5*600, 0.26);
-			iP.timefunc_shift = i * iP.timefunc_period / 10;
-		}
-	break;
-	}
-
-	current_pattern_mode = pMode;
-}
-
-void mode_tick() {
-	if(target_pattern_mode != current_pattern_mode)
-		switch_to_mode(target_pattern_mode);
-
-	switch(current_pattern_mode) {
-	case OFF: break;
-	case IDLE: break;
-
-	case TEAM_SELECT: {
-		Color tColor = bufferedColors.vestBase;
-		tColor.bMod(60);
-		RGBController.colors.fill(tColor, 1, -1);
-	break;
-	}
-
-	case ACTIVE: break; // TODO
-	}
-
-	for(auto pattern : modePatterns) {
-		pattern.tick();
-
-		for(int i=0; i<RGBController.length-1; i++)
-			pattern.apply_color_at(RGBController.colors[i+1], i);
-	}
 }
 
 #define COLOR_FADE(cName, alpha) bufferedColors.cName.merge_overlay(currentColors.cName, alpha)
@@ -225,14 +174,20 @@ void vest_tick() {
 	////////////////////
 	// Basic vest wavering
 	///////////////////
-	mode_tick();
+	FX::mode_tick();
+
+	// Determine whether hit flicker shall run
+	vestHitMarker.enabled = player.is_hit() && !player.is_dead();
+	vestDeathMarker.enabled = player.is_hit() && player.is_dead();
 
 	/////////////////////////////////////
 	// Vest shot flaring & wave animation
 	/////////////////////////////////////
-	vestShotPattern.tick();
-	for(int i=1; i<RGBController.length; i++) {
-		vestShotPattern.apply_color_at(RGBController.colors[i], i-1);
+	for(auto p : vestPatterns) {
+		p->tick();
+		for(int i=1; i<RGBController.length; i++) {
+			p->apply_color_at(RGBController.colors[i], i-1);
+		}
 	}
 }
 
@@ -246,16 +201,6 @@ void animation_thread(void *args) {
 
 			currentColors = teamColors[player.get_team()];
 			currentFX = brightnessLevels[player.get_brightness()];
-
-			if(player.is_hit()) {
-				if(player.is_dead())
-					flashEnable = true;
-				else
-					flashEnable  = ((xTaskGetTickCount()/30) & 0b1) == 0;
-				flashInvert = ((xTaskGetTickCount()/20) & 0b10) == 0;
-			}
-			else
-				flashEnable = false;
 
 			vest_tick();
 			vibr_motor_tick();
@@ -283,6 +228,10 @@ void start_animation_thread() {
 	bufferedColors = currentColors;
 
 	currentFX = brightnessLevels[0];
+
+	setup_vest_patterns();
+
+	FX::init();
 
 	Sounds::init();
 
