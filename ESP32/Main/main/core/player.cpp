@@ -10,11 +10,16 @@
 
 #include "esp_log.h"
 
+#include "../fx/colorSets.h"
+
 namespace LZR {
 
 Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 	ID(3),
-	team(4), brightness(2), isMarked(false), heartbeat(false),
+	team(4), brightness(2),
+	isMarked(false),
+	markerColor(0),
+	heartbeat(false),
 	name(""),
 	deadUntil(0), hitUntil(0),
 	currentGun(2), shotLocked(0),
@@ -35,8 +40,13 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			currentGun = atoi(data.data.data());
 			shotLocked = currentGun <= 0;
 		}
-		else if(data.topic == "FX/Marked")
-			isMarked = (data.data == "1");
+		else if(data.topic == "FX/Marked") {
+			isMarked = (data.data.length() != 0);
+			markerColor = atoi(data.data.data());
+
+			if(markerColor < 8)
+				markerColor = LZR::teamColors[markerColor].vestShotEnergy.getPrintable();
+		}
 		else if(data.topic == "FX/Heartbeat")
 			heartbeat = (data.data == "1");
 		else if(data.topic == "Name")
@@ -106,6 +116,9 @@ pattern_mode_t Player::get_brightness() {
 
 bool Player::is_marked() {
 	return isMarked;
+}
+uint32_t Player::get_marked_color() {
+	return markerColor;
 }
 bool Player::get_heartbeat() {
 	return heartbeat;
