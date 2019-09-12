@@ -32,14 +32,24 @@ sleep 1
 
 say "A new team-selection mode was added, to signal that players may switch teams"
 Thread.new do
-	6.times do |i| $pl.team = i+1; sleep 4; end
+	5.times do |i| $pl.team = i+1; sleep 4; end
 end
 say "This mode relies on a much more flexible library of effects, making such patterns easy to add"
 
-$pl.brightness = 2;
-say "Normal brightness, shot light behavior, hit and kill flashing have also been updated"
-$pl.hit()
+$pl.brightness = 3;
+say "A few other things have been optimized, such as shot effects:"
+sleep 4
+say "Being hit"
+$pl.hit(1.5);
+sleep 3;
+say "Or killed"
+$pl.dead = true;
+$pl.hit(2);
+sleep 5
+$pl.dead = false;
+say "Or being marked"
+$pl.marked = 0xBB6666;
 
 sleep 5
 
-say "Good day."
+say "Thank you for watching"

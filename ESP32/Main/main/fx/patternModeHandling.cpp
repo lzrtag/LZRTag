@@ -36,7 +36,7 @@ void switch_to_mode(pattern_mode_t pMode) {
 
 		ip.pattern_func = FX::pattern_func_t::TRAPEZ;
 		ip.pattern_period = 255*(VEST_LEDS);
-		ip.pattern_p2_length = ip.pattern_period;
+		ip.pattern_p2_length = ip.pattern_period - 255;
 
 		ip.pattern_p1_length = 2*255;
 		ip.pattern_trap_percent = 0.5 * (1<<16);
