@@ -25,7 +25,7 @@ private:
 	int brightness;
 
 	bool isMarked;
-	uint32_t markerColor;
+	Peripheral::Color markerColor;
 
 	bool heartbeat;
 
@@ -54,7 +54,7 @@ public:
 	pattern_mode_t get_brightness();
 
 	bool 		is_marked();
-	uint32_t 	get_marked_color();
+	Peripheral::Color get_marked_color();
 
 	bool get_heartbeat();
 
