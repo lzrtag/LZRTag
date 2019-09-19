@@ -37,18 +37,19 @@ private:
 
 public:
 	time_func_t time_func;
-	int32_t timefunc_period;
-	int32_t timefunc_p1_period;
+	int32_t timefunc_period;		// Total period after which the time func repeats
+	int32_t timefunc_p1_period;	// First-segment period, either the length of the trapez, linear section,
+											// or sine-wave
 	int32_t timefunc_trap_percent;
 	int32_t timefunc_shift;
 
 	pattern_func_t pattern_func;
-	int32_t sine_center;
-	int32_t sine_amplitude;
+	int32_t sine_center;				// Center value of the "sine" pattern
+	int32_t sine_amplitude;			// Amplitude of the "sine" pattern
 
-	int32_t 	pattern_period;
-	int32_t 	pattern_p1_length;
-	int32_t		pattern_p2_length;
+	int32_t 	pattern_period;		// Period after which the pattern repeats
+	int32_t 	pattern_p1_length;		// P1 length, i.e. length of the trapez or sine wave
+	int32_t		pattern_p2_length;	// Movement length, i.e. the x-coordinate amplitude of the time function
 	uint16_t 	pattern_trap_percent;
 	int32_t		pattern_shift;
 
