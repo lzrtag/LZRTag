@@ -195,7 +195,8 @@ void housekeeping_thread(void *args) {
 	while(true) {
 		take_battery_measurement();
 
-		send_ping_req();
+		if(!mqtt.is_disconnected())
+			send_ping_req();
 
 		vTaskDelayUntil(&nextTick, 1800);
 	}
@@ -242,6 +243,7 @@ void setup() {
     }
     else {
     	player.init();
+
         vTaskDelay(3*600);
         LZR::FX::target_mode = LZR::PLAYER_DECIDED;
 
