@@ -12,8 +12,9 @@
 namespace LZR {
 namespace FX {
 
-ShotFlicker::ShotFlicker(int length) :
-		BasePattern(), anim(length) {
+ShotFlicker::ShotFlicker(float length, int points) :
+		BasePattern(), anim(points),
+		maxLen(length), pointCount(points) {
 
 	anim.baseTug   = 0.0013;
 	anim.basePoint = 0.0;
@@ -29,7 +30,8 @@ void ShotFlicker::tick() {
 }
 void ShotFlicker::apply_color_at(Peripheral::Color &tgt, float index) {
 	Peripheral::Color shotColor = bufferedColors.vestShotEnergy;
-	shotColor.bMod(anim.scalarPoints[index]);
+
+	shotColor.bMod(anim.scalarPoints[(index/maxLen) * pointCount]);
 	tgt.merge_add(shotColor);
 }
 
