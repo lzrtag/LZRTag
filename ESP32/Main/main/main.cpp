@@ -43,13 +43,19 @@ void app_main()
     tcpip_adapter_init();
 
     esp_event_loop_init(event_handler, 0);
+    Xasin::MQTT::Handler::start_wifi("TP-LINK_84CDC2\0", "f36eebda48\0");
+
     LZR::audioManager.volumeMod = 200;
 
     LZR::setup();
     Xasin::MQTT::Handler::start_wifi("Lasertag\0", "\0");
 
+    LZR::FX::target_mode = LZR::BATTERY_LEVEL;
+    vTaskDelay(3*600);
+    LZR::FX::target_mode = LZR::PLAYER_DECIDED;
+
     while(true) {
-    	vTaskDelay(10*600);
+		 vTaskDelay(10*600);
     }
 
     fflush(stdout);

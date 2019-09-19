@@ -38,6 +38,7 @@ enum pattern_mode_t : uint16_t {
 	OFF,
 	BATTERY_LEVEL,
 	CHARGE,
+	
 	CONNECTING,
 
 	PLAYER_DECIDED,

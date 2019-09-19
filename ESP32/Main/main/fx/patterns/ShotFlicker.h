@@ -19,7 +19,10 @@ private:
 	ManeAnimator anim;
 
 public:
-	ShotFlicker(int length);
+	const float maxLen;
+	const int   pointCount;
+
+	ShotFlicker(float length, int points);
 
 	void tick();
 

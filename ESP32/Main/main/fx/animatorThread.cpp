@@ -34,14 +34,17 @@ ColorSet bufferedColors = currentColors;
 FXSet 	currentFX = brightnessLevels[0];
 FXSet 	bufferedFX = currentFX;
 
-auto vestShotPattern = FX::ShotFlicker(VEST_LEDS);
+auto vestShotPattern = FX::ShotFlicker(VEST_LEDS, VEST_LEDS);
 auto vestHitMarker 	 = FX::VestPattern();
 auto vestDeathMarker = FX::VestPattern();
+
+auto vestMarkedMarker = FX::VestPattern();
 
 std::vector<FX::BasePattern*> vestPatterns = {
 		&vestShotPattern,
 		&vestHitMarker,
 		&vestDeathMarker,
+		&vestMarkedMarker,
 };
 
 void set_bat_pwr(uint8_t level, uint8_t brightness = 255) {
@@ -76,6 +79,19 @@ void setup_vest_patterns() {
 
 	vestDeathMarker.timefunc_period = 0.2*600;
 	vestDeathMarker.timefunc_p1_period = 0.2*600;
+
+	vestMarkedMarker.pattern_func = FX::pattern_func_t::TRAPEZ;
+	vestMarkedMarker.pattern_period = 255 * (VEST_LEDS);
+	vestMarkedMarker.pattern_p2_length = vestMarkedMarker.pattern_period - 255;
+
+	vestMarkedMarker.pattern_p1_length = 2 * 255;
+	vestMarkedMarker.pattern_trap_percent = 0.5 * (1 << 16);
+
+	vestMarkedMarker.time_func = FX::time_func_t::TRAPEZ;
+	vestMarkedMarker.timefunc_p1_period = 600 * 1.6;
+	vestMarkedMarker.timefunc_period = vestMarkedMarker.timefunc_p1_period;
+	vestMarkedMarker.timefunc_trap_percent = 0.9 * (1 << 16);
+
 }
 
 void status_led_tick() {
@@ -180,6 +196,10 @@ void vest_tick() {
 	vestHitMarker.enabled = player.is_hit() && !player.is_dead();
 	vestDeathMarker.enabled = player.is_hit() && player.is_dead();
 
+	vestMarkedMarker.enabled = player.is_marked();
+	vestMarkedMarker.overlayColor = player.get_marked_color();
+	vestMarkedMarker.overlayColor.alpha = 100;
+
 	/////////////////////////////////////
 	// Vest shot flaring & wave animation
 	/////////////////////////////////////
@@ -202,6 +222,7 @@ void animation_thread(void *args) {
 			currentColors = teamColors[player.get_team()];
 			currentFX = brightnessLevels[player.get_brightness()];
 
+			vest_tick();
 			vibr_motor_tick();
 		}
 		else // Disable vibration motor
