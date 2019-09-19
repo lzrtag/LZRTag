@@ -41,6 +41,8 @@ extern Lasertag::GunHandler	gunHandler;
 
 void setup();
 
+uint8_t read_nav_switch();
+
 }
 
 #endif /* MAIN_SETUP_H_ */
