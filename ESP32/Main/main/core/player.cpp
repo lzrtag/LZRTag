@@ -42,10 +42,12 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 		}
 		else if(data.topic == "FX/Marked") {
 			isMarked = (data.data.length() != 0);
-			markerColor = atoi(data.data.data());
+			uint32_t markerCode = atoi(data.data.data());
 
 			if(markerColor < 8)
-				markerColor = LZR::teamColors[markerColor].vestShotEnergy.getPrintable();
+				markerColor = LZR::teamColors[markerCode].vestShotEnergy;
+			else
+				markerColor = markerCode;
 		}
 		else if(data.topic == "FX/Heartbeat")
 			heartbeat = (data.data == "1");
