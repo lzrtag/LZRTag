@@ -258,4 +258,24 @@ void setup() {
 
 	ESP_LOGI("LZR::Core", "Init finished");
 }
+
+uint8_t read_nav_switch() {
+	uint8_t outVal = 0;
+
+	if(!gpio_get_level(PIN_CTRL_DOWN))
+		outVal = 1;
+	else {
+		gpio_set_level(PIN_CTRL_DOWN, false);
+
+		if(!gpio_get_level(PIN_CTRL_FWD))
+			outVal = 2;
+		if(!gpio_get_level(PIN_CTRL_BACK))
+			outVal = 3;
+	}
+
+
+	gpio_set_level(PIN_CTRL_DOWN, true);
+	return outVal;
+}
+
 }
