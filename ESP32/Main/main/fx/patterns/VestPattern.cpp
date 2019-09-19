@@ -84,13 +84,16 @@ uint16_t VestPattern::get_timefunc_shifted(int32_t ticks) {
 }
 
 uint16_t VestPattern::get_patternfunc_at(float pos) {
-	int32_t bitPos = ((1<<8)-1) * pos + pattern_shift;
+	int32_t bitPos = 255.0 * pos + pattern_shift;
 
 	switch(pattern_func) {
 	default: return 0;
 
 	case pattern_func_t::SINE: {
-		int32_t sVal = sine_center + sine_amplitude * sin(2*M_PI*(bitPos + (pattern_period  * get_timefunc_shifted(0))/int32_t(1<<16))/float(pattern_p1_length));
+		float patternPos = bitPos + pattern_period * get_timefunc_shifted(0)/float(1<<16);
+		patternPos /= pattern_p1_length;
+		int32_t sVal = sine_center + sine_amplitude * sin(2*M_PI*patternPos);
+
 		if(sVal < 0)
 			return 0;
 		if(sVal > ((1<<16) -1))
@@ -100,8 +103,10 @@ uint16_t VestPattern::get_patternfunc_at(float pos) {
 
 	case pattern_func_t::TRAPEZ:
 		bitPos += pattern_p1_length/2 - ((pattern_p2_length*get_timefunc_shifted(0))>>16);
-		if(pattern_period == 0)
+
+		if(pattern_period != 0)
 			bitPos %= pattern_period;
+
 		if(bitPos < 0)
 			bitPos += pattern_period;
 		bitPos  = (bitPos<<16) / pattern_p1_length;
