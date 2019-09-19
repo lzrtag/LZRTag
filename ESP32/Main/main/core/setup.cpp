@@ -191,18 +191,25 @@ void send_ping_req() {
 }
 
 void housekeeping_thread(void *args) {
-	TickType_t nextTick;
+	TickType_t nextHWTick = xTaskGetTickCount();
 
 	if(!gpio_get_level(PIN_BAT_CHGING))
 		main_weapon_status = CHARGING;
 
 	while(true) {
-		take_battery_measurement();
+		if(xTaskGetTickCount() > nextHWTick) {
+			take_battery_measurement();
+
+			if(!mqtt.is_disconnected())
+				send_ping_req();
+
+			nextHWTick += 1800;
+		}
 
 		if(!mqtt.is_disconnected())
 			send_ping_req();
 
-		vTaskDelayUntil(&nextTick, 1800);
+		vTaskDelay(30);
 	}
 }
 
