@@ -180,7 +180,9 @@ void mode_tick() {
 		break;
 
 	case CHARGE:
-		modePatterns[0].overlayColor = Color::HSV(120*LZR::battery.current_capacity() / 100.0, 200, 50);
+		modePatterns[0].overlayColor = Color::HSV(120*LZR::battery.current_capacity() / 100.0, 200, 35);
+		if(!LZR::battery.is_charging)
+			RGBController.colors.fill(Color(Material::GREEN, 20), 1, -1);
 	break;
 
 	case IDLE:
