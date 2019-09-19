@@ -54,6 +54,7 @@ void app_main()
     LZR::FX::target_mode = LZR::PLAYER_DECIDED;
 
     while(true) {
+		 vTaskDelay(10*600);
     }
 
     fflush(stdout);
