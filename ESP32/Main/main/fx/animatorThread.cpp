@@ -24,6 +24,8 @@
 #include "patterns/ShotFlicker.h"
 #include "patterns/VestPattern.h"
 
+#include "esp_log.h"
+
 namespace LZR {
 
 using namespace Peripheral;
@@ -222,7 +224,6 @@ void animation_thread(void *args) {
 			currentColors = teamColors[player.get_team()];
 			currentFX = brightnessLevels[player.get_brightness()];
 
-			vest_tick();
 			vibr_motor_tick();
 		}
 		else // Disable vibration motor
