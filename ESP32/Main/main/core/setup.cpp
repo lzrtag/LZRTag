@@ -190,6 +190,28 @@ void send_ping_req() {
 	mqtt.publish_to(player.get_topic_base() + "/System/Ping", &outData, 4, 0);
 }
 
+int old_switch_position = 255;
+int nav_switch_debounce = 0;
+void navswitch_tick() {
+	uint8_t nSwitch = LZR::read_nav_switch();
+
+	if(old_switch_position != nSwitch)
+		nav_switch_debounce++;
+	else
+		nav_switch_debounce = 0;
+
+	if(nav_switch_debounce >= 2) {
+		old_switch_position = nSwitch;
+		nav_switch_debounce = 0;
+
+		if((!LZR::mqtt.is_disconnected()) && (old_switch_position != 0)) {
+			uint8_t dataBuffer = '0' + old_switch_position;
+
+			mqtt.publish_to(LZR::player.get_topic_base() + "NSwitch", &dataBuffer, 1, 0, 2);
+		}
+	}
+}
+
 void housekeeping_thread(void *args) {
 	TickType_t nextHWTick = xTaskGetTickCount();
 
@@ -206,8 +228,7 @@ void housekeeping_thread(void *args) {
 			nextHWTick += 1800;
 		}
 
-		if(!mqtt.is_disconnected())
-			send_ping_req();
+		navswitch_tick();
 
 		vTaskDelay(30);
 	}
