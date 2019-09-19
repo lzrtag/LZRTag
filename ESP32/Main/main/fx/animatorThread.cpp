@@ -34,7 +34,7 @@ ColorSet bufferedColors = currentColors;
 FXSet 	currentFX = brightnessLevels[0];
 FXSet 	bufferedFX = currentFX;
 
-auto vestShotPattern = FX::ShotFlicker(VEST_LEDS);
+auto vestShotPattern = FX::ShotFlicker(VEST_LEDS, VEST_LEDS);
 auto vestHitMarker 	 = FX::VestPattern();
 auto vestDeathMarker = FX::VestPattern();
 
