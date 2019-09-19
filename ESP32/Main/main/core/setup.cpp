@@ -139,8 +139,19 @@ void take_battery_measurement() {
 	battery.set_voltage(battery_avg / battery_samples.size());
 	battery.is_charging = !gpio_get_level(PIN_BAT_CHGING);
 
-	if(battery.current_capacity() < 5 && !battery.is_charging)
+	// Small debounce for battery percentage
+	auto bMin = 5;
+	if(main_weapon_status == NOMINAL)
+		bMin = 1;
+	if(battery.current_capacity() < bMin && !battery.is_charging) {
+		if(main_weapon_status == NOMINAL) {
+			ESP_LOGE("LZR::Core", "Battery critically low, shutting down!");
+			vTaskDelay(3);
+			esp_restart();
+		}
+
 		main_weapon_status = DISCHARGED;
+	}
 
 	if(xTaskGetTickCount() > (30*600 + lastBatteryUpdate)) {
 		ESP_LOGI("LZR::Core", "%sBattery level: %s%d",
@@ -184,10 +195,19 @@ void housekeeping_thread(void *args) {
 	while(true) {
 		take_battery_measurement();
 
-		send_ping_req();
+		if(!mqtt.is_disconnected())
+			send_ping_req();
 
 		vTaskDelayUntil(&nextTick, 1800);
 	}
+}
+
+void shutdown_system() {
+	LZR::FX::target_mode = LZR::OFF;
+	vTaskDelay(100);
+
+	esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
+	esp_deep_sleep_start();
 }
 
 void setup() {
@@ -199,24 +219,39 @@ void setup() {
 	setup_adc();
 	set_ledc();
 
-	setup_ping_req();
+	IR::init();
 
 	xTaskCreate(housekeeping_thread, "Housekeeping", 2*1024, nullptr, 10, nullptr);
 
-	vTaskDelay(10);
-
-	IR::init();
 	setup_audio();
-
-	player.init();
-
-	vTaskDelay(10);
 
 	start_animation_thread();
 
-	if(main_weapon_status == INITIALIZING)
-		main_weapon_status = NOMINAL;
+    LZR::FX::target_mode = LZR::BATTERY_LEVEL;
+    vTaskDelay(200);
 
-	puts("Initialisation finished!");
+    if(main_weapon_status == DISCHARGED) {
+    	ESP_LOGE("LZR::Core", "Battery low, sleeping!");
+
+    	vTaskDelay(3*600);
+    	shutdown_system();
+    }
+    else if(main_weapon_status == CHARGING) {
+    	ESP_LOGI("LZR::Core", "Charging detected, entering CHG mode");
+
+    	LZR::FX::target_mode = LZR::CHARGE;
+    }
+    else {
+    	player.init();
+
+        vTaskDelay(3*600);
+        LZR::FX::target_mode = LZR::PLAYER_DECIDED;
+
+    	setup_ping_req();
+
+    	main_weapon_status = NOMINAL;
+    }
+
+	ESP_LOGI("LZR::Core", "Init finished");
 }
 }

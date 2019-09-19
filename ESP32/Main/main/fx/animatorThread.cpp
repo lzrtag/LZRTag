@@ -225,10 +225,10 @@ void animation_thread(void *args) {
 			vest_tick();
 			vibr_motor_tick();
 		}
-		else {
-			RGBController.colors.fill(0);
+		else // Disable vibration motor
 			gpio_set_level(PIN_VBRT, false);
-		}
+
+		vest_tick();
 
 		Color newMuzzleColor = RGBController.colors[0];
 		Color actualMuzzle = Color();

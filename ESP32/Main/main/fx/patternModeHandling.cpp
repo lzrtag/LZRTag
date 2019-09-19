@@ -48,6 +48,17 @@ void switch_to_mode(pattern_mode_t pMode) {
 	break;
 	}
 
+	case CHARGE: {
+		switch_to_mode(IDLE);
+
+		auto &ip = modePatterns[0];
+		ip.pattern_p1_length = 1.5*255;
+
+		ip.timefunc_p1_period = 10*600;
+		ip.timefunc_period = ip.timefunc_p1_period;
+	break;
+	}
+
 	case IDLE: {
 		modePatterns.emplace_back();
 		auto &ip = modePatterns[0];
@@ -167,6 +178,12 @@ void mode_tick() {
 	case PATTERN_MODE_MAX:
 	case PLAYER_DECIDED:
 		break;
+
+	case CHARGE:
+		modePatterns[0].overlayColor = Color::HSV(120*LZR::battery.current_capacity() / 100.0, 200, 35);
+		if(!LZR::battery.is_charging)
+			RGBController.colors.fill(Color(Material::GREEN, 20), 1, -1);
+	break;
 
 	case IDLE:
 		modePatterns[0].overlayColor = Color(0x333333);
