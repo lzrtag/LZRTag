@@ -31,6 +31,11 @@ void ShotFlicker::tick() {
 void ShotFlicker::apply_color_at(Peripheral::Color &tgt, float index) {
 	Peripheral::Color shotColor = bufferedColors.vestShotEnergy;
 
+	if(index < 0)
+		index = 0;
+	if(index > maxLen)
+		index = maxLen;
+
 	shotColor.bMod(anim.scalarPoints[(index/maxLen) * pointCount]);
 	tgt.merge_add(shotColor);
 }

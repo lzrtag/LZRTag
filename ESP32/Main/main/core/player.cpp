@@ -44,7 +44,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			isMarked = (data.data.length() != 0);
 			uint32_t markerCode = atoi(data.data.data());
 
-			if(markerColor < 8)
+			if(markerCode < 8)
 				markerColor = LZR::teamColors[markerCode].vestShotEnergy;
 			else
 				markerColor = markerCode;
@@ -119,7 +119,7 @@ pattern_mode_t Player::get_brightness() {
 bool Player::is_marked() {
 	return isMarked;
 }
-uint32_t Player::get_marked_color() {
+Peripheral::Color Player::get_marked_color() {
 	return markerColor;
 }
 bool Player::get_heartbeat() {
