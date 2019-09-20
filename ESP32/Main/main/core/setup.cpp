@@ -207,7 +207,7 @@ void navswitch_tick() {
 		if((!LZR::mqtt.is_disconnected()) && (old_switch_position != 0)) {
 			uint8_t dataBuffer = '0' + old_switch_position;
 
-			mqtt.publish_to(LZR::player.get_topic_base() + "NSwitch", &dataBuffer, 1, 0, 2);
+			mqtt.publish_to(LZR::player.get_topic_base() + "/NSwitch", &dataBuffer, 1, 0, 2);
 		}
 	}
 }
