@@ -40,12 +40,7 @@ DebugHook.on :playerEnteredZone do |player, entered|
 	end
 end
 
-$mqtt = MQTT::SubHandler.new("192.168.251.1");
-
-$myMapsData    = LZRTag::Map::MyMapsParser.new("Rainbow Road.kml");
-$rainbowMapSet = LZRTag::Map::Set.new($mqtt, $myMapsData.generate_zones());
-$rainbowMapSet.centerpoint = [9.716822475785307, 52.38715890804035, 0];
-#$rainbowMapSet.publish();
+$mqtt = MQTT::SubHandler.new("192.168.6.111");
 
 $handler = LZRTag.Handler.new($mqtt);
 
@@ -61,7 +56,18 @@ cfg.fireConfig = {
 
 $handler.add_hook(cfg);
 
-sleep 4
+$handler.add_hook(LZRTag::Hook::TeamSelector);
+
+loop do
+	sleep 1;
+
+	plRemaining = false;
+	$handler.each do |pl|
+		plRemaining = true if pl.brightness == 1;
+	end
+
+	break unless plRemaining;
+end
 
 $handler.start_game(LZRTag::Game::Base.new($handler));
 
