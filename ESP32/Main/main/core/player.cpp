@@ -15,15 +15,30 @@
 namespace LZR {
 
 Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
-	ID(3),
-	team(4), brightness(2),
+	ID(0),
+	team(0), brightness(0),
 	isMarked(false),
 	markerColor(0),
 	heartbeat(false),
 	name(""),
 	deadUntil(0), hitUntil(0),
 	currentGun(2), shotLocked(0),
-	mqtt(mqtt), deviceID(devID) {
+	deviceID(devID),
+	mqtt(mqtt) {
+
+	if(deviceID == "") {
+			uint8_t smacc[6] = {};
+
+			char macStr[14] = {};
+
+			esp_read_mac(smacc, ESP_MAC_WIFI_STA);
+
+			sprintf(macStr, "%02X.%02X.%02X.%02X.%02X.%02X",
+				smacc[0], smacc[1], smacc[2],
+			 	smacc[3], smacc[4], smacc[5]);
+
+			deviceID = macStr;
+		}
 
 	mqtt.subscribe_to("Lasertag/Players/" + deviceID + "/#",
 			[this](Xasin::MQTT::MQTT_Packet data) {
@@ -90,6 +105,9 @@ std::string Player::get_topic_base() {
 	return "Lasertag/Players/" + deviceID;
 }
 
+std::string Player::get_device_id() {
+	return deviceID;
+}
 int Player::get_id() {
 	return ID;
 }
