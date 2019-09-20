@@ -40,6 +40,8 @@ module LZRTag
 
 				@battery = 0; @ping = 0; @heap = 0;
 
+				@BrightnessMap = [:idle, :teamSelect, :dead, :active];
+
 				# These values are configured for a DPS ~1, equal to all weapons
 				# Including reload timings and other penalties
 				@GunDamageMultipliers = [
@@ -114,8 +116,9 @@ module LZRTag
 				@team;
 			end
 			def brightness=(n)
-				n = n.to_i;
-				raise ArgumentError, "Brightness out of range (must be between 0 and 7)" unless n <= 7 and n >= 0;
+				raise ArgumentError, "Brightness must be nil or a valid symbol!" unless n.nil or @BrightnessMap.include? n;
+				n = @BrightnessMap.find_index(n) if n.is_a? Symbol
+
 				return if @brightness == n;
 
 				@brightness = n;
