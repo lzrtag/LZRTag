@@ -59,6 +59,29 @@ module LZRTag
 			end
 		end
 
+		class TeamSelector < Base
+			def initialize(possibleTeams: [1, 2, 3, 4])
+				super();
+
+				@possibleTeams = possibleTeams;
+			end
+
+			on :playerConnected do |pl|
+				pl.brightness = 1;
+			end
+
+			on :navSwitchPressed do |player, dir|
+				newTeam = @possibleTeams.find_index(player.team) || 0;
+
+				newTeam += 1 if(dir == 2)
+				newTeam -= 1 if(dir == 3)
+
+				player.team = @possibleTeams[newTeam % @possibleTeams.length]
+
+				player.brightness = 3 if(dir == 1)
+			end
+		end
+
 		class Regenerator < Base
 			def initialize(regRate: 1, regDelay: 10, healDead: false, autoReviveThreshold: 30)
 				super();

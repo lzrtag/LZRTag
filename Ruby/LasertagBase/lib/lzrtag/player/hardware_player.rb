@@ -80,6 +80,8 @@ module LZRTag
 						@position = JSON.parse(data, symbolize_names: true);
 					rescue
 					end
+				when "NSwitch"
+					@handler.send_event(:navSwitchPressed, self, data.to_i)
 				when "ZoneUpdate"
 					begin
 						data = JSON.parse(data, symbolize_names: true);
