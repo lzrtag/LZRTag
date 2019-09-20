@@ -205,7 +205,7 @@ void GunHandler::tick() {
 			int32_t currentAmmo;
 			int32_t maxAmmo;
 		} ammoData = {cGun().currentAmmo, cGun().maxAmmo};
-		LZR::mqtt.publish_to("Lasertag/Players/"+LZR::player.deviceID+"/Ammo", &ammoData, sizeof(ammoData), 0, true);
+		LZR::mqtt.publish_to(LZR::player.get_topic_base() +"/Ammo", &ammoData, sizeof(ammoData), 0, true);
 
 		mqttAmmo = cGun().currentAmmo;
 		lastMQTTPush = xTaskGetTickCount();

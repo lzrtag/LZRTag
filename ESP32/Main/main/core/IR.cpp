@@ -51,7 +51,7 @@ void send_hit_event(uint8_t pID, uint8_t arbCode) {
 
 	cJSON_AddStringToObject(output, "type", "hit");
 	cJSON_AddNumberToObject(output, "shooterID", pID);
-	cJSON_AddStringToObject(output, "target", player.deviceID.data());
+	cJSON_AddStringToObject(output, "target", player.get_device_id().data());
 	cJSON_AddNumberToObject(output, "arbCode", arbCode);
 
 	char outStr[100] = {};
