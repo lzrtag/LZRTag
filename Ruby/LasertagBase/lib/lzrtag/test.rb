@@ -61,12 +61,9 @@ $handler.add_hook(LZRTag::Hook::TeamSelector);
 loop do
 	sleep 1;
 
-	plRemaining = false;
-	$handler.each do |pl|
-		plRemaining = true if pl.brightness == :teamSelect;
-	end
+	puts "Brightness levels: #{$handler.brightnessCount}"
 
-	break unless plRemaining;
+	break if $handler.brightnessCount[:teamSelect] == 0;
 end
 
 puts "All players ready - starting!"
