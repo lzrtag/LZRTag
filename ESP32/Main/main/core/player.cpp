@@ -84,13 +84,13 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 		}
 		else if(data.topic == "FX/Hit")
 			hitUntil = xTaskGetTickCount() + atof(data.data.data())*600;
-	});
+	}, 1);
 }
 
 void Player::init() {
     Xasin::MQTT::Handler::start_wifi("TP-LINK_84CDC2\0", "f36eebda48\0");
 
-	mqtt.start("mqtt://192.168.6.111", get_topic_base() + "/Connection");
+	mqtt.start("mqtt://192.168.178.50", get_topic_base() + "/Connection");
 	mqtt.set_status("OK");
 }
 
