@@ -26,10 +26,10 @@ module LZRTag
 				super(evtName, data);
 
 				case evtName
-				when :playerConnected
+				when :playerRegistered
 					@teamCount[data[0].team] += 1;
 					@brightnessCount[data[0].brightness] += 1;
-				when :playerDisconnected
+				when :playerUnregistered
 					@teamCount[data[0].team] -= 1;
 					@brightnessCount[data[0].brightness] -= 1;
 				when :playerTeamChanged
