@@ -85,11 +85,11 @@ void switch_to_mode(pattern_mode_t pMode) {
 			modePatterns.emplace_back();
 			auto &iP = modePatterns[i];
 
-			iP.overlayColor = Color::HSV(120 * i);
-			iP.overlayColor.alpha = 70;
+			iP.overlayColor = Color::HSV(120 * i, 255, 95);
+			iP.overlayColor.alpha = 255;
 
 			iP.pattern_func = FX::pattern_func_t::TRAPEZ;
-			iP.pattern_p1_length = 3.5*255;
+			iP.pattern_p1_length = 2.5*255;
 			iP.pattern_period = 255*(VEST_LEDS + 4);
 			iP.pattern_trap_percent = (1<<16) * 0.5;
 
@@ -98,12 +98,10 @@ void switch_to_mode(pattern_mode_t pMode) {
 			iP.pattern_trap_percent = 0.6*(1<<16);
 
 			iP.time_func = FX::time_func_t::LINEAR;
-			iP.timefunc_p1_period = 2*600;
+			iP.timefunc_p1_period = 0.75*600;
 			iP.timefunc_period = 5*600;
 
-			iP.timefunc_shift = (2-i)*600*0.5;
-
-			iP.overlay = false;
+			iP.timefunc_shift = (2-i)*600*0.2;
 		}
 	break;
 

@@ -156,8 +156,8 @@ void vest_tick() {
 	// Vest color fading
 	////////////////////
 	COLOR_FADE(muzzleFlash, 13);
-	COLOR_FADE(muzzleHeat,  6);
-	COLOR_FADE(vestBase, 	4);
+	COLOR_FADE(muzzleHeat,  10);
+	COLOR_FADE(vestBase, 	6);
 	COLOR_FADE(vestShotEnergy, 10);
 
 	FX_FADE(minBaseGlow, 0.02);

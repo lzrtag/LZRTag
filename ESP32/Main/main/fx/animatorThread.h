@@ -43,6 +43,8 @@ enum pattern_mode_t : uint16_t {
 
 	PLAYER_DECIDED,
 
+	// NOTE: The Ruby-side brightness keys must be updated
+	// whenever modes in here were added or removed!
 	IDLE,
 	TEAM_SELECT,
 	DEAD,
