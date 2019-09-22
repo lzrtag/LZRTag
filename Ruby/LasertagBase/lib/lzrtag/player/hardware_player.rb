@@ -124,7 +124,7 @@ module LZRTag
 				raise ArgumentError, "Brightness must be a valid symbol!" unless @BrightnessMap.include? n;
 
 				return if @brightness == n;
-				oldB = n;
+				oldB = @brightness;
 				@brightness = n;
 
 				n = @BrightnessMap.find_index(n)
