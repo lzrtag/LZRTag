@@ -66,11 +66,13 @@ module LZRTag
 				@possibleTeams = possibleTeams;
 			end
 
-			on :playerConnected do |pl|
-				pl.brightness = 1;
+			on :playerRegistered do |pl|
+				pl.brightness = :teamSelect;
 			end
 
 			on :navSwitchPressed do |player, dir|
+				next if player.brightness == :active
+
 				newTeam = @possibleTeams.find_index(player.team) || 0;
 
 				newTeam += 1 if(dir == 2)
@@ -78,7 +80,7 @@ module LZRTag
 
 				player.team = @possibleTeams[newTeam % @possibleTeams.length]
 
-				player.brightness = 3 if(dir == 1)
+				player.brightness = :active if(dir == 1)
 			end
 		end
 
