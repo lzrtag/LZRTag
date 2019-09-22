@@ -40,7 +40,7 @@ DebugHook.on :playerEnteredZone do |player, entered|
 	end
 end
 
-$mqtt = MQTT::SubHandler.new("192.168.6.111");
+$mqtt = MQTT::SubHandler.new("192.168.178.50");
 
 $handler = LZRTag.Handler.new($mqtt);
 
@@ -63,11 +63,13 @@ loop do
 
 	plRemaining = false;
 	$handler.each do |pl|
-		plRemaining = true if pl.brightness == 1;
+		plRemaining = true if pl.brightness == :teamSelect;
 	end
 
 	break unless plRemaining;
 end
+
+puts "All players ready - starting!"
 
 $handler.start_game(LZRTag::Game::Base.new($handler));
 

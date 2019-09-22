@@ -53,7 +53,7 @@ module LZRTag
 				end
 			end
 
-			on :playerConnected do |player|
+			on :playerRegistered do |player|
 				puts "Reassigning player: #{player}"
 				reassignTeam(player);
 			end
