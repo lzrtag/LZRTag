@@ -20,13 +20,17 @@ module LZRTag
 
 			attr_reader :battery, :ping, :heap
 
-			attr_reader :fireConfig, :hitConfig
+			attr_reader :fireConfig, :hitConfig;
+
+			def self.getBrightnessKeys()
+				return [:idle, :teamSelect, :dead, :active]
+			end
 
 			def initialize(*data)
 				super(*data);
 
 				@team = 0;
-				@brightness = 0;
+				@brightness = :idle;
 
 				@dead = false;
 				@deathChangeTime = Time.now();
@@ -39,6 +43,8 @@ module LZRTag
 				@zoneIDs  = Hash.new();
 
 				@battery = 0; @ping = 0; @heap = 0;
+
+				@BrightnessMap = self.class.getBrightnessKeys();
 
 				# These values are configured for a DPS ~1, equal to all weapons
 				# Including reload timings and other penalties
@@ -111,15 +117,20 @@ module LZRTag
 
 				_pub_to "Team", @team, retain: true;
 				@handler.send_event :playerTeamChanged, self, oldT;
+
 				@team;
 			end
 			def brightness=(n)
-				n = n.to_i;
-				raise ArgumentError, "Brightness out of range (must be between 0 and 7)" unless n <= 7 and n >= 0;
-				return if @brightness == n;
+				raise ArgumentError, "Brightness must be a valid symbol!" unless @BrightnessMap.include? n;
 
+				return if @brightness == n;
+				oldB = @brightness;
 				@brightness = n;
-				_pub_to "FX/Brightness", @brightness, retain: true;
+
+				n = @BrightnessMap.find_index(n)
+
+				_pub_to "FX/Brightness", n, retain: true;
+				@handler.send_event :playerBrightnessChanged, self, oldB;
 
 				@brightness;
 			end
