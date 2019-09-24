@@ -175,9 +175,10 @@ void vest_tick() {
 	////////////////////
 	// Muzzle flash for shots
 	////////////////////
-	if(gunHandler.was_shot_tick())
-		newMuzzleColor.merge_overlay(bufferedColors.muzzleFlash);
-	RGBController.colors[0] = newMuzzleColor;
+	if(Sounds::note_until > xTaskGetTickCount())
+		RGBController.colors[0].merge_overlay(Color::HSV(Sounds::suggested_hue, 255, fmin(Sounds::volume*500, 254)), 60);
+	else
+		RGBController.colors[0].merge_overlay(0, 40);
 
 	////////////////////
 	// Generation of vest base color + heatup
@@ -239,6 +240,7 @@ void animation_thread(void *args) {
 		RGBController.colors[0] = actualMuzzle;
 
 		RGBController.update();
+		RGBController.colors[0] = newMuzzleColor;
 
 		vTaskDelay(10);
 	}

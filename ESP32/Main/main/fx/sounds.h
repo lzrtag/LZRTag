@@ -13,6 +13,10 @@
 namespace LZR {
 namespace Sounds {
 
+extern volatile uint32_t note_until;
+extern volatile float 	 volume;
+extern volatile uint32_t suggested_hue;
+
 void play_audio(std::string aName);
 void init();
 

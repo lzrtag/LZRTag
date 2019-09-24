@@ -187,6 +187,10 @@ module LZRTag
 				@hitConfig.hash = h;
 			end
 
+			def play_midi(note, volume, duration, hue)
+				_pub_to("MIDI", [note, volume, duration, hue].pack("LLLL"));
+			end
+
 			def clear_all_topics()
 				super();
 

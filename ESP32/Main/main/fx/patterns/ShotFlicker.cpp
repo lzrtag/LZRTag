@@ -9,6 +9,8 @@
 #include "../animatorThread.h"
 #include "ShotFlicker.h"
 
+#include "../sounds.h"
+
 namespace LZR {
 namespace FX {
 
@@ -26,10 +28,13 @@ ShotFlicker::ShotFlicker(float length, int points) :
 void ShotFlicker::tick() {
 	if(gunHandler.was_shot_tick())
 		anim.points[0].pos = 1;
+	if(Sounds::note_until > xTaskGetTickCount())
+		anim.points[0].pos = Sounds::volume;
+
 	anim.tick();
 }
 void ShotFlicker::apply_color_at(Peripheral::Color &tgt, float index) {
-	Peripheral::Color shotColor = bufferedColors.vestShotEnergy;
+	Peripheral::Color shotColor = Color::HSV(Sounds::suggested_hue);
 
 	if(index < 0)
 		index = 0;

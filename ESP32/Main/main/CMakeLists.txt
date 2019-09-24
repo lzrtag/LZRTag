@@ -1,4 +1,5 @@
-set(COMPONENT_SRCS "main.cpp")
-set(COMPONENT_ADD_INCLUDEDIRS "")
 
-register_component()
+set(EXTRA_COMPONENT_DIRS "/home/xasin/XasWorks/XasCode/ESP32")
+
+idf_component_register(SRCS "main.cpp"
+                    INCLUDE_DIRS ".")

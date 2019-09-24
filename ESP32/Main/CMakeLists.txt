@@ -3,5 +3,8 @@
 
 cmake_minimum_required(VERSION 3.5)
 
+set(EXTRA_COMPONENT_DIRS "/home/xasin/XasWorks/XasCode/ESP32/")
+
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+
 project(LZRTag_Main)

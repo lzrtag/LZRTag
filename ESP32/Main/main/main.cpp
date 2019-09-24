@@ -48,6 +48,8 @@ void app_main()
 
     LZR::setup();
 
+    LZR::FX::target_mode = LZR::OFF;
+
     while(true) {
 		 vTaskDelay(10*600);
     }
