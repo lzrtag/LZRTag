@@ -15,7 +15,6 @@
 #include "driver/ledc.h"
 
 #include <array>
-#include <cmath>
 
 #include "esp_log.h"
 
