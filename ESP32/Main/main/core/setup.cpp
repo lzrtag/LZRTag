@@ -24,7 +24,8 @@ CORE_WEAPON_STATUS main_weapon_status = INITIALIZING;
 Housekeeping::BatteryManager battery = Housekeeping::BatteryManager();
 
 Xasin::Peripheral::AudioHandler  audioManager = Xasin::Peripheral::AudioHandler();
-Peripheral::NeoController RGBController = Peripheral::NeoController(PIN_WS2812_OUT, RMT_CHANNEL_0, WS2812_NUMBER);
+Peripheral::NeoController 	RGBController = Peripheral::NeoController(PIN_WS2812_OUT, RMT_CHANNEL_0, WS2812_NUMBER);
+Xasin::I2C::LSM6DS3			gyro = Xasin::I2C::LSM6DS3();
 
 Xasin::MQTT::Handler mqtt = Xasin::MQTT::Handler();
 
