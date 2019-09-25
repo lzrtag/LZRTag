@@ -11,6 +11,13 @@
 namespace LZR {
 namespace GYR {
 
+enum position_t {
+	UNKNOWN,
+	LAID_DOWN,
+	POINT_UP,
+	POINT_DOWN,
+	ACTIVE,
+};
 
 void init();
 void tick();
