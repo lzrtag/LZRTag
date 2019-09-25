@@ -15,6 +15,8 @@ module LZRTag
 			attr_reader :maxAmmo
 			attr_reader :gunNo
 
+			attr_reader :gyroPose
+
 			attr_reader :position
 			attr_reader :zoneIDs
 
@@ -38,6 +40,8 @@ module LZRTag
 				@ammo = 0;
 				@maxAmmo = 0;
 				@gunNo = 0;
+
+				@gyroPose = :unknown;
 
 				@position = {x: 0, y: 0}
 				@zoneIDs  = Hash.new();
@@ -88,6 +92,9 @@ module LZRTag
 					end
 				when "NSwitch"
 					@handler.send_event(:navSwitchPressed, self, data.to_i)
+				when "Gyro/Pose"
+					@gyroPose = data.to_sym
+					@handler.send_event(:poseChanged, self, @gyroPose);
 				when "ZoneUpdate"
 					begin
 						data = JSON.parse(data, symbolize_names: true);
