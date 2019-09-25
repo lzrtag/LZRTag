@@ -47,7 +47,7 @@ void setup_io_pins() {
 
 	gpio_config_t inCFG = {};
 
-	inCFG.pin_bit_mask = (1<< PIN_I2C_SDA | 1<<PIN_I2C_SCL |
+	inCFG.pin_bit_mask = (
 			1<< PIN_IR_IN |
 			1<< PIN_TRIGR |
 			1<< PIN_BAT_CHGING | 1<< PIN_CTRL_FWD | 1<< PIN_CTRL_BACK);
@@ -61,6 +61,8 @@ void setup_io_pins() {
 	inCFG.pin_bit_mask = 1<< PIN_CTRL_DOWN;
 	inCFG.mode = GPIO_MODE_INPUT_OUTPUT_OD;
 	gpio_config(&inCFG);
+
+	XaI2C::MasterAction::init(PIN_I2C_SDA, PIN_I2C_SCL, I2C_NUM_0, 50000);
 }
 
 void setup_adc() {
@@ -230,6 +232,7 @@ void housekeeping_thread(void *args) {
 		}
 
 		navswitch_tick();
+		gyro.update();
 
 		vTaskDelay(30);
 	}
@@ -253,6 +256,7 @@ void setup() {
 	set_ledc();
 
 	IR::init();
+	gyro.init();
 
 	xTaskCreate(housekeeping_thread, "Housekeeping", 2*1024, nullptr, 10, nullptr);
 
