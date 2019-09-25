@@ -34,9 +34,13 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-DebugHook.on :playerEnteredZone do |player, entered|
-	if(entered.include? "teamSetter")
-		player.team = (player.zoneIDs[:teamSetter][:team]).to_i;
+DebugHook.on :poseChanged do |pl, nPose|
+	if(nPose == :pointsUp)
+		pl.marked = 2;
+	elsif (nPose == :pointsDown)
+		pl.marked = 6;
+	else
+		pl.marked = nil;
 	end
 end
 
@@ -63,7 +67,7 @@ loop do
 
 	puts "Brightness levels: #{$handler.brightnessCount}"
 
-	break if $handler.brightnessCount[:teamSelect] == 0;
+	break if $handler.brightnessCount[:teamSelect] == 0 && $handler.brightnessCount[:active] != 0;
 end
 
 puts "All players ready - starting!"

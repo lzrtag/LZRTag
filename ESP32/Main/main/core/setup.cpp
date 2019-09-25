@@ -9,6 +9,7 @@
 
 #include "../IODefs.h"
 #include "IR.h"
+#include "gyro.h"
 #include "../fx/animatorThread.h"
 
 #include "driver/ledc.h"
@@ -232,7 +233,7 @@ void housekeeping_thread(void *args) {
 		}
 
 		navswitch_tick();
-		gyro.update();
+		GYR::tick();
 
 		vTaskDelay(30);
 	}
@@ -256,7 +257,7 @@ void setup() {
 	set_ledc();
 
 	IR::init();
-	gyro.init();
+	GYR::init();
 
 	xTaskCreate(housekeeping_thread, "Housekeeping", 2*1024, nullptr, 10, nullptr);
 
