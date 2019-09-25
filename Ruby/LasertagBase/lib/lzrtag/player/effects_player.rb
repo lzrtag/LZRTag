@@ -31,7 +31,7 @@ module LZRTag
 				if data.is_a? Numeric
 					_pub_to("FX/Marked", @marked.to_s, retain: true)
 				else
-					_pub_to("FX/Marked", "", retain: true)
+					_pub_to("FX/Marked", "0", retain: true)
 				end
 			end
 

@@ -56,10 +56,12 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			shotLocked = currentGun <= 0;
 		}
 		else if(data.topic == "FX/Marked") {
-			isMarked = (data.data.length() != 0);
+			isMarked = (data.data.length() >= 1);
 			uint32_t markerCode = atoi(data.data.data());
 
-			if(markerCode < 8)
+			if(markerCode <= 0)
+				isMarked = false;
+			else if(markerCode < 8)
 				markerColor = LZR::teamColors[markerCode].vestShotEnergy;
 			else
 				markerColor = markerCode;
