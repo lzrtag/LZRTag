@@ -67,7 +67,13 @@ module LZRTag
 			end
 
 			on :playerRegistered do |pl|
-				pl.brightness = :teamSelect;
+				pl.brightness = (pl.gyroPose == :laidDown) ? :idle : :teamSelect;
+			end
+
+			on :poseChanged do |pl, nPose|
+				next if(pl.brightness == :active)
+
+				pl.brightness = (pl.gyroPose == :laidDown) ? :idle : :teamSelect;
 			end
 
 			on :navSwitchPressed do |player, dir|
