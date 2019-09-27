@@ -33,6 +33,7 @@ private:
 
 	TickType_t deadUntil;
 	TickType_t hitUntil;
+	TickType_t vibrateUntil;
 
 	int 	currentGun;
 	bool	shotLocked;
@@ -67,6 +68,7 @@ public:
 
 	bool is_dead();
 	bool is_hit();
+	bool should_vibrate();
 };
 
 }
