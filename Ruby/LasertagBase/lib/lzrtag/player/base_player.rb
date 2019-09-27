@@ -30,10 +30,6 @@ module LZRTag
 				@mqtt.publish_to("Lasertag/Players/#{@DeviceID}/#{key}", data, retain: retain);
 			end
 			private :_pub_to
-			def _console(cmd)
-				_pub_to("Console/In", cmd);
-			end
-			private :_console
 
 			def on_mqtt_data(data, topic)
 				case topic[1..topic.length].join("/")
@@ -53,9 +49,6 @@ module LZRTag
 
 			def connected?()
 				return @status == "OK"
-			end
-			def clear_safemode()
-				_console('file.remove("BOOT_SAFECHECK")') if @status == "SAFEMODE"
 			end
 
 			def id=(n)

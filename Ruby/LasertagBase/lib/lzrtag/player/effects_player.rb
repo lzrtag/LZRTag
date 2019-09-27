@@ -12,8 +12,6 @@ module LZRTag
 
 			def vibrate(duration)
 				raise ArgumentError, "Vibration-duration out of range (between 0 and 65.536)" unless duration.is_a? Numeric and duration <= 65.536 and duration >= 0
-				_console("vibrate(#{(duration*1000).to_i});");
-
 				_pub_to("CFG/Vibrate", duration);
 			end
 
@@ -35,9 +33,6 @@ module LZRTag
 				end
 			end
 
-			def fire
-				_console("fireWeapon();")
-			end
 
 			def noise(duration: 0.5, startF: 440, endF: startF)
 				return false unless duration.is_a? Numeric and startF.is_a? Integer and endF.is_a? Integer
