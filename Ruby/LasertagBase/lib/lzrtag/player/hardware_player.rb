@@ -22,8 +22,6 @@ module LZRTag
 
 			attr_reader :battery, :ping, :heap
 
-			attr_reader :fireConfig, :hitConfig;
-
 			def self.getBrightnessKeys()
 				return [:idle, :teamSelect, :dead, :active]
 			end
@@ -57,9 +55,6 @@ module LZRTag
 					1.85,
 					0.6166,
 				];
-
-				@fireConfig = MQTT::TXHash.new(@mqtt, "Lasertag/Players/#{@DeviceID}/FireConf")
-				@hitConfig  = MQTT::TXHash.new(@mqtt, "Lasertag/Players/#{@DeviceID}/HitConf")
 			end
 
 			def on_mqtt_data(data, topic)
@@ -185,13 +180,6 @@ module LZRTag
 				number = @gunNo if(number.nil?)
 
 				return @GunDamageMultipliers[number-1] || 1;
-			end
-
-			def fireConfig=(h)
-				@fireConfig.hash = h;
-			end
-			def hitConfig=(h)
-				@hitConfig.hash = h;
 			end
 
 			def clear_all_topics()

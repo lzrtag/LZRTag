@@ -53,13 +53,6 @@ $handler.add_hook(LZRTag::Hook::RandomTeam);
 $handler.add_hook(LZRTag::Hook::Damager.new(dmgPerShot: 25));
 $handler.add_hook(LZRTag::Hook::Regenerator.new(regRate: 7, regDelay: 3, autoReviveThreshold: 21));
 
-cfg = LZRTag::Hook::Configurator.new();
-cfg.fireConfig = {
-	shotLocked: false
-}
-
-$handler.add_hook(cfg);
-
 $handler.add_hook(LZRTag::Hook::TeamSelector);
 
 loop do
