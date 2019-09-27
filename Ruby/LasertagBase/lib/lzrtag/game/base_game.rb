@@ -37,7 +37,7 @@ module LZRTag
 				end
 
 				@handler.each do |pl|
-					pl.noise(startF: 1000);
+					pl.noise(frequency: 1000);
 					pl.brightness = :active;
 				end
 			end
