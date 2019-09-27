@@ -46,8 +46,21 @@ void play_audio(std::string aName) {
 }
 
 void init() {
-	mqtt.subscribe_to(player.get_topic_base() + "/FX/Sound", [](Xasin::MQTT::MQTT_Packet data) {
-		play_audio(data.data);
+	mqtt.subscribe_to(player.get_topic_base() + "/Sound/#", [](Xasin::MQTT::MQTT_Packet data) {
+		if(data.topic == "File")
+			play_audio(data.data);
+		else if(data.topic == "Note") {
+#pragma pack(1)
+			struct note_data_t {
+				uint32_t frequency;
+				uint32_t volume;
+				uint32_t duration;
+			} note = *reinterpret_cast<const note_data_t*>(data.data.data());
+#pragma pack(0)
+
+			if(note.duration < 5000)
+				LZR::audioManager.insert_sample(new TriangleWave(note.frequency, note.volume, note.duration));
+		}
 	});
 }
 

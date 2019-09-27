@@ -33,10 +33,9 @@ module LZRTag
 				end
 			end
 
-
-			def noise(duration: 0.5, startF: 440, endF: startF)
-				return false unless duration.is_a? Numeric and startF.is_a? Integer and endF.is_a? Integer
-				_console("ping(#{startF},#{endF},#{(duration*1000).to_i});");
+			def noise(duration: 0.5, frequency: 440, volume: 0.5)
+				return false unless duration.is_a? Numeric and frequency.is_a? Integer
+				_pub_to("Sound/Note", [frequency, volume*20000, duration*1000].pack("L3"))
 			end
 
 			def sound(sName)
