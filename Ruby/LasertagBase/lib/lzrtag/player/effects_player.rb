@@ -14,14 +14,14 @@ module LZRTag
 				raise ArgumentError, "Vibration-duration out of range (between 0 and 65.536)" unless duration.is_a? Numeric and duration <= 65.536 and duration >= 0
 				_console("vibrate(#{(duration*1000).to_i});");
 
-				_pub_to("FX/Vibrate", duration);
+				_pub_to("CFG/Vibrate", duration);
 			end
 
 			def heartbeat=(data)
 				return if (@heartbeat == data);
 
 				@heartbeat = data;
-				_pub_to("FX/Heartbeat", @heartbeat ? "1" : "0", retain: true);
+				_pub_to("CFG/Heartbeat", @heartbeat ? "1" : "0", retain: true);
 			end
 
 			def marked=(data)
@@ -29,9 +29,9 @@ module LZRTag
 
 				@marked = data;
 				if data.is_a? Numeric
-					_pub_to("FX/Marked", @marked.to_s, retain: true)
+					_pub_to("CFG/Marked", @marked.to_s, retain: true)
 				else
-					_pub_to("FX/Marked", "0", retain: true)
+					_pub_to("CFG/Marked", "0", retain: true)
 				end
 			end
 
@@ -45,17 +45,17 @@ module LZRTag
 			end
 
 			def sound(sName)
-				_pub_to("FX/Sound", sName);
+				_pub_to("Sound/File", sName);
 			end
 
 			def hit(hitLength = nil)
-				_pub_to("FX/Hit", hitLength || @hitConfig[:hitDuration] || 0.7)
+				_pub_to("CFG/Hit", hitLength || @hitConfig[:hitDuration] || 0.7)
 			end
 
 			def clear_all_topics()
 				super();
 
-				["FX/Heartbeat", "FX/Marked"].each do |t|
+				["CFG/Heartbeat", "CFG/Marked"].each do |t|
 					_pub_to(t, "", retain: true)
 				end
 			end

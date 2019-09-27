@@ -172,7 +172,7 @@ void take_battery_measurement() {
 }
 
 void setup_ping_req() {
-	mqtt.subscribe_to(player.get_topic_base() + "/System/Ping",
+	mqtt.subscribe_to(player.get_topic_base() + "/Ping",
 			[](Xasin::MQTT::MQTT_Packet data) {
 
 		struct {
@@ -185,13 +185,13 @@ void setup_ping_req() {
 		.ping = uint32_t((xTaskGetTickCount() - *reinterpret_cast<const uint32_t*>(data.data.data()))/0.6)
 		};
 
-		mqtt.publish_to(player.get_topic_base() + "/System", &sysData, sizeof(sysData), 1);
+		mqtt.publish_to(player.get_topic_base() + "/HW/Ping", &sysData, sizeof(sysData), 1);
 	});
 }
 
 void send_ping_req() {
 	uint32_t outData = xTaskGetTickCount();
-	mqtt.publish_to(player.get_topic_base() + "/System/Ping", &outData, 4, 0);
+	mqtt.publish_to(player.get_topic_base() + "/Ping", &outData, 4, 0);
 }
 
 int old_switch_position = 255;
@@ -211,7 +211,7 @@ void navswitch_tick() {
 		if((!LZR::mqtt.is_disconnected()) && (old_switch_position != 0)) {
 			uint8_t dataBuffer = '0' + old_switch_position;
 
-			mqtt.publish_to(LZR::player.get_topic_base() + "/NSwitch", &dataBuffer, 1, 0, 2);
+			mqtt.publish_to(LZR::player.get_topic_base() + "/HW/NSwitch", &dataBuffer, 1, 0, 2);
 		}
 	}
 }

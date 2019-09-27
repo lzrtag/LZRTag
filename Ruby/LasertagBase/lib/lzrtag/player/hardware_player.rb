@@ -64,14 +64,14 @@ module LZRTag
 
 			def on_mqtt_data(data, topic)
 				case topic[1..topic.length].join("/")
-				when "System"
+				when "HW/Ping"
 					if(data.size == 3*4)
 						parsedData = data.unpack("L<*");
 
 						@battery = parsedData[0].to_f/1000;
 						@ping 	= parsedData[2].to_f;
 					end
-				when "Dead"
+				when "CFG/Dead"
 					dead = (data == "1")
 					return if @dead == dead;
 					@dead = dead;
@@ -79,7 +79,7 @@ module LZRTag
 					@deathChangeTime = Time.now();
 
 					@handler.send_event(@dead ? :playerKilled : :playerRevived, self);
-				when "Ammo"
+				when "Stats/Ammo"
 					return if(data.size != 8)
 
 					outData = data.unpack("L<*");
@@ -90,9 +90,9 @@ module LZRTag
 						@position = JSON.parse(data, symbolize_names: true);
 					rescue
 					end
-				when "NSwitch"
+				when "HW/NSwitch"
 					@handler.send_event(:navSwitchPressed, self, data.to_i)
-				when "Gyro/Pose"
+				when "HW/Gyro"
 					@gyroPose = data.to_sym
 					@handler.send_event(:poseChanged, self, @gyroPose);
 				when "ZoneUpdate"
@@ -122,7 +122,7 @@ module LZRTag
 				oldT = @team;
 				@team = n;
 
-				_pub_to "Team", @team, retain: true;
+				_pub_to "CFG/Team", @team, retain: true;
 				@handler.send_event :playerTeamChanged, self, oldT;
 
 				@team;
@@ -136,7 +136,7 @@ module LZRTag
 
 				n = @BrightnessMap.find_index(n)
 
-				_pub_to "FX/Brightness", n, retain: true;
+				_pub_to "CFG/Brightness", n, retain: true;
 				@handler.send_event :playerBrightnessChanged, self, oldB;
 
 				@brightness;
@@ -149,7 +149,7 @@ module LZRTag
 
 				@deathChangeTime = Time.now();
 
-				_pub_to "Dead", @dead ? "1" : "0", retain: true;
+				_pub_to "CFG/Dead", @dead ? "1" : "0", retain: true;
 				@handler.send_event(@dead ? :playerKilled : :playerRevived, self, player);
 			end
 			def dead=(d)
@@ -167,7 +167,7 @@ module LZRTag
 
 				@ammo = n;
 
-				_pub_to("Ammo/Set", n);
+				_pub_to("Stats/Ammo/Set", n);
 			end
 
 			def gunNo=(n)
@@ -178,7 +178,7 @@ module LZRTag
 				return if(@gunNo == n)
 
 				@gunNo = n;
-				_pub_to("GunNo", n, retain: true);
+				_pub_to("CFG/GunNo", n, retain: true);
 			end
 
 			def gunDamage(number = nil)
@@ -197,8 +197,7 @@ module LZRTag
 			def clear_all_topics()
 				super();
 
-				[	"Dead", "GunNo", "FX/Brightness", "Team",
-					"HitConf", "FireConf"].each do |t|
+				[	"CFG/Dead", "CFG/GunNo", "CFG/Brightness", "CFG/Team"].each do |t|
 					_pub_to(t, "", retain: true);
 				end
 			end
