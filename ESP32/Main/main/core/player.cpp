@@ -21,7 +21,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 	markerColor(0),
 	heartbeat(false),
 	name(""),
-	deadUntil(0), hitUntil(0),
+	deadUntil(0), hitUntil(0), vibrateUntil(0),
 	currentGun(2), shotLocked(0),
 	deviceID(devID),
 	mqtt(mqtt) {
@@ -86,6 +86,8 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 		}
 		else if(data.topic == "Hit")
 			hitUntil = xTaskGetTickCount() + atof(data.data.data())*600;
+		else if(data.topic == "Vibrate")
+			vibrateUntil = xTaskGetTickCount() + atof(data.data.data())*600;
 	}, 1);
 }
 
@@ -172,6 +174,12 @@ bool Player::is_dead() {
 }
 bool Player::is_hit() {
 	return xTaskGetTickCount() < hitUntil;
+}
+bool Player::should_vibrate() {
+	if(is_hit())
+		return false;
+
+	return xTaskGetTickCount() < vibrateUntil;
 }
 
 }
