@@ -46,7 +46,7 @@ module LZRTag
 					elsif(oldStatus == "OK")
 						@handler.send_event(:playerDisconnected, self);
 					end
-				when "Name"
+				when "CFG/Name"
 					@name = data;
 				end
 			end
@@ -70,7 +70,7 @@ module LZRTag
 					@id = nil;
 				end
 
-				_pub_to("ID", @id, retain: true);
+				_pub_to("CFG/ID", @id, retain: true);
 			end
 
 			def clear_all_topics()
