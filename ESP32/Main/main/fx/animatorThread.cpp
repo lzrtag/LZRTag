@@ -135,18 +135,20 @@ TickType_t vibr_motor_count = 0;
 void vibr_motor_tick() {
 	vibr_motor_count++;
 
+	bool vibrOn = false;
+
 	if(gunHandler.timeSinceLastShot() <= gunHandler.cGun().postShotVibrationTicks)
-		gpio_set_level(PIN_VBRT, 1);
-	else if(player.is_hit() && player.is_dead() && (vibr_motor_count & 0b1))
-		gpio_set_level(PIN_VBRT, 1);
-	else if((vibr_motor_count & 0b1010) == 0 && player.is_hit())
-		gpio_set_level(PIN_VBRT, 1);
-	else if(player.get_heartbeat() && ((0b101 & (xTaskGetTickCount()/75)) == 0))
-		gpio_set_level(PIN_VBRT, 1);
+		vibrOn = true;
+	else if(player.is_hit() && player.is_dead())
+		vibrOn = (vibr_motor_count & 0b1);
+	else if(player.is_hit())
+		vibrOn = (vibr_motor_count & 0b1010) == 0;
+	else if(player.get_heartbeat())
+		vibrOn = ((0b101 & (xTaskGetTickCount()/75)) == 0);
 	else if(player.should_vibrate())
-		gpio_set_level(PIN_VBRT, 1);
-	else
-		gpio_set_level(PIN_VBRT, 0);
+		vibrOn = true;
+
+	gpio_set_level(PIN_VBRT, vibrOn);
 }
 
 #define COLOR_FADE(cName, alpha) bufferedColors.cName.merge_overlay(currentColors.cName, alpha)
