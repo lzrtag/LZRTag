@@ -47,6 +47,13 @@ module LZRTag
 				@gameTickThread.abort_on_exception = true;
 			end
 
+			def consume_event(event, data)
+				super(event, data)
+
+				return unless @currentGame
+				@currentGame.consume_event(event, data);
+			end
+
 			def start_game(game = @lastGame)
 				@lastGame = game;
 
