@@ -7,33 +7,36 @@ module LZRTag
 			attr_reader :hookList
 			attr_reader :tickTime
 
+			attr_reader :phases
+
+			def self.get_phase_map()
+				@globalPhaseMap ||= Hash.new();
+				return @globalPhaseMap;
+			end
+			def self.get_phase_prep_map()
+				@globalPhasePrepMap ||= Hash.new();
+				return @globalPhasePrepMap;
+			end
+
+			def get_phase_map()
+				return @phaseMap
+			end
+
 			def initialize(handler)
+				super()
+
 				@handler = handler;
 
 				@hookList = Array.new();
-				@activeHooks = Array.new();
 
 				@tickTime = 1;
 			end
 
-			def _on_start_raw()
-				@hookList.each do |h|
-					@activeHooks << @handler.add_hook(h);
-				end
 
-				on_start();
 			end
 
-			def on_start()
-				@handler.each do |pl|
-					pl.sound("GAME START");
-				end
 
-				3.times do
-					@handler.each do |pl|
-						pl.noise();
 					end
-					sleep 1;
 				end
 
 				@handler.each do |pl|
@@ -42,14 +45,9 @@ module LZRTag
 				end
 			end
 
-			def _on_end_raw()
-				@activeHooks.each do |h|
-					@handler.remove_hook(h);
 				end
 
-				on_end();
 			end
-			def on_end()
 			end
 		end
 	end
