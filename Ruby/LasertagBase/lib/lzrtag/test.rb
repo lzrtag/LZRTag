@@ -15,9 +15,6 @@ class DebugHook < LZRTag::Hook::Base
 	end
 end
 
-DebugHook.on :playerDisconnected do |player|
-	puts "Yay, player #{player.DeviceID} disconnected!"
-end
 DebugHook.on :playerHurt do |player, fromPlayer|
 	player.sound("HIT");
 	fromPlayer.sound("MINOR SCORE");
@@ -34,16 +31,6 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-DebugHook.on :poseChanged do |pl, nPose|
-	if(nPose == :pointsUp)
-		pl.marked = 2;
-	elsif (nPose == :pointsDown)
-		pl.marked = 6;
-	else
-		pl.marked = nil;
-	end
-end
-
 $mqtt = MQTT::SubHandler.new("192.168.178.50");
 
 $handler = LZRTag.Handler.new($mqtt);
@@ -55,17 +42,41 @@ $handler.add_hook(LZRTag::Hook::Regenerator.new(regRate: 7, regDelay: 3, autoRev
 
 $handler.add_hook(LZRTag::Hook::TeamSelector);
 
-loop do
-	sleep 1;
+class TestGame < LZRTag::Game::Base
+	def initialize(handler)
+		super(handler);
+	end
 
-	puts "Brightness levels: #{$handler.brightnessCount}"
+	phase :starting do |dT|
+		if(@handler.brightnessCount[:active] >= 1)
+			@handler.set_phase(:countdown)
+		end
+	end
 
-	break if $handler.brightnessCount[:teamSelect] == 0 && $handler.brightnessCount[:active] != 0;
+	phase_prep :countdown do
+		@phaseTime = -3.9;
+		@nextBeep = -4;
+	end
+
+	phase :countdown do |dT|
+		if(@phaseTime >= 0)
+			@handler.each do |pl| pl.noise(frequency: 1000); end
+			@handler.set_phase(:running)
+		elsif(@phaseTime > @nextBeep)
+			@handler.each do |pl| pl.noise(); end
+			@nextBeep += 1;
+		end
+	end
+
+	phase_prep :running do
+		@phaseTime = -3*60;
+	end
+
+	phase :running do
+	end
 end
 
-puts "All players ready - starting!"
-
-$handler.start_game(LZRTag::Game::Base.new($handler));
+$handler.start_game(TestGame);
 
 $handler.each do |pl|
 	pl.ammo = 100;
