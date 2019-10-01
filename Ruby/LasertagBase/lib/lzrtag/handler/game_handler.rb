@@ -29,11 +29,7 @@ module LZRTag
 						Thread.stop() until(@nextGame.is_a? LZRTag::Game::Base);
 
 						@currentGame = @nextGame;
-						send_event(:gameStarting, @currentGame)
-						@currentGame._on_start_raw();
-
-						@gameRunning = true;
-						send_event(:gameStarted, @currentGame);
+						set_phase(:starting);
 
 						while(@currentGame == @nextGame)
 							sleep @currentGame.tickTime
@@ -43,25 +39,30 @@ module LZRTag
 							send_event(:gameTick, dT);
 						end
 
-						@gameRunning = false;
-						send_event(:gameStopping, @currentGame);
-						@currentGame._on_end_raw();
-						send_event(:gameStopped, @currentGame);
-						@currentGame = @nextGame;
+						set_phase(:idle);
+						sleep 1;
+						@currentGame = nil;
 					end
 				end
 				@gameTickThread.abort_on_exception = true;
 			end
 
 			def start_game(game = @lastGame)
+				@lastGame = game;
+
+				game = game.new(self) if game.is_a? Class and game <= LZRTag::Game::Base;
 				unless(game.is_a? LZRTag::Game::Base)
 					raise ArgumentError, "Game class needs to be specified!"
 				end
-				@lastGame = game;
-
 				@nextGame = game;
+
 				@gameTickThread.run();
 			end
+
+			def stop_game()
+				@nextGame = nil;
+			end
+
 			def set_phase(nextPhase)
 				allowedPhases = [:idle]
 				if(@currentGame)
