@@ -7,6 +7,8 @@ module LZRTag
 			attr_reader :currentGame
 			attr_reader :gameRunning
 
+			attr_reader :gamePhase
+
 			def initialize(*data, **argHash)
 				super(*data, **argHash)
 
@@ -16,7 +18,7 @@ module LZRTag
 				@currentGame = nil;
 				@nextGame 	 = nil;
 
-				@gameRunning = false;
+				@gamePhase = :idle;
 
 				_start_game_thread();
 			end
@@ -59,6 +61,20 @@ module LZRTag
 
 				@nextGame = game;
 				@gameTickThread.run();
+			end
+			def set_phase(nextPhase)
+				allowedPhases = [:idle]
+				if(@currentGame)
+					allowedPhases = [allowedPhases, @currentGame.phases].flatten
+				end
+
+				puts "Allowed phases are: #{allowedPhases}"
+				raise ArgumentError, "Phase must be valid!" unless allowedPhases.include? nextPhase
+
+				oldPhase = @gamePhase
+				@gamePhase = nextPhase;
+				send_event(:gamePhaseChanged, nextPhase, oldPhase);
+				@mqtt.publish_to "Lasertag/Game/Phase", @gamePhase.to_s, retain: true
 			end
 		end
 	end
