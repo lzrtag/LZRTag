@@ -26,8 +26,10 @@ module LZRTag
 			end
 		end
 
-		class RandomTeam < Base
-			attr_accessor :teamWhitelist
+		class TeamSelector < Base
+			describe_option :possibleTeams, "List of teams that can be selected", {
+				type: Array
+			}
 
 			def initialize(handler, possibleTeams: [1, 2, 3, 4])
 				super(handler);
@@ -94,6 +96,14 @@ module LZRTag
 
 				@regRate = regRate;
 				@regDelay = regDelay;
+			describe_option :regRate, "Regeneraton rate, HP per second"
+			describe_option :regDelay, "Healing delay, in s, after a player was hit"
+			describe_option :healDead, "Whether or not to heal dead players"
+
+			describe_option :autoReviveThreshold, "The HP a player needs before he is revived"
+
+			describe_option :teamFilter, "Which teams this regenerator belongs to"
+			describe_option :phaseFilter, "During which phases this hook should be active"
 
 				@healDead = healDead;
 				@autoReviveThreshold = autoReviveThreshold;
@@ -124,6 +134,11 @@ module LZRTag
 		end
 
 		class Damager < Base
+			describe_option :dmgPerShot, "Base damage per shot"
+			describe_option :useDamageMultiplier, "Shall shots be adjusted per-gun?"
+			describe_option :friendlyFire, "Shall friendly-fire be enabled"
+			describe_option :hitThreshold, "Limit below dead players will not be hit"
+
 			def initialize(handler, **options)
 				super(handler);
 

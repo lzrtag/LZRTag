@@ -6,10 +6,23 @@ module LZRTag
 				@globalCBList ||= Hash.new();
 				return @globalCBList;
 			end
+			def self.getOptionDescriptions()
+				@globalOptionDescriptions ||= Hash.new();
+				return @globalOptionDescriptions
+			end
 
 			def initialize(handler)
 				@localCBList = Hash.new();
+				@activePhases = Array.new();
+
 				@handler = handler
+			end
+
+			def self.describe_option(optionSymbol, descString, extraDetails = {})
+				raise ArgumentError, "Option shall be a symbol!" unless optionSymbol.is_a? Symbol
+				raise ArgumentError, "Description should be a string!" unless descString.is_a? String
+				getOptionDescriptions()[optionSymbol] = extraDetails;
+				getOptionDescriptions()[optionSymbol][:desc] = descString;
 			end
 
 			def self.on(evtName, &block)
