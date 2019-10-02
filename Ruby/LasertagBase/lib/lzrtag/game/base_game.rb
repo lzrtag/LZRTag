@@ -31,11 +31,12 @@ module LZRTag
 			end
 
 			def initialize(handler)
-				super()
-
-				@handler = handler;
+				super(handler)
 
 				@hookList = Array.new();
+				self.class.get_hooks().each do |hookData|
+					@hookList << hookData[0].new(@handler, **hookData[1])
+				end
 
 				@tickTime = 0.3;
 
@@ -47,6 +48,10 @@ module LZRTag
 
 				@phaseTime = 0;
 				@phaseLastTime = 0;
+			end
+
+			def self.hook(hookType, hookOptions = {})
+				get_hooks() << [hookType, hookOptions];
 			end
 
 			def self.phase(phaseName, &block)
