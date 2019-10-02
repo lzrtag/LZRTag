@@ -34,52 +34,51 @@ module LZRTag
 			def initialize(handler, possibleTeams: [1, 2, 3, 4])
 				super(handler);
 
-				@teamWhitelist = (1..6).to_a;
+				@possibleTeams = possibleTeams;
 			end
 
-			def on_hookin(game)
-				super(game);
+			on :gamePhaseEnds do |oldPhase, nextPhase|
+				if((oldPhase == :teamSelect) && (nextPhase != :idle))
+					puts "Selecting active players!"
 
-				game.each do |pl|
-					reassignTeam(pl);
+					@handler.gamePlayers = Array.new();
+					@handler.each do |pl|
+						if(pl.brightness == :active)
+							@handler.gamePlayers << pl;
+						end
+					end
+
+					puts "Game players are: #{@handler.gamePlayers}"
 				end
 			end
 
-			def reassignTeam(player)
-				minCount = @handler.teamCount.values.min[1];
-				(@teamWhitelist.shuffle()).each do |t|
-					if(@handler.teamCount[t] == minCount)
-						player.team = t;
-						break;
+			on :gamePhaseStarts do |nextPhase, oldPhase|
+				case(nextPhase)
+				when :teamSelect
+					@handler.each do |pl|
+						pl.brightness = (pl.gyroPose == :laidDown) ? :idle : :teamSelect;
+
+						if(!@possibleTeams.include?(pl.team))
+							pl.team = @possibleTeams.sample();
+						end
+					end
+				when :idle
+					@handler.each do |pl|
+						pl.brightness = :idle;
 					end
 				end
 			end
 
-			on :playerRegistered do |player|
-				puts "Reassigning player: #{player}"
-				reassignTeam(player);
-			end
-		end
-
-		class TeamSelector < Base
-			def initialize(possibleTeams: [1, 2, 3, 4])
-				super();
-
-				@possibleTeams = possibleTeams;
-			end
-
-			on :playerRegistered do |pl|
-				pl.brightness = (pl.gyroPose == :laidDown) ? :idle : :teamSelect;
-			end
-
 			on :poseChanged do |pl, nPose|
+				next if(@handler.gamePhase != :teamSelect)
 				next if(pl.brightness == :active)
 
 				pl.brightness = (pl.gyroPose == :laidDown) ? :idle : :teamSelect;
 			end
 
 			on :navSwitchPressed do |player, dir|
-				next if player.brightness == :active
+				next if(@handler.gamePhase != :teamSelect)
+				next if player.brightness != :teamSelect
 
 				newTeam = @possibleTeams.find_index(player.team) || 0;
 
@@ -94,8 +93,6 @@ module LZRTag
 
 		class Regenerator < Base
 
-				@regRate = regRate;
-				@regDelay = regDelay;
 			describe_option :regRate, "Regeneraton rate, HP per second"
 			describe_option :regDelay, "Healing delay, in s, after a player was hit"
 			describe_option :healDead, "Whether or not to heal dead players"
@@ -105,8 +102,6 @@ module LZRTag
 			describe_option :teamFilter, "Which teams this regenerator belongs to"
 			describe_option :phaseFilter, "During which phases this hook should be active"
 
-				@healDead = healDead;
-				@autoReviveThreshold = autoReviveThreshold;
 			def initialize(handler, **options)
 				super(handler);
 
@@ -121,7 +116,11 @@ module LZRTag
 			end
 
 			on :gameTick do |dT|
-				@handler.each do |pl|
+				next unless @phaseFilter.include? @handler.gamePhase
+
+				@handler.each_participating do |pl|
+					next unless @teamFilter.include? pl.team
+
 					if((Time.now() - pl.lastDamageTime) >= @regDelay)
 						pl.regenerate(dT * @regRate);
 					end
