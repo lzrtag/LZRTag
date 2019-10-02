@@ -56,7 +56,9 @@ module LZRTag
 					cbList.each do |cb|
 						begin
 							instance_exec(*data, &cb);
-						rescue
+						rescue StandardError => e
+							puts e.message
+							puts e.backtrace.inspect
 						end
 					end
 				end
@@ -64,7 +66,9 @@ module LZRTag
 					cbList.each do |cb|
 						begin
 							cb.call(*data);
-						rescue
+						rescue StandardError => e
+							puts e.message
+							puts e.backtrace.inspect
 						end
 					end
 				end
