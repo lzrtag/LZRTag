@@ -81,9 +81,14 @@ module LZRTag
 
 				oldPhase = @gamePhase
 				@gamePhase = nextPhase;
-				send_event(:gamePhaseChanged, nextPhase, oldPhase);
+				send_event(:gamePhaseEnds, oldPhase, nextPhase)
+				send_event(:gamePhaseStarts, nextPhase, oldPhase);
 				@mqtt.publish_to "Lasertag/Game/Phase", @gamePhase.to_s, retain: true
 			end
+			def gamePhase=(nextPhase)
+				set_phase(nextPhase)
+			end
+
 		end
 	end
 end
