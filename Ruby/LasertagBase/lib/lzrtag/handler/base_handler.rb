@@ -99,7 +99,7 @@ module LZRTag
 				@evtCallbacks[cb[0]].delete cb[1];
 			end
 			def add_hook(hook)
-				hook = hook.new() if hook.is_a? Class and hook <= LZRTag::Hook::Base;
+				hook = hook.new(self) if hook.is_a? Class and hook <= LZRTag::Hook::Base;
 
 				unless(hook.is_a? LZRTag::Hook::Base)
 					raise ArgumentError, "Hook needs to be a Lasertag::EventHook!"
