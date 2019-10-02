@@ -5,9 +5,9 @@ module LZRTag
 	module Handler
 		class Game < Count
 			attr_reader :currentGame
-			attr_reader :gameRunning
-
 			attr_reader :gamePhase
+
+			attr_reader :gamePlayers
 
 			def initialize(*data, **argHash)
 				super(*data, **argHash)
@@ -19,6 +19,8 @@ module LZRTag
 				@nextGame 	 = nil;
 
 				@gamePhase = :idle;
+
+				@gamePlayers = Array.new();
 
 				_start_game_thread();
 			end
@@ -89,6 +91,26 @@ module LZRTag
 				set_phase(nextPhase)
 			end
 
+			def gamePlayers=(newPlayers)
+				raise ArgumentError, "Game player list shall be an array!" unless newPlayers.is_a? Array
+				@gamePlayers = newPlayers;
+
+				plNameArray = Array.new();
+				@gamePlayers.each do |pl|
+					plNameArray << pl.deviceID();
+				end
+
+				@mqtt.publish_to "Lasertag/Game/Participating", plNameArray.to_json(), retain: true
+			end
+			def each_participating()
+				@gamePlayers.each do |pl|
+					yield(pl)
+				end
+			end
+
+			def in_game?(player)
+				return @gamePlayers.include? player
+			end
 		end
 	end
 end
