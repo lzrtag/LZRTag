@@ -3,8 +3,8 @@
 require_relative '../lzrtag.rb'
 
 class DebugHook < LZRTag::Hook::Base
-	def initialize()
-		super();
+	def initialize(handler)
+		super(handler);
 	end
 
 	def consume_event(evtName, data)
@@ -36,40 +36,67 @@ $mqtt = MQTT::SubHandler.new("192.168.178.50");
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
-$handler.add_hook(LZRTag::Hook::RandomTeam);
-$handler.add_hook(LZRTag::Hook::Damager.new(dmgPerShot: 25));
-$handler.add_hook(LZRTag::Hook::Regenerator.new(regRate: 7, regDelay: 3, autoReviveThreshold: 21));
 
-$handler.add_hook(LZRTag::Hook::TeamSelector);
+sleep 3
 
 class TestGame < LZRTag::Game::Base
 	def initialize(handler)
 		super(handler);
 	end
 
-	phase :starting do |dT|
+	hook LZRTag::Hook::TeamSelector, {
+		possibleTeams: [1, 4]
+	}
+	hook LZRTag::Hook::Regenerator, {
+		regRate: 7,
+		regDelay: 3,
+		autoReviveThreshold: 21
+	}
+	hook LZRTag::Hook::Damager, {
+		dmgPerShot: 25
+	}
+
+	phase_prep :starting do
+		@handler.gamePhase = :teamSelect
+	end
+
+	phase :teamSelect do |dT|
 		if(@handler.brightnessCount[:active] >= 1)
 			@handler.set_phase(:countdown)
 		end
 	end
 
 	phase_prep :countdown do
-		@phaseTime = -3.9;
-		@nextBeep = -4;
+		@phaseTime = -10;
+		@nextBeep = -10;
+
+		@handler.each_participating do |pl|
+			pl.sound("GAME START");
+			pl.brightness = :idle;
+
+			pl.heartbeat = true;
+		end
+	end
+	phase_end :countdown do
+		@handler.each_participating do |pl| pl.heartbeat = false; end
 	end
 
 	phase :countdown do |dT|
 		if(@phaseTime >= 0)
-			@handler.each do |pl| pl.noise(frequency: 1000); end
+			@handler.each_participating do |pl| pl.noise(frequency: 1000); end
 			@handler.set_phase(:running)
 		elsif(@phaseTime > @nextBeep)
-			@handler.each do |pl| pl.noise(); end
+			@handler.each_participating do |pl| pl.noise(); end
 			@nextBeep += 1;
 		end
 	end
 
 	phase_prep :running do
 		@phaseTime = -3*60;
+
+		@handler.each_participating do |pl|
+			pl.brightness = :active
+		end
 	end
 
 	phase :running do
