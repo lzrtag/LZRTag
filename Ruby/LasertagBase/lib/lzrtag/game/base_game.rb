@@ -4,7 +4,7 @@ require_relative '../hooks/base_hook.rb'
 module LZRTag
 	module Game
 		class Base < Hook::Base
-			attr_reader :hooksList
+			attr_reader :hookList
 			attr_reader :tickTime
 
 			attr_reader :phases
