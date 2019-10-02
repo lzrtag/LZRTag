@@ -29,8 +29,8 @@ module LZRTag
 		class RandomTeam < Base
 			attr_accessor :teamWhitelist
 
-			def initialize()
-				super();
+			def initialize(handler, possibleTeams: [1, 2, 3, 4])
+				super(handler);
 
 				@teamWhitelist = (1..6).to_a;
 			end
@@ -91,14 +91,23 @@ module LZRTag
 		end
 
 		class Regenerator < Base
-			def initialize(regRate: 1, regDelay: 10, healDead: false, autoReviveThreshold: 30)
-				super();
 
 				@regRate = regRate;
 				@regDelay = regDelay;
 
 				@healDead = healDead;
 				@autoReviveThreshold = autoReviveThreshold;
+			def initialize(handler, **options)
+				super(handler);
+
+				@regRate = options[:regRate] || 1;
+				@regDelay = options[:regDelay] || 10;
+
+				@healDead = options[:healDead] || false;
+				@autoReviveThreshold = options[:autoReviveThreshold] || 30;
+
+				@teamFilter = options[:teamFilter] || (0..7).to_a
+				@phaseFilter = options[:phaseFilter] || [:running]
 			end
 
 			on :gameTick do |dT|
@@ -115,13 +124,13 @@ module LZRTag
 		end
 
 		class Damager < Base
-			def initialize(dmgPerShot: 40, useDamageMultiplier: true, friendlyFire: false, hitThreshold: 10)
-				super();
+			def initialize(handler, **options)
+				super(handler);
 
-				@dmgPerShot = dmgPerShot;
-				@useDamageMultiplier = useDamageMultiplier;
-				@friendlyFire = friendlyFire;
-				@hitThreshold = hitThreshold
+				@dmgPerShot = options[:dmgPerShot] || 40;
+				@useDamageMultiplier = options[:useDamageMultiplier] || true;
+				@friendlyFire = options[:friendlyFire] || false;
+				@hitThreshold = options[:hitThreshold] || 10;
 			end
 
 			def process_raw_hit(hitPlayer, sourcePlayer)

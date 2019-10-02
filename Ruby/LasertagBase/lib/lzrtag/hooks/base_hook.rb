@@ -7,8 +7,9 @@ module LZRTag
 				return @globalCBList;
 			end
 
-			def initialize()
+			def initialize(handler)
 				@localCBList = Hash.new();
+				@handler = handler
 			end
 
 			def self.on(evtName, &block)
