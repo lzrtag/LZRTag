@@ -17,6 +17,14 @@ module LZRTag
 				@globalPhasePrepMap ||= Hash.new();
 				return @globalPhasePrepMap;
 			end
+			def self.get_phase_end_map()
+				@globalPhaseEndMap ||= Hash.new();
+				return @globalPhaseEndMap;
+			end
+			def self.get_hooks()
+				@globalHookList ||= Array.new();
+				return @globalHookList;
+			end
 
 			def get_phase_map()
 				return @phaseMap
@@ -33,8 +41,9 @@ module LZRTag
 
 				@phaseMap = self.class.get_phase_map();
 				@phasePrepMap = self.class.get_phase_prep_map();
+				@phaseEndMap = self.class.get_phase_end_map();
 
-				@phases = @phaseMap.keys
+				@phases = [@phaseMap.keys, @phasePrepMap.keys].flatten
 
 				@phaseTime = 0;
 				@phaseLastTime = 0;
@@ -65,14 +74,33 @@ module LZRTag
 				end
 			end
 
+			def self.phase_end(phaseName, &block)
+				raise ArgumentError, "Block needs to be given!" unless block_given?
+
+				phaseName = [phaseName].flatten
+				phaseName.each do |evt|
+					unless (evt.is_a? Symbol)
+						raise ArgumentError, "Phase needs to be a symbol or array of symbols!"
+					end
+					self.get_phase_end_map()[evt] ||= Array.new()
+					self.get_phase_end_map()[evt] << block;
+				end
+			end
+
 			def consume_event(evt, data)
 				super(evt, data);
 
 				case evt
 				when :gameTick
 					handle_game_tick(*data);
-				when :gamePhaseChanged
+				when :gamePhaseStarts
 					handle_phase_change();
+				when :gamePhaseEnds
+					if @phaseEndMap[data[0]]
+						@phaseEndMap[data[0]].each do |cb|
+							instance_exec(&cb);
+						end
+					end
 				end
 
 				@hookList.each do |hook|
