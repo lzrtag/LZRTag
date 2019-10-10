@@ -22,6 +22,8 @@ module LZRTag
 
 				@gamePlayers = Array.new();
 
+				@knownGames = Hash.new();
+
 				_start_game_thread();
 			end
 
@@ -49,6 +51,15 @@ module LZRTag
 				@gameTickThread.abort_on_exception = true;
 			end
 
+			def register_game(gameTag, game)
+				raise ArgumentError, "Game Tag must be a string!" unless gameTag.is_a? String
+				raise ArgumentError, "Game must be a LZRTag::Game class" unless game <= LZRTag::Game::Base
+
+				@knownGames[gameTag] = game;
+
+				@mqtt.publish_to "Lasertag/Game/KnownGames", @knownGames.keys.to_json, retain: true;
+			end
+
 			def consume_event(event, data)
 				super(event, data)
 
@@ -58,6 +69,10 @@ module LZRTag
 
 			def start_game(game = @lastGame)
 				@lastGame = game;
+
+				if(gKey = @knownGames.key(game))
+					@mqtt.publish_to "Lasertag/Game/CurrentGame", gKey, retain: true
+				end
 
 				game = game.new(self) if game.is_a? Class and game <= LZRTag::Game::Base;
 				unless(game.is_a? LZRTag::Game::Base)
