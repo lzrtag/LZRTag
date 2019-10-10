@@ -25,6 +25,33 @@ module LZRTag
 				@knownGames = Hash.new();
 
 				_start_game_thread();
+
+				@mqtt.subscribe_to "Lasertag/Game/Controls/#" do |data, topics|
+					case topics[0]
+					when "SetPhase"
+						phase = data.to_sym;
+						if(get_allowed_phases().include? phase)
+							set_phase(phase);
+						end
+					when "SetGame"
+						if(@knownGames[data])
+							start_game(@knownGames[data])
+						elsif(data == "STOP")
+							stop_game();
+						end
+					end
+				end
+
+				clean_game_topics();
+				at_exit {
+					clean_game_topics();
+				}
+			end
+
+			def clean_game_topics()
+				@mqtt.publish_to "Lasertag/Game/ParticipatingPlayers", [].to_json(), retain: true
+				@mqtt.publish_to "Lasertag/Game/KnownGames", @knownGames.keys.to_json, retain: true;
+				@mqtt.publish_to "Lasertag/Game/CurrentGame", "", retain: true
 			end
 
 			def _start_game_thread()
@@ -81,10 +108,13 @@ module LZRTag
 				@nextGame = game;
 
 				@gameTickThread.run();
+				@mqtt.publish_to "Lasertag/Game/Phase/Valid",
+					get_allowed_phases.to_json(), retain: true
 			end
 
 			def stop_game()
 				@nextGame = nil;
+				@mqtt.publish_to "Lasertag/Game/CurrentGame", "", retain: true
 			end
 
 			def set_phase(nextPhase)
@@ -100,7 +130,8 @@ module LZRTag
 				@gamePhase = nextPhase;
 				send_event(:gamePhaseEnds, oldPhase, nextPhase)
 				send_event(:gamePhaseStarts, nextPhase, oldPhase);
-				@mqtt.publish_to "Lasertag/Game/Phase", @gamePhase.to_s, retain: true
+				@mqtt.publish_to "Lasertag/Game/Phase/Current", @gamePhase.to_s, retain: true
+
 			end
 			def gamePhase=(nextPhase)
 				set_phase(nextPhase)
@@ -115,7 +146,7 @@ module LZRTag
 					plNameArray << pl.deviceID();
 				end
 
-				@mqtt.publish_to "Lasertag/Game/Participating", plNameArray.to_json(), retain: true
+				@mqtt.publish_to "Lasertag/Game/ParticipatingPlayers", plNameArray.to_json(), retain: true
 			end
 			def each_participating()
 				@gamePlayers.each do |pl|
