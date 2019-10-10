@@ -38,13 +38,13 @@ module LZRTag
 					@hookList << hookData[0].new(@handler, **hookData[1])
 				end
 
-				@tickTime = 0.3;
+				@tickTime = 0.1;
 
 				@phaseMap = self.class.get_phase_map();
 				@phasePrepMap = self.class.get_phase_prep_map();
 				@phaseEndMap = self.class.get_phase_end_map();
 
-				@phases = [@phaseMap.keys, @phasePrepMap.keys].flatten
+				@phases = [@phaseMap.keys, @phasePrepMap.keys].flatten.uniq
 
 				@phaseTime = 0;
 				@phaseLastTime = 0;
