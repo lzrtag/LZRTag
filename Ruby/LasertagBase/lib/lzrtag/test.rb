@@ -100,15 +100,12 @@ class TestGame < LZRTag::Game::Base
 	end
 
 	phase :running do
+		@handler.stop_game() if @phaseTime > 0
 	end
 end
 
+$handler.register_game("Test", TestGame);
 $handler.start_game(TestGame);
-
-$handler.each do |pl|
-	pl.ammo = 100;
-	pl.gunNo = 2;
-end
 
 while(true) do
 	sleep 0.5;
