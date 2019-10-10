@@ -31,7 +31,7 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-$mqtt = MQTT::SubHandler.new("192.168.178.50");
+$mqtt = MQTT::SubHandler.new("mqtts://0XpEgUMxDedUA2H4MXFokuuOm2dOep53cjxg39BubCeBvJt5uWkEhEgruj3xwYqw:test@mqtt.flespi.io");
 
 $handler = LZRTag.Handler.new($mqtt);
 
