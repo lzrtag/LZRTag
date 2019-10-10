@@ -123,14 +123,15 @@ module LZRTag
 			end
 
 			def handle_game_tick(dT)
-				return unless @phaseMap[@handler.gamePhase];
-				return if @handler.gamePhase == :idle;
+				phase = @handler.gamePhase
+				return unless @phaseMap[phase];
+				return if phase == :idle;
 
 				@phaseLastTime = @phaseTime;
 				@phaseTime += dT;
 				@handler.mqtt.publish_to "Lasertag/Game/Timer", @phaseTime
 
-				instance_exec(dT, &@phaseMap[@handler.gamePhase]);
+				instance_exec(dT, &@phaseMap[phase]);
 			end
 		end
 	end
