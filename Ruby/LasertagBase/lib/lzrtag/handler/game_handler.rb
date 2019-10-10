@@ -62,6 +62,7 @@ module LZRTag
 						@currentGame = @nextGame;
 						set_phase(:starting);
 
+						@lastTick = Time.now();
 						while(@currentGame == @nextGame)
 							sleep @currentGame.tickTime
 							dT = Time.now() - @lastTick;
@@ -117,11 +118,17 @@ module LZRTag
 				@mqtt.publish_to "Lasertag/Game/CurrentGame", "", retain: true
 			end
 
-			def set_phase(nextPhase)
+			def get_allowed_phases()
 				allowedPhases = [:idle]
 				if(@currentGame)
 					allowedPhases = [allowedPhases, @currentGame.phases].flatten
 				end
+
+				return allowedPhases;
+			end
+
+			def set_phase(nextPhase)
+				allowedPhases = get_allowed_phases();
 
 				puts "Allowed phases are: #{allowedPhases}"
 				raise ArgumentError, "Phase must be valid!" unless allowedPhases.include? nextPhase
