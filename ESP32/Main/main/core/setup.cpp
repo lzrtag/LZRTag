@@ -259,7 +259,7 @@ void setup() {
 	IR::init();
 	GYR::init();
 
-	xTaskCreate(housekeeping_thread, "Housekeeping", 2*1024, nullptr, 10, nullptr);
+	xTaskCreate(housekeeping_thread, "Housekeeping", 3*1024, nullptr, 10, nullptr);
 
 	setup_audio();
 
