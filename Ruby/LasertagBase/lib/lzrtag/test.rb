@@ -77,9 +77,6 @@ class TestGame < LZRTag::Game::Base
 			pl.heartbeat = true;
 		end
 	end
-	phase_end :countdown do
-		@handler.each_participating do |pl| pl.heartbeat = false; end
-	end
 
 	phase :countdown do |dT|
 		if(@phaseTime >= 0)
@@ -90,6 +87,11 @@ class TestGame < LZRTag::Game::Base
 			@nextBeep += 1;
 		end
 	end
+
+	phase_end :countdown do
+		@handler.each_participating do |pl| pl.heartbeat = false; end
+	end
+
 
 	phase_prep :running do
 		@phaseTime = -3*60;
