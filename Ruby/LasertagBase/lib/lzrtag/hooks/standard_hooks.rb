@@ -56,7 +56,7 @@ module LZRTag
 				case(nextPhase)
 				when :teamSelect
 					@handler.each do |pl|
-						pl.brightness = (pl.gyroPose == :laidDown) ? :idle : :teamSelect;
+						pl.brightness = :idle;
 
 						if(!@possibleTeams.include?(pl.team))
 							pl.team = @possibleTeams.sample();
@@ -78,7 +78,7 @@ module LZRTag
 
 			on :navSwitchPressed do |player, dir|
 				next if(@handler.gamePhase != :teamSelect)
-				next if player.brightness != :teamSelect
+				next unless [:teamSelect, :idle].include? player.brightness
 
 				newTeam = @possibleTeams.find_index(player.team) || 0;
 
@@ -86,8 +86,11 @@ module LZRTag
 				newTeam -= 1 if(dir == 3)
 
 				player.team = @possibleTeams[newTeam % @possibleTeams.length]
-
-				player.brightness = :active if(dir == 1)
+				if(dir == 1)
+					player.brightness = :active
+				else
+					player.brightness = :teamSelect
+				end
 			end
 		end
 
