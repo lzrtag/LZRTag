@@ -64,6 +64,8 @@ module LZRTag
 						sleep 0.5;
 					}
 				end
+
+				puts "I LZR::Handler init finished".green
 			end
 
 			def send_event(evtName, *data)
