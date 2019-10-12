@@ -31,13 +31,10 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-$mqtt = MQTT::SubHandler.new("mqtts://0XpEgUMxDedUA2H4MXFokuuOm2dOep53cjxg39BubCeBvJt5uWkEhEgruj3xwYqw:test@mqtt.flespi.io");
-
+$mqtt = MQTT::SubHandler.new("mqtt://192.168.6.27");
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
-
-sleep 3
 
 class TestGame < LZRTag::Game::Base
 	def initialize(handler)
@@ -61,7 +58,7 @@ class TestGame < LZRTag::Game::Base
 	end
 
 	phase :teamSelect do |dT|
-		if(@handler.brightnessCount[:active] >= 1)
+		if((@handler.brightnessCount[:active] >= 1) && (@handler.brightnessCount[:teamSelect] == 0))
 			@handler.set_phase(:countdown)
 		end
 	end
@@ -107,6 +104,9 @@ class TestGame < LZRTag::Game::Base
 end
 
 $handler.register_game("Test", TestGame);
+
+sleep 3
+
 $handler.start_game(TestGame);
 
 while(true) do
