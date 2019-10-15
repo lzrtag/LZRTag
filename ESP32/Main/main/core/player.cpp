@@ -92,9 +92,9 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 }
 
 void Player::init() {
-    Xasin::MQTT::Handler::start_wifi("TP-LINK_84CDC2\0", "f36eebda48\0");
+    Xasin::MQTT::Handler::start_wifi("Lasertag\0", "\0");
 
-	 mqtt.start("mqtt://0XpEgUMxDedUA2H4MXFokuuOm2dOep53cjxg39BubCeBvJt5uWkEhEgruj3xwYqw@mqtt.flespi.io", get_topic_base() + "/Connection");
+	 mqtt.start("mqtt://192.168.250.1", get_topic_base() + "/Connection");
 	mqtt.set_status("OK");
 }
 
