@@ -26,7 +26,7 @@ module LZRTag
 
 				_start_game_thread();
 
-				@mqtt.subscribe_to "Lasertag/Game/Controls/#" do |data, topics|
+				@mqtt.subscribe_to "Lasertag/Game/Controls/+" do |data, topics|
 					case topics[0]
 					when "SetPhase"
 						phase = data.to_sym;
@@ -50,7 +50,7 @@ module LZRTag
 
 			def clean_game_topics()
 				@mqtt.publish_to "Lasertag/Game/ParticipatingPlayers", [].to_json(), retain: true
-				@mqtt.publish_to "Lasertag/Game/KnownGames", @knownGames.keys.to_json, retain: true;
+				@mqtt.publish_to "Lasertag/Game/KnownGames", [].to_json, retain: true;
 				@mqtt.publish_to "Lasertag/Game/CurrentGame", "", retain: true
 			end
 
@@ -130,7 +130,6 @@ module LZRTag
 			def set_phase(nextPhase)
 				allowedPhases = get_allowed_phases();
 
-				puts "Allowed phases are: #{allowedPhases}"
 				raise ArgumentError, "Phase must be valid!" unless allowedPhases.include? nextPhase
 
 				oldPhase = @gamePhase
