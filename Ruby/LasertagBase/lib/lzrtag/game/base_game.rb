@@ -51,6 +51,10 @@ module LZRTag
 			end
 
 			def self.hook(hookType, hookOptions = {})
+				unless hookType.is_a? Class and hookType < LZRTag::Hook::Base
+					raise ArgumentError, "Hook needs to be a LZR::Hook!"
+				end
+				raise ArgumentError, "Hook options need to be a hash" unless hookOptions.is_a? Hash
 				get_hooks() << [hookType, hookOptions];
 			end
 

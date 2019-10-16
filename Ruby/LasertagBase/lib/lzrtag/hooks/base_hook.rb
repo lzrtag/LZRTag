@@ -13,7 +13,6 @@ module LZRTag
 
 			def initialize(handler)
 				@localCBList = Hash.new();
-				@activePhases = Array.new();
 
 				@handler = handler
 			end
