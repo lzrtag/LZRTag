@@ -34,7 +34,13 @@ module LZRTag
 				return if (sourcePlayer.hitIDTimetable[arbCode] + 1) > Time.now();
 
 				veto = false;
-				@hooks.each do |h|
+				hookList = Array.new();
+				hookList << @hooks;
+				if(@currentGame)
+					hookList << @currentGame.hookList
+				end
+				hookList.flatten!
+				hookList.each do |h|
 					veto |= !(h.process_raw_hit(hitPlayer, sourcePlayer));
 				end
 				return if veto;

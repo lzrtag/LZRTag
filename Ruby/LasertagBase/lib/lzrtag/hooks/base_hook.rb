@@ -6,9 +6,22 @@ module LZRTag
 				@globalCBList ||= Hash.new();
 				return @globalCBList;
 			end
+			def self.getOptionDescriptions()
+				@globalOptionDescriptions ||= Hash.new();
+				return @globalOptionDescriptions
+			end
 
-			def initialize()
+			def initialize(handler)
 				@localCBList = Hash.new();
+
+				@handler = handler
+			end
+
+			def self.describe_option(optionSymbol, descString, extraDetails = {})
+				raise ArgumentError, "Option shall be a symbol!" unless optionSymbol.is_a? Symbol
+				raise ArgumentError, "Description should be a string!" unless descString.is_a? String
+				getOptionDescriptions()[optionSymbol] = extraDetails;
+				getOptionDescriptions()[optionSymbol][:desc] = descString;
 			end
 
 			def self.on(evtName, &block)
@@ -42,7 +55,9 @@ module LZRTag
 					cbList.each do |cb|
 						begin
 							instance_exec(*data, &cb);
-						rescue
+						rescue StandardError => e
+							puts e.message
+							puts e.backtrace.inspect
 						end
 					end
 				end
@@ -50,7 +65,9 @@ module LZRTag
 					cbList.each do |cb|
 						begin
 							cb.call(*data);
-						rescue
+						rescue StandardError => e
+							puts e.message
+							puts e.backtrace.inspect
 						end
 					end
 				end
