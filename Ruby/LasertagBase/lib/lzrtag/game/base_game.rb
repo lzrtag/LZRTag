@@ -1,35 +1,58 @@
 
 require_relative '../hooks/base_hook.rb'
 
+# @author Xasin
 module LZRTag
 	module Game
+		# The base game class.
+		# It implements a DSL that allows users to easily
+		# define their own games, and hooks in with the
+		# game event system
 		class Base < Hook::Base
 			attr_reader :hookList
 			attr_reader :tickTime
 
 			attr_reader :phases
 
+			# @private
+			# This function is meant for the DSL,
+			# to allow adding to the class itself
 			def self.get_phase_map()
 				@globalPhaseMap ||= Hash.new();
 				return @globalPhaseMap;
 			end
+			# @private
+			# See get_phsae_map()
 			def self.get_phase_prep_map()
 				@globalPhasePrepMap ||= Hash.new();
 				return @globalPhasePrepMap;
 			end
+			# @private
+			# See get_phase_map()
 			def self.get_phase_end_map()
 				@globalPhaseEndMap ||= Hash.new();
 				return @globalPhaseEndMap;
 			end
+			# @private
+			# See get_phase_map()
 			def self.get_hooks()
 				@globalHookList ||= Array.new();
 				return @globalHookList;
 			end
 
+			# This function returns a list of possible phases
+			# and their tick callbacks
 			def get_phase_map()
 				return @phaseMap
 			end
 
+			# Initializes a generic game handler.
+			# This function is usually not called by the user,
+			# but instead by the LZRTag::Handler::Game when
+			# starting a game.
+			# @param handler [LZRTag::Handler::Base] any valid
+			# 		LZRTag handler that the game shall follow
+			#
 			def initialize(handler)
 				super(handler)
 
