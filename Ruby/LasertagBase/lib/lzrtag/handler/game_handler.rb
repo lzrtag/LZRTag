@@ -166,6 +166,7 @@ module LZRTag
 					raise ArgumentError, "Game class needs to be specified!"
 				end
 				@nextGame = game;
+				send_event(:gameStarting, @nextGame);
 
 				@gameTickThread.run();
 				@mqtt.publish_to "Lasertag/Game/Phase/Valid",
@@ -204,11 +205,11 @@ module LZRTag
 				puts "Phase started: #{nextPhase}!".green;
 
 				oldPhase = @gamePhase
-				@gamePhase = nextPhase;
 				send_event(:gamePhaseEnds, oldPhase, nextPhase)
-				send_event(:gamePhaseStarts, nextPhase, oldPhase);
-				@mqtt.publish_to "Lasertag/Game/Phase/Current", @gamePhase.to_s, retain: true
 
+				@mqtt.publish_to "Lasertag/Game/Phase/Current", @gamePhase.to_s, retain: true
+				@gamePhase = nextPhase;
+				send_event(:gamePhaseStarts, nextPhase, oldPhase);
 			end
 			# Alias for set_phase
 			# @see set_phase
