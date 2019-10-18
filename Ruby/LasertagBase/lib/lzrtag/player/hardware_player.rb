@@ -217,7 +217,10 @@ module LZRTag
 
 				return if(@gunNo == n)
 
+				oldGun = @gunNo;
 				@gunNo = n;
+				@handler.send_event(:playerGunChanged, self, n, oldGun);
+				
 				_pub_to("CFG/GunNo", n, retain: true);
 			end
 
