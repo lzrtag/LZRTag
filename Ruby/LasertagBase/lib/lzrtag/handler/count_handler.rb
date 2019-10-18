@@ -31,6 +31,7 @@ module LZRTag
 				end
 			end
 
+			# @private
 			def consume_event(evtName, data)
 				super(evtName, data);
 
