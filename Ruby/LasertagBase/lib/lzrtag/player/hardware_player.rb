@@ -19,6 +19,8 @@ module LZRTag
 			# Setting it to a number will publish to /DeviceID/CFG/Team,
 			# changing the color of the weapon. Interpret it as binary string,
 			# with 1 being red, 2 green and 4 blue.
+			#
+			# Changes trigger the :playerTeamChanged event, with [player, oldTeam] data
 			attr_reader :team
 			# Current brightness of the weapon.
 			# @return [Symbol] Symbol describing the current brightness.
@@ -27,11 +29,13 @@ module LZRTag
 			# - :teamSelect (team-colored with rainbow overlay)
 			# - :dead (low brightness, team colored with white overlay)
 			# - :active (bright, flickering and in team color)
+			#
+			# A change will trigger the :playerBrightnessChanged event, with data [player, oldBrightness]
 			attr_reader :brightness
 
 			# Whether or not the player is currently dead.
-			# Set this to kill the player. Will trigger a :playerKilled event, although
-			# kill_by is preferred to also specify which player killed.
+			# Set this to kill the player. Will trigger a :playerKilled or :playerRevived event,
+			# although kill_by is preferred to also specify which player killed.
 			attr_reader :dead
 			# Last time the death status changed (killed/revivied).
 			# Especially useful to determine when to revive a player
@@ -42,12 +46,20 @@ module LZRTag
 			attr_reader :ammo
 			# Maximum ammo the weapon can have with the currently equipped gun.
 			attr_reader :maxAmmo
+			# Number of the current gun.
+			# The application can freely choose which gun profile the set is using,
+			# which influences shot speeds, sounds, reloading, etc.
 			attr_reader :gunNo
 
+			# Returns the gyro pose of the set.
+			# This is either:
+			# - :active
+			# - :laidDown
+			# - :pointsUp
+			# - :pointsDown
+			# Changes are triggered by the set itself, if it has a gyro.
+			# The :poseChanged event is sent on change with [player, newPose] data
 			attr_reader :gyroPose
-
-			attr_reader :position
-			attr_reader :zoneIDs
 
 			attr_reader :battery, :ping, :heap
 
@@ -86,6 +98,10 @@ module LZRTag
 				];
 			end
 
+			# @private
+			# This function processes incoming MQTT data.
+			# The user must not call this, since it is handled by the
+			# LZRTag base handler
 			def on_mqtt_data(data, topic)
 				case topic[1..topic.length].join("/")
 				when "HW/Ping"
@@ -205,8 +221,13 @@ module LZRTag
 				_pub_to("CFG/GunNo", n, retain: true);
 			end
 
+			# Return the averaged damage the player's gun should do.
+			# This function is very useful to calculate the damage a player did
+			# per shot. The returned number tries to average damage to "1 DPS" for
+			# all weapons regardless of speed etc., which the application can
+			# multiply for a given total damage, creating a more balanced game.
 			def gunDamage(number = nil)
-				number = @gunNo if(number.nil?)
+				number ||= @gunNo
 
 				return @GunDamageMultipliers[number-1] || 1;
 			end
