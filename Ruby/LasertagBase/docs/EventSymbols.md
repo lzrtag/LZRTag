@@ -8,7 +8,7 @@ however, only the following event symbols and payloads will be used by the provi
 ## Game related events
 
 ###### :gameTick
-Triggered in regular intervals, default 0.1s
+Triggered in regular intervals, default 0.1s  
 Payload is [deltaTime since last tick].
 It is only triggered when a game is present.
 
@@ -94,9 +94,24 @@ things like the heartbeat.
 ###### :playerRegenerated
 Triggered whenever the player gains a bit of health, this can be by self-healing or
 by a medic or similar providing health.  
-Payload is [thePlayer, deltaLife]
+Payload is [thePlayer, deltaLife, sourcePlayer | nil]
 
 ###### :playerFullyRegenerated
 Triggered similarly to :playerRegenerated, but only whenever the player has fully
 regenerated and has reached maxLife again.  
-Payload is [thePlayer]
+Payload is [thePlayer, sourcePlayer | nil]
+
+###### :playerHurt
+Triggered whenever a player is hurt after a hit arbitration
+and damage calculation, or by other game events.  
+Payload is [thePlayer, deltaLife]
+
+###### :playerRevived
+Triggered whenever a player was revivied, either by a timeout
+or by regenerating enough health, or by another person.  
+Payload is [thePlayer, sourcePlayer]
+
+###### :playerKilled
+Triggered whenever a player was killed, often by another player,
+but can be by system damage (killzones etc.)  
+Payload is [thePlayer, sourcePlayer | nil]

@@ -199,6 +199,10 @@ module LZRTag
 				return if @dead;
 				_set_dead(true, player);
 			end
+			def revive_by(player)
+				return unless @dead
+				_set_dead(false, player)
+			end
 
 			def ammo=(n)
 				unless (n.is_a?(Integer) and (n >= 0))
@@ -220,7 +224,7 @@ module LZRTag
 				oldGun = @gunNo;
 				@gunNo = n;
 				@handler.send_event(:playerGunChanged, self, n, oldGun);
-				
+
 				_pub_to("CFG/GunNo", n, retain: true);
 			end
 
