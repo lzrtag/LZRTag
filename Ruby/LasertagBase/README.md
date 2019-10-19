@@ -47,6 +47,7 @@ new players. If you look at your MQTT Server, for example with MQTT-Spy, you
 should see that any connected players will now have an ID.
 
 Let's see what players the system has already registered:
+
 ```irb
 irb(main):004:0> handler.each do |player| puts player; end;
 #<Player:DEVICE_ID#OFFLINE, Team=0, Battery=4.19, Ping=218ms>
@@ -58,6 +59,7 @@ Alright, we need to fetch one single player to play with. If you have a device I
 (their MAC, used on the MQTT network to identify them) you can use that, otherwise
 use the ShotID (number, 0..255). Let's do  that now - and while we're at it,
 let's identify the player:
+
 ```irb
 irb(main):005:0> player = handler["BC.DD.C2.D0.63.F8"]
 => #<Player:#OFFLINE, Team=0, Battery=4.19, Heap=0, Ping=218ms>
