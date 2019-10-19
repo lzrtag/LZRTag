@@ -91,10 +91,9 @@ module LZRTag
 			end
 
 			def inspect()
-				iString =  "#<Player:#{@name}##{@id ? @id : "OFFLINE"}, Team=#{@team}";
+				iString =  "#<Player:#{@deviceID}##{@id ? @id : "OFFLINE"}, Team=#{@team}";
 				iString += ", DEAD" if @dead
 				iString += ", Battery=#{@battery.round(2)}"
-				iString += ", Heap=#{@heap}" if @heap < 10000;
 				iString += ", Ping=#{@ping.ceil}ms>";
 
 				return iString;

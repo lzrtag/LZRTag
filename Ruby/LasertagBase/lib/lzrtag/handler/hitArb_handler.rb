@@ -19,8 +19,8 @@ module LZRTag
 		# preventing this shot from being logged and thusly enabling multiple hits
 		# @see Base
 		class HitArb < Base
-			def initialize(mqtt)
-				super(mqtt);
+			def initialize(*data, **options)
+				super(*data, **options);
 
 				@mqtt.subscribe_to "Lasertag/Game/Events" do |data|
 					begin
