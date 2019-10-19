@@ -38,7 +38,7 @@ module LZRTag
 			# or :playerFullyRegenerated [player]
 			# if a player's life was increased to the maximum value.
 			# @param amount [Numeric] Amount of life to add
-			def regenerate(amount)
+			def regenerate(amount, source = nil)
 				unless((amount.is_a? Numeric) && amount >= 0)
 					raise ArgumentError, "Amount needs to be a positive number!"
 				end
@@ -50,9 +50,9 @@ module LZRTag
 				oLife = @life;
 				@life = nLife;
 
-				@handler.send_event(:playerRegenerated, self, @life - oLife);
+				@handler.send_event(:playerRegenerated, self, @life - oLife, source);
 				if(@life == maxLife)
-					@handler.send_event(:playerFullyRegenerated, self);
+					@handler.send_event(:playerFullyRegenerated, self, source);
 				end
 
 				_pub_to("Stats/HP", @life.to_s, retain: true);
