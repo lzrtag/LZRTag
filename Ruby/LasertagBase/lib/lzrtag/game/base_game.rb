@@ -17,7 +17,7 @@ module LZRTag
 		#
 		#      hook :dmgHook, LZRTag::Hook::Damager
 		#
-		#      phase :running do |deltaTick|
+		#      phase :starting do |deltaTick|
 		#         puts "I tick!"
 		#      end
 		#
@@ -81,9 +81,9 @@ module LZRTag
 			def initialize(handler)
 				super(handler)
 
-				@hookList = Array.new();
+				@hookList = Hash.new();
 				self.class.get_hooks().each do |hookID, hookData|
-					@hookList << hookData[0].new(@handler, **hookData[1])
+					@hookList[hookID] = hookData[0].new(@handler, **hookData[1])
 				end
 
 				@tickTime = 0.1;
@@ -113,7 +113,7 @@ module LZRTag
 					raise ArgumentError, "Hook needs to be a LZR::Hook!"
 				end
 				raise ArgumentError, "Hook options need to be a hash" unless hookOptions.is_a? Hash
-				get_hooks()[hookID] << [hookType, hookOptions];
+				get_hooks()[hookID] = [hookType, hookOptions];
 			end
 
 			# DSL function to provide a phase tick code to this game
@@ -188,7 +188,7 @@ module LZRTag
 					end
 				end
 
-				@hookList.each do |hook|
+				@hookList.each do |hookID, hook|
 					hook.consume_event(evt, data);
 				end
 			end
