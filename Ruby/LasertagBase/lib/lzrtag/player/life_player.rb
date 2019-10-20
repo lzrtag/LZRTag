@@ -18,7 +18,7 @@ module LZRTag
 
 			# Returns the last time the player was damaged.
 			# This can be useful to apply buffs and other data, as well as
-			# "post-damage regenration delay"
+			# "post-damage regeneration delay"
 			attr_reader :lastDamageTime
 
 			def initialize(*data)

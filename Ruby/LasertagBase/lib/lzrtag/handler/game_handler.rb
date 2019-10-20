@@ -122,6 +122,7 @@ module LZRTag
 			# A list of games is published to Lasertag/Game/KnownGames
 			# @param gameTag [String] Cleartext name of the game
 			# @param game [LZRTag::Game::Base] The game class to register
+			# @see start_game
 			def register_game(gameTag, game)
 				raise ArgumentError, "Game Tag must be a string!" unless gameTag.is_a? String
 				raise ArgumentError, "Game must be a LZRTag::Game class" unless game <= LZRTag::Game::Base
@@ -143,6 +144,10 @@ module LZRTag
 			# This function will take either a String (as registered with register_game),
 			# or a LZRTag::Game::Base class, instantiate it, and start it.
 			# If no fitting game was found, the game is instead stopped.
+			#
+			# @note The first phase that is started by default is :starting, the Game
+			#    class must define at least a phase_start hook to change the phase and
+			#    configure the game!
 			# @param game [String,LZRTag::Game::Base] The game, or game name, to start
 			def start_game(game = @lastGame)
 				@lastGame = game;

@@ -25,6 +25,7 @@ ruby console. It's a great way to see the immediate effects of various commands
 on the set, and is kinda fun, too.
 
 Let's first start up the console and require the library.
+
 ```IRB
 irb(main):001:0> require 'lzrtag.rb'
 => true
