@@ -146,7 +146,7 @@ module LZRTag
 			# If no fitting game was found, the game is instead stopped.
 			#
 			# @note The first phase that is started by default is :starting, the Game
-			#    class must define at least a phase_start hook to change the phase and
+			#    class must define at least a phase_prep hook to change the phase and
 			#    configure the game!
 			# @param game [String,LZRTag::Game::Base] The game, or game name, to start
 			def start_game(game = @lastGame)
