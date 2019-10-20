@@ -3,15 +3,26 @@ require 'mqtt/sub_handler'
 
 module LZRTag
 	module Player
+		# The base player class.
+		# This class is not instantiated by the user, but instead on a on-demand basis
+		# by the LZRTag::Handler::Base when a new PlayerID needs to be registered. The player classes
+		# process and send MQTT data, handle events, and keep track of per-player infos like life,
+		# damage, ammo, team, etc. etc.
 		class Base
 			attr_reader :handler
+			# @return [String] The player's DeviceID, which is derived from the ESP's MAC
 			attr_reader :DeviceID
 
+			# @return [String] Name of the player, set externally
 			attr_reader :name
 
+			# @return [String] status-string of the player. Should be "OK"
 			attr_reader :status
 
+			# @return [Integer] 0..255, shot ID of the player
 			attr_reader   :id
+			# @return [Hash<Time>] Hash of the last few recorded shot times,
+			#  used for hit arbitration
 			attr_accessor :hitIDTimetable
 
 			def initialize(deviceID, handler)
@@ -31,6 +42,7 @@ module LZRTag
 			end
 			private :_pub_to
 
+			# @private
 			def on_mqtt_data(data, topic)
 				case topic[1..topic.length].join("/")
 				when "Connection"
@@ -47,10 +59,15 @@ module LZRTag
 				end
 			end
 
+			# @return [Boolean] Whether this player is connected
 			def connected?()
 				return @status == "OK"
 			end
 
+			# Set the Shot ID of the player.
+			# @note Do not call this function yourself - the Handler must
+			#   assign unique IDs to ensure proper game functionality!
+			# @private
 			def id=(n)
 				return if @id == n;
 
@@ -66,15 +83,17 @@ module LZRTag
 				_pub_to("CFG/ID", @id, retain: true);
 			end
 
+			# Trigger a clear of all topics
+			# @note Do not call this function yourself, except when deregistering a player!
+			# @private
 			def clear_all_topics()
 				self.id = nil;
 			end
 
 			def inspect()
-				iString =  "#<Player:#{@name}##{@id ? @id : "OFFLINE"}, Team=#{@team}";
+				iString =  "#<Player:#{@deviceID}##{@id ? @id : "OFFLINE"}, Team=#{@team}";
 				iString += ", DEAD" if @dead
 				iString += ", Battery=#{@battery.round(2)}"
-				iString += ", Heap=#{@heap}" if @heap < 10000;
 				iString += ", Ping=#{@ping.ceil}ms>";
 
 				return iString;

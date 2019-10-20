@@ -5,20 +5,61 @@ require_relative 'base_player.rb'
 
 module LZRTag
 	module Player
+		# Hardware-handling player class.
+		# This class extends the base player, adding more hardware-related
+		# functionality and interfaces, such as:
+		# - Team setting
+		# - Brightness setting
+		# - Note playing
+		# - Gyro and button readout
+		# - Ping and Battery reading
+		# etc.
 		class Hardware < Base
+			# The team (0..7) of this player.
+			# Setting it to a number will publish to /DeviceID/CFG/Team,
+			# changing the color of the weapon. Interpret it as binary string,
+			# with 1 being red, 2 green and 4 blue.
+			#
+			# Changes trigger the :playerTeamChanged event, with [player, oldTeam] data
 			attr_reader :team
+			# Current brightness of the weapon.
+			# @return [Symbol] Symbol describing the current brightness.
+			# Possible brightnesses are:
+			# - :idle (low, slow brightness, white with slight team hue)
+			# - :teamSelect (team-colored with rainbow overlay)
+			# - :dead (low brightness, team colored with white overlay)
+			# - :active (bright, flickering and in team color)
+			#
+			# A change will trigger the :playerBrightnessChanged event, with data [player, oldBrightness]
 			attr_reader :brightness
 
-			attr_reader :dead, :deathChangeTime
+			# Whether or not the player is currently dead.
+			# Set this to kill the player. Will trigger a :playerKilled or :playerRevived event,
+			# although kill_by is preferred to also specify which player killed.
+			attr_reader :dead
+			# Last time the death status changed (killed/revivied).
+			# Especially useful to determine when to revive a player
+			attr_reader :deathChangeTime
 
+			# Current ammo of the weapon.
+			# TODO one day this should be settable. Right now, it's just reading
 			attr_reader :ammo
+			# Maximum ammo the weapon can have with the currently equipped gun.
 			attr_reader :maxAmmo
+			# Number of the current gun.
+			# The application can freely choose which gun profile the set is using,
+			# which influences shot speeds, sounds, reloading, etc.
 			attr_reader :gunNo
 
+			# Returns the gyro pose of the set.
+			# This is either:
+			# - :active
+			# - :laidDown
+			# - :pointsUp
+			# - :pointsDown
+			# Changes are triggered by the set itself, if it has a gyro.
+			# The :poseChanged event is sent on change with [player, newPose] data
 			attr_reader :gyroPose
-
-			attr_reader :position
-			attr_reader :zoneIDs
 
 			attr_reader :battery, :ping, :heap
 
@@ -57,6 +98,10 @@ module LZRTag
 				];
 			end
 
+			# @private
+			# This function processes incoming MQTT data.
+			# The user must not call this, since it is handled by the
+			# LZRTag base handler
 			def on_mqtt_data(data, topic)
 				case topic[1..topic.length].join("/")
 				when "HW/Ping"
@@ -154,6 +199,10 @@ module LZRTag
 				return if @dead;
 				_set_dead(true, player);
 			end
+			def revive_by(player)
+				return unless @dead
+				_set_dead(false, player)
+			end
 
 			def ammo=(n)
 				unless (n.is_a?(Integer) and (n >= 0))
@@ -172,12 +221,20 @@ module LZRTag
 
 				return if(@gunNo == n)
 
+				oldGun = @gunNo;
 				@gunNo = n;
+				@handler.send_event(:playerGunChanged, self, n, oldGun);
+
 				_pub_to("CFG/GunNo", n, retain: true);
 			end
 
+			# Return the averaged damage the player's gun should do.
+			# This function is very useful to calculate the damage a player did
+			# per shot. The returned number tries to average damage to "1 DPS" for
+			# all weapons regardless of speed etc., which the application can
+			# multiply for a given total damage, creating a more balanced game.
 			def gunDamage(number = nil)
-				number = @gunNo if(number.nil?)
+				number ||= @gunNo
 
 				return @GunDamageMultipliers[number-1] || 1;
 			end

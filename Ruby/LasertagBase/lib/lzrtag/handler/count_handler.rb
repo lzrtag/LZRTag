@@ -4,8 +4,17 @@ require_relative '../player/hardware_player.rb'
 
 module LZRTag
 	module Handler
+		# This class provides useful statistics about the current game and situation.
+		#
+		# The various readable attributes contain various information on the game, such as
+		# current kill count, damage done, team and brightness composition, etc.
+		# Most of this information can be used to determine game progress
 		class Count < HitArb
+			# Returns a Hash with keys 0..7, describing which teams have
+			# how many players
 			attr_reader :teamCount
+			# Returns a Hash with keys equal to player's brightnesses, describing
+			# how many players have which brightness
 			attr_reader :brightnessCount
 
 			def initialize(*args, **argHash)
@@ -22,6 +31,7 @@ module LZRTag
 				end
 			end
 
+			# @private
 			def consume_event(evtName, data)
 				super(evtName, data);
 
