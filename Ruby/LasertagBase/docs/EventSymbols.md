@@ -15,6 +15,11 @@ It is only triggered when a game is present.
 *Game class alternative:* Describe per-tick code using the
 "phase" DSL. It allows easy and clean specification of tick code.
 
+###### :slowTick
+Sent in regular intervals (0.5s) as a slower alternative to :gameTick for less
+critical tasks. This for example handles player beacon entering/leaving as well
+as slow timeouts.
+
 ###### :gameStarting
 Triggered when a new game is selected, either in Ruby or via MQTT.  
 Payload is [newGame]
@@ -85,6 +90,22 @@ Payload is [thePlayer, newGun, oldGun]
 
 *TODO:* The gun number should be replaced by an ID string, when the
 gun configuration is moved to a Filesystem-based one (possibly by loading from JSON)
+
+###### :playerEnteredBeacon
+Triggered once when a player receives a new IR Beacon signal, of a beacon that
+he has not seen for the last 3s, to indicate that the Player entered a new zone.  
+Payload is [thePlayer, beaconID]
+
+###### :playerInBeacon
+Triggered for every single beacon pulse a player receives from a IR Beacon.  
+This can be useful to handle time-continuous beacon interaction, such as being
+healed by a beacon, or a capture point.  
+Payload is [thePlayer, beaconID]
+
+###### :playerLeftBeacon
+Triggered once when a player does not see a beacon ID for at least 3s, indicating
+that the player has left a zone.  
+Payload is [thePlayer, beaconID]
 
 ## Player life signals
 These signals are sent whenever the player's HP count or life status is changed,

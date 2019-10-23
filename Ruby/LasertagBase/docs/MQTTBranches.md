@@ -60,6 +60,7 @@ They all relate to the hardware of the system, such as battery etc.
 |Ping|uint32_t[3]|Battery, free-heap and ping data|No|
 |NSwitch|STR Number|Navigation switch press info (0-3)|No|
 |Gyro|String|Clear string of the pose the gyroscope is reporting|Yes|
+|BeaconDetect|STR Number|Number of the beacon signal that was detected (0-255)|No|
 
 ### Statistics Attributes
 
