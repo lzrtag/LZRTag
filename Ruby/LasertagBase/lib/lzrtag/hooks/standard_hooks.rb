@@ -7,8 +7,8 @@ module LZRTag
 			attr_accessor :eventWhitelist
 			attr_accessor :eventBlacklist
 
-			def initialize()
-				super();
+			def initialize(handler)
+				super(handler);
 
 				@eventWhitelist = Array.new();
 				@eventBlacklist = [:slowTick, :gameTick, :playerInBeacon];
