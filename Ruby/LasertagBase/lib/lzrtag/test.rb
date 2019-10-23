@@ -2,19 +2,12 @@
 
 require_relative '../lzrtag.rb'
 
-class DebugHook < LZRTag::Hook::Base
+class DebugHook < LZRTag::Hook::Debug
 	def initialize(handler)
 		super(handler);
 
-		@eventBlacklist << [:gameTick, :playerRegenerated, :gameStarted, :gameStarting];
+		@eventBlacklist [:gameTick, :playerRegenerated, :gameStarted, :gameStarting];
 		@eventBlacklist.flatten!
-	end
-
-	def consume_event(evtName, data)
-		super(evtName, data);
-
-		return if @eventBlacklist.include? evtName
-		puts "Caught event: #{evtName} with data: #{data}";
 	end
 end
 
