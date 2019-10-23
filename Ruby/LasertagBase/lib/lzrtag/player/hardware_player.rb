@@ -61,6 +61,9 @@ module LZRTag
 			# The :poseChanged event is sent on change with [player, newPose] data
 			attr_reader :gyroPose
 
+			# Returns a Hash of the last timestamps when a beacon was detected
+			attr_reader :beaconTimes
+
 			attr_reader :battery, :ping, :heap
 
 			def self.getBrightnessKeys()
@@ -84,6 +87,9 @@ module LZRTag
 
 				@position = {x: 0, y: 0}
 				@zoneIDs  = Hash.new();
+
+				@beaconTimes = Hash.new();
+				@BeaconTimeout = 3;
 
 				@battery = 0; @ping = 0; @heap = 0;
 
@@ -135,6 +141,13 @@ module LZRTag
 				when "HW/Gyro"
 					@gyroPose = data.to_sym
 					@handler.send_event(:poseChanged, self, @gyroPose);
+				when "HW/BeaconDetect"
+					beaconID = data.to_i;
+					unless(@beaconTimes[beaconID])
+						@handler.send_event(:playerEnteredBeacon, self, beaconID);
+					end
+					@beaconTimes[beaconID] = Time.now();
+					@handler.send_event(:playerInBeacon, self, beaconID);
 				when "ZoneUpdate"
 					begin
 						data = JSON.parse(data, symbolize_names: true);
@@ -237,6 +250,16 @@ module LZRTag
 				number ||= @gunNo
 
 				return @GunDamageMultipliers[number-1] || 1;
+			end
+
+			def check_beacons()
+				bIDs = @beaconTimes.keys;
+				bIDs.each do |bID|
+					if((Time.now() - @beaconTimes[bID]) > @BeaconTimeout)
+						@handler.send_event(:playerLeftBeacon, self, bID);
+						@beaconTimes.delete(bID)
+					end
+				end
 			end
 
 			def clear_all_topics()

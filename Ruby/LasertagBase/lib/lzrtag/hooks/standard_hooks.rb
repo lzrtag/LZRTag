@@ -11,7 +11,7 @@ module LZRTag
 				super();
 
 				@eventWhitelist = Array.new();
-				@eventBlacklist = Array.new();
+				@eventBlacklist = [:slowTick, :gameTick, :playerInBeacon];
 			end
 
 			def consume_event(evtName, data)
@@ -37,16 +37,28 @@ module LZRTag
 				@possibleTeams = possibleTeams;
 			end
 
+			def in_phase
+				return @handler.gamePhase == :teamSelect;
+			end
+			def is_selecting(pl)
+				return ([:idle, :teamSelect].include? pl.brightness)
+			end
+
 			on :gamePhaseEnds do |oldPhase, nextPhase|
 				if((oldPhase == :teamSelect) && (nextPhase != :idle))
 					puts "Selecting active players!"
 
-					@handler.gamePlayers = Array.new();
+					nextPlayers = Array.new();
 					@handler.each do |pl|
-						if(pl.brightness == :active)
-							@handler.gamePlayers << pl;
+						if([:active, :teamSelect].include? pl.brightness)
+							nextPlayers << pl;
+						else
+							pl.team = 0;
+							pl.brightness = :idle;
 						end
 					end
+
+					@handler.gamePlayers = nextPlayers;
 
 					puts "Game players are: #{@handler.gamePlayers}"
 				end
@@ -58,27 +70,22 @@ module LZRTag
 					@handler.each do |pl|
 						pl.brightness = :idle;
 
-						if(!@possibleTeams.include?(pl.team))
+						unless(@possibleTeams.include?(pl.team))
 							pl.team = @possibleTeams.sample();
 						end
-					end
-				when :idle
-					@handler.each do |pl|
-						pl.brightness = :idle;
 					end
 				end
 			end
 
 			on :poseChanged do |pl, nPose|
-				next if(@handler.gamePhase != :teamSelect)
-				next if(pl.brightness == :active)
+				next unless in_phase
+				next unless is_selecting(pl)
 
 				pl.brightness = (pl.gyroPose == :laidDown) ? :idle : :teamSelect;
 			end
 
 			on :navSwitchPressed do |player, dir|
-				next if(@handler.gamePhase != :teamSelect)
-				next unless [:teamSelect, :idle].include? player.brightness
+				next unless in_phase
 
 				newTeam = @possibleTeams.find_index(player.team) || 0;
 
@@ -91,6 +98,26 @@ module LZRTag
 				else
 					player.brightness = :teamSelect
 				end
+			end
+
+			on :playerEnteredBeacon do |pl, beacon|
+				next unless in_phase
+
+				next unless is_selecting(pl)
+				next unless(@possibleTeams.include? beacon)
+
+				pl.team = beacon;
+				pl.brightness = :teamSelect;
+			end
+
+			on :playerLeftBeacon do |pl, beacon|
+				next unless in_phase
+
+				next unless(pl.team == beacon)
+				next unless is_selecting(pl)
+
+				pl.team = 0;
+				pl.brightness = :idle
 			end
 		end
 

@@ -226,24 +226,24 @@ module LZRTag
 			# @param [Array<LZRTag::Player::Base] Array of active players
 			def gamePlayers=(newPlayers)
 				raise ArgumentError, "Game player list shall be an array!" unless newPlayers.is_a? Array
+				oldGamePlayers = @gamePlayers.dup
 				@gamePlayers = newPlayers.dup;
 
 				@playerNames = Array.new();
 				plNameArray = Array.new();
 				@gamePlayers.each do |pl|
-					plNameArray << pl.deviceID();
+					plNameArray << pl.DeviceID();
 				end
 
-				newPlayers = @gamePlayers - @oldGamePlayers;
+				newPlayers = @gamePlayers - oldGamePlayers;
 				newPlayers.each do |pl|
 					send_event :playerEnteredGame, pl;
 				end
-				oldPlayers = @oldGamePlayers - @gamePlayers;
+				oldPlayers = oldGamePlayers - @gamePlayers;
 				oldPlayers.each do |pl|
 					send_event :playerLeftGame, pl;
 				end
 
-				@oldGamePlayers = @gamePlayers.dup;
 				@mqtt.publish_to "Lasertag/Game/ParticipatingPlayers", plNameArray.to_json(), retain: true
 			end
 

@@ -22,13 +22,11 @@ module LZRTag
 			def initialize(*data, **options)
 				super(*data, **options);
 
-				@mqtt.subscribe_to "Lasertag/Game/Events" do |data|
+				@mqtt.subscribe_to "Lasertag/Game/Events/Hits" do |data|
 					begin
 						data = JSON.parse(data, symbolize_names: true);
 
-						if(data[:type] == "hit")
-							_handle_hitArb(data);
-						end
+						_handle_hitArb(data);
 					rescue JSON::ParserError
 					end
 				end
@@ -36,6 +34,15 @@ module LZRTag
 
 			def process_raw_hit(*)
 				return true;
+			end
+
+			def consume_event(evt, data)
+				super(evt, data)
+				if(evt == :slowTick)
+					self.each do |pl|
+						pl.check_beacons();
+					end
+				end
 			end
 
 			def _handle_hitArb(data)
