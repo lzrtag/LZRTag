@@ -5,12 +5,15 @@ require_relative '../lzrtag.rb'
 class DebugHook < LZRTag::Hook::Base
 	def initialize(handler)
 		super(handler);
+
+		@eventBlacklist << [:gameTick, :playerRegenerated, :gameStarted, :gameStarting];
+		@eventBlacklist.flatten!
 	end
 
 	def consume_event(evtName, data)
 		super(evtName, data);
 
-		return if [:gameTick, :playerRegenerated, :gameStarted, :gameStarting].include? evtName
+		return if @eventBlacklist.include? evtName
 		puts "Caught event: #{evtName} with data: #{data}";
 	end
 end
@@ -41,9 +44,7 @@ class TestGame < LZRTag::Game::Base
 		super(handler);
 	end
 
-	hook :teamSelect, LZRTag::Hook::TeamSelector, {
-		possibleTeams: [1, 4]
-	}
+	hook :teamSelect, LZRTag::Hook::TeamSelector
 	hook :regenerator, LZRTag::Hook::Regenerator, {
 		regRate: 7,
 		regDelay: 3,
