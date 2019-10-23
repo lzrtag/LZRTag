@@ -232,7 +232,7 @@ module LZRTag
 				@playerNames = Array.new();
 				plNameArray = Array.new();
 				@gamePlayers.each do |pl|
-					plNameArray << pl.deviceID();
+					plNameArray << pl.DeviceID();
 				end
 
 				newPlayers = @gamePlayers - oldGamePlayers;
