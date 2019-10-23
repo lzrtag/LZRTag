@@ -36,6 +36,15 @@ module LZRTag
 				return true;
 			end
 
+			def consume_event(evt, data)
+				super(evt, data)
+				if(evt == :slowTick)
+					self.each do |pl|
+						pl.check_beacons();
+					end
+				end
+			end
+
 			def _handle_hitArb(data)
 				unless  (hitPlayer = get_player(data[:target])) and
 						  (sourcePlayer = get_player(data[:shooterID])) and

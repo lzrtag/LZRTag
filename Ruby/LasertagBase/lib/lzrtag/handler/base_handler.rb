@@ -48,6 +48,12 @@ module LZRTag
 					end
 				end
 				@eventThread.abort_on_exception = true;
+				Thread.new do
+					loop do
+						sleep 0.5;
+						send_event(:slowTick);
+					end
+				end
 
 				@mqtt.subscribe_to "Lasertag/Players/#" do |data, topic|
 					dID = topic[0];
