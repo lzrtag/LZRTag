@@ -61,6 +61,9 @@ module LZRTag
 			# The :poseChanged event is sent on change with [player, newPose] data
 			attr_reader :gyroPose
 
+			# Returns a Hash of the last timestamps when a beacon was detected
+			attr_reader :beaconTimes
+
 			attr_reader :battery, :ping, :heap
 
 			def self.getBrightnessKeys()
