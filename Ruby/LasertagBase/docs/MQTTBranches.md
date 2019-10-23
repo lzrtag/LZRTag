@@ -1,5 +1,17 @@
 # MQTT Branch setup description
 
+## Game Branches
+
+- Lasertag/Game/Events/Hits
+- Lasertag/Game/Controls/+
+	- SetPhase
+	- SetGame
+- Lasertag/Game/Phase/Valid
+- Lasertag/Game/ParticipatingPlayers
+- Lasertag/Game/KnownGames
+- Lasertag/Game/CurrentGame
+- Lasertag/Game/Phase/Current 
+
 ## Weapon Branches
 The weapons are the main unit of the Lasertag system. As such, they use a specific
 branch setup to minimize traffic to them, while making code maintaining easier.
