@@ -6,7 +6,7 @@ class DebugHook < LZRTag::Hook::Debug
 	def initialize(handler)
 		super(handler);
 
-		@eventBlacklist [:gameTick, :playerRegenerated, :gameStarted, :gameStarting];
+		@eventBlacklist = [:gameTick, :playerRegenerated, :gameStarted, :gameStarting];
 		@eventBlacklist.flatten!
 	end
 end
