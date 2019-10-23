@@ -17,6 +17,10 @@ module LZRTag
 			# how many players have which brightness
 			attr_reader :brightnessCount
 
+			# Returns a hash with keys of beacon numbers, describing
+			# how many players are in which beacon
+			attr_reader :beaconCount
+
 			def initialize(*args, **argHash)
 				super(*args, **argHash);
 
@@ -29,6 +33,8 @@ module LZRTag
 				Player::Hardware.getBrightnessKeys().each do |bKey|
 					@brightnessCount[bKey] = 0;
 				end
+
+				@beaconCount = Hash.new(0);
 			end
 
 			# @private
@@ -48,6 +54,10 @@ module LZRTag
 				when :playerBrightnessChanged
 					@brightnessCount[data[1]] -= 1;
 					@brightnessCount[data[0].brightness] += 1;
+				when :playerEnteredBeacon
+					@beaconCount[data[1]] += 1;
+				when :playerLeftBeacon
+					@beaconCount[data[1]] -= 1;
 				end
 			end
 		end
