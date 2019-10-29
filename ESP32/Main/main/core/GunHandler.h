@@ -24,6 +24,9 @@ using namespace Xasin::Peripheral;
 namespace Lasertag {
 
 enum FIRE_STATE {
+	NO_GUN,
+	WEAPON_SWITCH_DELAY,
+	RELOAD_DELAY,
 	WAIT_ON_VALID,
 	POST_TRIGGER_DELAY,
 	POST_TRIGGER_RELEASE,
@@ -36,8 +39,11 @@ enum FIRE_STATE {
 
 class GunSpecs {
 public:
-	int  maxAmmo;
-	int  currentAmmo;
+	int weaponSwitchDelay;
+
+	int currentReserveAmmo;
+	int clipSize;
+	int currentClipAmmo;
 
 	int  postTriggerTicks;
 	bool postTriggerRelease;
@@ -52,8 +58,7 @@ public:
 	int	 postSalveDelay;
 	bool postSalveRelease;
 
-	int	 postShotReloadBlock;
-	int	 postReloadReloadBlock;
+	int  perReloadDelay;
 	int  perReloadRecharge;
 
 	double perShotHeatup;
@@ -71,6 +76,7 @@ private:
 
 	FIRE_STATE 		fireState;
 
+	int currentGunID;
 	TickType_t shotTick;
 	int salveCounter;
 	TickType_t lastShotTick;

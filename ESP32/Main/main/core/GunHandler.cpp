@@ -27,7 +27,8 @@ const AudioCassette reloadFull(reload_full, sizeof(reload_full));
 
 GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 	:	mqttAmmo(0), lastMQTTPush(0),
-		fireState(WAIT_ON_VALID),
+		fireState(NO_GUN),
+		currentGunID(0),
 		shotTick(0), salveCounter(0), lastShotTick(0),
 		emptyClickPlayed(false),
 		reloadTick(0),
@@ -68,8 +69,6 @@ void GunHandler::handle_shot() {
 	shotTick  = xTaskGetTickCount() + (cGun().perShotDelay*(95 + esp_random()%10))/100;
 	lastShotTick = xTaskGetTickCount();
 
-	reloadTick  = xTaskGetTickCount() + cGun().postShotReloadBlock;
-
 	shot_performed = true;
 
 	audio.insert_cassette(cGun().shotSounds);
@@ -81,12 +80,22 @@ void GunHandler::handle_shot() {
 
 void GunHandler::shot_tick() {
 	shot_performed = false;
-	bool fireStateChanged = true;
 
-	while(fireStateChanged) {
-		fireStateChanged = false;
+	auto playerGunID = LZR::player.get_gun_num();
+	if(playerGunID != currentGunID) {
+		if(playerGunID == 0)
+			fireState = NO_GUN;
+		else {
+			fireState = WEAPON_SWITCH_DELAY;
+			shotTick = xTaskGetTickCount() + cGun().weaponSwitchDelay;
+		}
+	}
 
+	while(true) {
 		switch(fireState) {
+		case NO_GUN:
+			break;
+
 		case WAIT_ON_VALID:
 			if(!triggerPressed())
 				break;
@@ -139,7 +148,7 @@ void GunHandler::shot_tick() {
 		case POST_SALVE_DELAY:
 			if(xTaskGetTickCount() >= shotTick) {
 				fireState = WAIT_ON_VALID;
-				fireStateChanged = true;
+				continue;
 
 				if(!triggerPressed() && !cGun().postSalveRelease && !cGun().postTriggerRelease) {
 					if(gunHeat > 0.4)
@@ -147,6 +156,8 @@ void GunHandler::shot_tick() {
 				}
 			}
 		}
+
+		break;
 	}
 
 	if(!triggerPressed())
