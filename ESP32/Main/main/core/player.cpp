@@ -12,6 +12,8 @@
 
 #include "../fx/colorSets.h"
 
+#include "../../LZROptions.h"
+
 namespace LZR {
 
 Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
@@ -92,9 +94,9 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 }
 
 void Player::init() {
-    Xasin::MQTT::Handler::start_wifi("Lasertag\0", "\0");
+	Xasin::MQTT::Handler::start_wifi(WIFI_STATION_SSID, WIFI_STATION_PASSWD);
 
-	 mqtt.start("mqtt://192.168.250.1", get_topic_base() + "/Connection");
+	mqtt.start(MQTT_SERVER_ADDR, get_topic_base() + "/Connection");
 	mqtt.set_status("OK");
 }
 
