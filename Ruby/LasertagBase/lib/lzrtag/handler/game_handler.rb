@@ -105,7 +105,8 @@ module LZRTag
 							send_event(:gameTick, dT);
 						end
 
-						puts "Stopping current game.".green
+						x_logi("Stopping game!");
+
 						set_phase(:idle);
 						sleep 1;
 						@currentGame = nil;
@@ -128,6 +129,8 @@ module LZRTag
 				raise ArgumentError, "Game must be a LZRTag::Game class" unless game <= LZRTag::Game::Base
 
 				@knownGames[gameTag] = game;
+
+				x_logi("Game registered: #{gameTag}");
 
 				@mqtt.publish_to "Lasertag/Game/KnownGames", @knownGames.keys.to_json, retain: true;
 			end
@@ -161,7 +164,7 @@ module LZRTag
 
 				if(gKey = @knownGames.key(game))
 					@mqtt.publish_to "Lasertag/Game/CurrentGame", gKey, retain: true
-					puts "Starting game #{gKey}!".green
+					x_logi("Starting game #{gKey}");
 				else
 					@mqtt.publish_to "Lasertag/Game/CurrentGame", "", retain: true
 				end
@@ -207,7 +210,7 @@ module LZRTag
 
 				raise ArgumentError, "Phase must be valid!" unless allowedPhases.include? nextPhase
 
-				puts "Phase started: #{nextPhase}!".green;
+				x_logi("Starting phase #{nextPhase}");
 
 				oldPhase = @gamePhase
 				send_event(:gamePhaseEnds, oldPhase, nextPhase)

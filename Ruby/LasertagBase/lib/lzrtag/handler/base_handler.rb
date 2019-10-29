@@ -1,6 +1,8 @@
 
 require 'mqtt/sub_handler'
 
+require 'xasin_logger'
+
 require_relative '../hooks/base_hook.rb'
 
 require_relative '../player/life_player.rb'
@@ -20,6 +22,8 @@ module LZRTag
 		#  # Using LZRTag.Handler instead of LZRTag::Handler::Base to fetch the latest handler
 		#  handler = LZRTag.Handler.new(mqttConn);
 		class Base
+			include XasLogger::Mix
+
 			# Returns the MQTT connection
 			attr_reader :mqtt
 
@@ -27,6 +31,8 @@ module LZRTag
 			attr_reader :idTable
 
 			def initialize(mqtt, playerClass = Player::Life, clean_on_exit: true)
+				init_x_log("LZRTag Base", nil);
+
 				@mqtt = mqtt;
 
 				@playerClass = playerClass;
@@ -62,6 +68,7 @@ module LZRTag
 							@players[dID] = @playerClass.new(dID, self);
 						}
 						send_event(:playerRegistered, @players[dID]);
+						x_logi("New player registered: #{dID}");
 					end
 
 					@players[dID].on_mqtt_data(data, topic);
@@ -79,7 +86,7 @@ module LZRTag
 					}
 				end
 
-				puts "I LZR::Handler init finished".green
+				x_logi("Initialisation complete");
 			end
 
 			# Send an event into the event loop.

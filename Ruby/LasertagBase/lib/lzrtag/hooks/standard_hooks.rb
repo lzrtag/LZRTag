@@ -8,7 +8,7 @@ module LZRTag
 			attr_accessor :eventBlacklist
 
 			def initialize(handler)
-				super(handler);
+				super(handler, "DBG");
 
 				@eventWhitelist = Array.new();
 				@eventBlacklist = [:slowTick, :gameTick, :playerInBeacon];
@@ -22,7 +22,7 @@ module LZRTag
 					return unless @eventWhitelist.include? evtName
 				end
 
-				puts "Caught event: #{evtName} with data: #{data}";
+				x_logd "Event: #{evtName} with data: #{data}";
 			end
 		end
 
@@ -32,7 +32,7 @@ module LZRTag
 			}
 
 			def initialize(handler, possibleTeams: [1, 2, 3, 4])
-				super(handler);
+				super(handler, "Team Selector");
 
 				@possibleTeams = possibleTeams;
 			end
@@ -46,7 +46,7 @@ module LZRTag
 
 			on :gamePhaseEnds do |oldPhase, nextPhase|
 				if((oldPhase == :teamSelect) && (nextPhase != :idle))
-					puts "Selecting active players!"
+					x_logi("Selecting active players!");
 
 					nextPlayers = Array.new();
 					@handler.each do |pl|
@@ -60,7 +60,7 @@ module LZRTag
 
 					@handler.gamePlayers = nextPlayers;
 
-					puts "Game players are: #{@handler.gamePlayers}"
+					x_logd("Participating players are: #{@handler.gamePlayers}")
 				end
 			end
 

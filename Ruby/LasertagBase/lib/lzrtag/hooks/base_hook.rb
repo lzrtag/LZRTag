@@ -1,4 +1,6 @@
 
+require 'xasin_logger'
+
 module LZRTag
 	module Hook
 =begin
@@ -40,6 +42,8 @@ module LZRTag
 		handler.add_hook(MyHook);
 =end
 		class Base
+			include XasLogger::Mix
+
 			def self.getCBs()
 				@globalCBList ||= Hash.new();
 				return @globalCBList;
@@ -49,10 +53,12 @@ module LZRTag
 				return @globalOptionDescriptions
 			end
 
-			def initialize(handler)
+			def initialize(handler, logName = self)
 				@localCBList = Hash.new();
 
 				@handler = handler
+
+				init_x_log(logName.to_s, nil);
 			end
 
 			# DSL function to describe an option of this hook.
