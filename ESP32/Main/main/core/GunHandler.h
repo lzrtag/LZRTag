@@ -77,13 +77,12 @@ private:
 	FIRE_STATE 		fireState;
 
 	int currentGunID;
+
 	TickType_t shotTick;
 	int salveCounter;
 	TickType_t lastShotTick;
 
 	bool emptyClickPlayed;
-
-	TickType_t reloadTick;
 
 	TickType_t lastTick;
 
@@ -95,7 +94,6 @@ private:
 	void handle_shot();
 
 	void shot_tick();
-	void reload_tick();
 	void fx_tick();
 
 public:

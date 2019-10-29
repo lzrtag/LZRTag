@@ -31,7 +31,6 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 		currentGunID(0),
 		shotTick(0), salveCounter(0), lastShotTick(0),
 		emptyClickPlayed(false),
-		reloadTick(0),
 		lastTick(0),
 		gunHeat(0),
 		triggerPin(trgPin),
@@ -44,8 +43,7 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 }
 
 GunSpecs &GunHandler::cGun() {
-	int gNum = LZR::player.get_gun_num();
-	if(gNum == 0 || gNum > 3)
+	if(0 >= currentGunID || currentGunID > 3)
 		return LZR::Weapons::wyre;
 
 	GunSpecs * gunSets[] = {
@@ -54,7 +52,7 @@ GunSpecs &GunHandler::cGun() {
 			&LZR::Weapons::zinger,
 	};
 
-	return *gunSets[gNum-1];
+	return *gunSets[currentGunID-1];
 }
 
 bool GunHandler::triggerPressed() {
@@ -62,7 +60,7 @@ bool GunHandler::triggerPressed() {
 }
 
 void GunHandler::handle_shot() {
-	cGun().currentAmmo--;
+	cGun().currentClipAmmo--;
 	gunHeat += cGun().perShotHeatup;
 
 	fireState = POST_SHOT_DELAY;
@@ -74,8 +72,6 @@ void GunHandler::handle_shot() {
 	audio.insert_cassette(cGun().shotSounds);
 
 	LZR::IR::send_signal();
-
-	ESP_LOGD(GUN_TAG, "Fired, ammo : %3d", cGun().currentAmmo);
 }
 
 void GunHandler::shot_tick() {
@@ -83,6 +79,8 @@ void GunHandler::shot_tick() {
 
 	auto playerGunID = LZR::player.get_gun_num();
 	if(playerGunID != currentGunID) {
+		currentGunID = playerGunID;
+
 		if(playerGunID == 0)
 			fireState = NO_GUN;
 		else {
@@ -96,12 +94,48 @@ void GunHandler::shot_tick() {
 		case NO_GUN:
 			break;
 
+		case WEAPON_SWITCH_DELAY:
+			if(xTaskGetTickCount() > shotTick) {
+				fireState = WAIT_ON_VALID;
+				continue;
+			}
+		break;
+
+		case RELOAD_DELAY:
+			if(xTaskGetTickCount() > shotTick) {
+				auto refillAmount = cGun().perReloadRecharge;
+				if(cGun().currentReserveAmmo >= 0 || refillAmount > cGun().currentReserveAmmo) {
+					refillAmount = cGun().currentReserveAmmo;
+				}
+
+				auto newAmmo = cGun().currentClipAmmo + refillAmount;
+				if(newAmmo > cGun().clipSize)
+					newAmmo = cGun().clipSize;
+
+				if(cGun().currentReserveAmmo >= 0) {
+					cGun().currentReserveAmmo -= newAmmo - cGun().currentClipAmmo;
+				}
+				cGun().currentClipAmmo = newAmmo;
+
+				if((cGun().currentClipAmmo < cGun().clipSize) && !triggerPressed())
+					shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
+				else
+					fireState = WAIT_ON_VALID;
+				continue;
+			}
+		break;
+
 		case WAIT_ON_VALID:
-			if(!triggerPressed())
-				break;
 			if(!LZR::player.can_shoot())
 				break;
-			if(cGun().currentAmmo < cGun().shotsPerSalve) {
+			if(cGun().currentClipAmmo < cGun().shotsPerSalve && cGun().currentReserveAmmo != 0) {
+				shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
+				fireState = RELOAD_DELAY;
+			}
+			if(!triggerPressed())
+				break;
+
+			if(cGun().currentClipAmmo == 0) {
 				if(!emptyClickPlayed) {
 					audio.insert_cassette(emptyClick);
 					emptyClickPlayed = true;
@@ -115,18 +149,21 @@ void GunHandler::shot_tick() {
 
 			shotTick  = xTaskGetTickCount() + cGun().postTriggerTicks;
 			fireState = POST_TRIGGER_RELEASE;
+			continue;
 
 		case POST_TRIGGER_RELEASE:
 			if(triggerPressed() && cGun().postTriggerRelease)
 				break;
 
 			fireState = POST_TRIGGER_DELAY;
+			continue;
 
 		case POST_TRIGGER_DELAY:
 			if(xTaskGetTickCount() >= shotTick) {
 				salveCounter = cGun().shotsPerSalve;
 				handle_shot();
 			}
+		break;
 
 		case POST_SHOT_DELAY:
 			if(xTaskGetTickCount() < shotTick)
@@ -139,11 +176,13 @@ void GunHandler::shot_tick() {
 
 			fireState = POST_SALVE_RELEASE;
 			shotTick = xTaskGetTickCount() + cGun().postSalveDelay;
+			continue;
 
 		case POST_SALVE_RELEASE:
 			if(triggerPressed() && cGun().postSalveRelease)
 				break;
 			fireState = POST_SALVE_DELAY;
+			continue;
 
 		case POST_SALVE_DELAY:
 			if(xTaskGetTickCount() >= shotTick) {
@@ -162,24 +201,6 @@ void GunHandler::shot_tick() {
 
 	if(!triggerPressed())
 		emptyClickPlayed = false;
-}
-
-void GunHandler::reload_tick() {
-	if(cGun().currentAmmo >= cGun().maxAmmo)
-		return;
-
-	if(reloadTick > xTaskGetTickCount())
-		return;
-
-	cGun().currentAmmo += cGun().perReloadRecharge;
-	if(cGun().currentAmmo >= cGun().maxAmmo) {
-		audio.insert_cassette(reloadFull);
-		cGun().currentAmmo = cGun().maxAmmo;
-	}
-
-	ESP_LOGD(GUN_TAG, "Reloaded, ammo: %3d", cGun().currentAmmo);
-
-	reloadTick = xTaskGetTickCount() + cGun().postReloadReloadBlock;
 }
 
 void GunHandler::fx_tick() {
