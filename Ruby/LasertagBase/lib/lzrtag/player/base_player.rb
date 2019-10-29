@@ -19,6 +19,11 @@ module LZRTag
 			# @return [String] status-string of the player. Should be "OK"
 			attr_reader :status
 
+			attr_reader :connected
+
+			# @return [Time] Time at which the player status was last updated
+			attr_reader :last_status_update
+
 			# @return [Integer] 0..255, shot ID of the player
 			attr_reader   :id
 			# @return [Hash<Time>] Hash of the last few recorded shot times,
@@ -34,6 +39,9 @@ module LZRTag
 				@status = "";
 				@name   = "";
 
+				@last_status_update = Time.at(0);
+				@connected = false;
+
 				@hitIDTimetable = Hash.new(Time.new(0));
 			end
 
@@ -47,21 +55,38 @@ module LZRTag
 				case topic[1..topic.length].join("/")
 				when "Connection"
 					return if @status == data;
-					oldStatus = @status;
 					@status = data;
-					if(@status == "OK")
-						@handler.send_event(:playerConnected, self);
-					elsif(oldStatus == "OK")
-						@handler.send_event(:playerDisconnected, self);
-					end
+
+					return if @status == "OK"
+					return if @status == ""
+					return if !@connected
+					@connected = false;
+					@handler.send_event(:playerDisconnected, self);
+
 				when "CFG/Name"
 					@name = data;
+				when "Ping"
+					@last_status_update = Time.now();
+
+					if(@status == "OK" && (!@connected))
+						@connected = true
+						@handler.send_event(:playerConnected, self);
+					end
+				end
+			end
+
+			def _tick_connection()
+				return unless @connected
+
+				if((Time.now() - @last_status_update) > 60)
+					@connected = false;
+					@handler.send_event(:playerDisconnected, self);
 				end
 			end
 
 			# @return [Boolean] Whether this player is connected
 			def connected?()
-				return @status == "OK"
+				return @connected
 			end
 
 			# Set the Shot ID of the player.

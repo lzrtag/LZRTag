@@ -112,6 +112,10 @@ module LZRTag
 					player = data[0];
 					@idTable[player.id] = nil;
 					player.id = nil;
+				when :slowTick
+					self.each do |pl|
+						pl._tick_connection();
+					end
 				end
 			end
 
