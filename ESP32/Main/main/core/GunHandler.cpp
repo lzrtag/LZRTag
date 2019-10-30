@@ -17,7 +17,7 @@
 #include "empty_click.h"
 #include "reload_full.h"
 
-#define LOG_LOCAL_LEVEL ESP_LOG_INFO
+#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_log.h"
 
 namespace Lasertag {
@@ -40,6 +40,8 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 	gpio_set_direction(triggerPin, GPIO_MODE_INPUT);
 	gpio_set_pull_mode(triggerPin, GPIO_PULLUP_ONLY);
 	gpio_pullup_en(triggerPin);
+
+	esp_log_level_set(GUN_TAG, ESP_LOG_DEBUG);
 }
 
 GunSpecs &GunHandler::cGun() {
@@ -60,7 +62,20 @@ bool GunHandler::triggerPressed() {
 }
 
 void GunHandler::handle_shot() {
-	cGun().currentClipAmmo--;
+	if(cGun().currentClipAmmo > 0)
+		cGun().currentClipAmmo--;
+	// We have to abort the salve if we have no ammo left
+	// This also plays the empty click
+	else if(cGun().currentClipAmmo == 0) {
+		audio.insert_cassette(emptyClick);
+		emptyClickPlayed = true;
+
+		fireState = POST_SALVE_RELEASE;
+		shotTick = xTaskGetTickCount() + cGun().postSalveDelay;
+
+		return;
+	}
+
 	gunHeat += cGun().perShotHeatup;
 
 	fireState = POST_SHOT_DELAY;
@@ -95,46 +110,80 @@ void GunHandler::shot_tick() {
 			break;
 
 		case WEAPON_SWITCH_DELAY:
-			if(xTaskGetTickCount() > shotTick) {
+			if(xTaskGetTickCount() < shotTick)
+				break;
+			fireState = WAIT_ON_VALID;
+			continue;
+		break;
+
+		case RELOAD_DELAY: {
+			// Detect infinite clip ammo and skip reload
+			if(cGun().currentClipAmmo < 0) {
 				fireState = WAIT_ON_VALID;
 				continue;
 			}
-		break;
-
-		case RELOAD_DELAY:
-			if(xTaskGetTickCount() > shotTick) {
-				auto refillAmount = cGun().perReloadRecharge;
-				if(cGun().currentReserveAmmo >= 0 || refillAmount > cGun().currentReserveAmmo) {
-					refillAmount = cGun().currentReserveAmmo;
-				}
-
-				auto newAmmo = cGun().currentClipAmmo + refillAmount;
-				if(newAmmo > cGun().clipSize)
-					newAmmo = cGun().clipSize;
-
-				if(cGun().currentReserveAmmo >= 0) {
-					cGun().currentReserveAmmo -= newAmmo - cGun().currentClipAmmo;
-				}
-				cGun().currentClipAmmo = newAmmo;
-
-				if((cGun().currentClipAmmo < cGun().clipSize) && !triggerPressed())
-					shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
-				else
-					fireState = WAIT_ON_VALID;
+			if(cGun().currentClipAmmo == cGun().clipSize) {
+				fireState = WAIT_ON_VALID;
 				continue;
 			}
-		break;
+			if(xTaskGetTickCount() < shotTick)
+				break;
+
+			// Cap refill amount to how much we have left
+			// This also handles infinite refill ammo (reserveAmmo < 0)
+			auto refillAmount = cGun().perReloadRecharge;
+			if((cGun().currentReserveAmmo >= 0) || (refillAmount > cGun().currentReserveAmmo)) {
+				refillAmount = cGun().currentReserveAmmo;
+			}
+
+			// Cap the refilled ammo amount to our clip size
+			auto newAmmo = cGun().currentClipAmmo + refillAmount;
+			if(newAmmo > cGun().clipSize)
+				newAmmo = cGun().clipSize;
+
+			// Subtract the amount of ammo we are refilling from the reserve ammo
+			// Also tracking infinite reserve ammo
+			if(cGun().currentReserveAmmo >= 0) {
+				cGun().currentReserveAmmo -= newAmmo - cGun().currentClipAmmo;
+			}
+			cGun().currentClipAmmo = newAmmo;
+
+			// If our clip isn't full yet, continue reloading, except when the
+			// trigger is pressed
+			// Think of a shotgun that is loaded clip by clip
+			if((cGun().currentClipAmmo < cGun().clipSize) && !triggerPressed()) {
+				shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
+				ESP_LOGD(GUN_TAG, "Reloaded a little, continuing");
+			}
+			else {
+				fireState = WAIT_ON_VALID;
+				ESP_LOGD(GUN_TAG, "Reload complete!");
+				continue;
+			}
+
+			break;
+		}
 
 		case WAIT_ON_VALID:
+			// Players may not shoot nor reload if they are
+			// disabled!
 			if(!LZR::player.can_shoot())
 				break;
-			if(cGun().currentClipAmmo < cGun().shotsPerSalve && cGun().currentReserveAmmo != 0) {
+			// First, check if a reload needs to be forced. This happens only
+			// when we have no more ammo at all, but have some in reserve
+			if(cGun().currentClipAmmo == 0 && cGun().currentReserveAmmo != 0) {
+				ESP_LOGD(GUN_TAG, "Forcing reload!");
 				shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
 				fireState = RELOAD_DELAY;
+				continue;
 			}
+
+			// Wait for the user to press the trigger
 			if(!triggerPressed())
 				break;
 
+			// If we don't have enough ammo and already couldn't force a reload above,
+			// play an "empty clip" click
 			if(cGun().currentClipAmmo == 0) {
 				if(!emptyClickPlayed) {
 					audio.insert_cassette(emptyClick);
@@ -144,6 +193,7 @@ void GunHandler::shot_tick() {
 				break;
 			}
 
+			// Otherwise, continue with our magic~
 			if(cGun().postTriggerTicks != 0)
 				audio.insert_cassette(cGun().chargeSounds);
 
@@ -227,19 +277,18 @@ uint8_t GunHandler::getGunHeat() {
 }
 
 void GunHandler::tick() {
-	reload_tick();
 	shot_tick();
-
 	fx_tick();
 
-	if((cGun().currentAmmo != mqttAmmo) && (xTaskGetTickCount() > (lastMQTTPush+300))) {
+	if((cGun().currentClipAmmo != mqttAmmo) && (xTaskGetTickCount() > (lastMQTTPush+300))) {
 		struct {
 			int32_t currentAmmo;
-			int32_t maxAmmo;
-		} ammoData = {cGun().currentAmmo, cGun().maxAmmo};
+			int32_t clipSize;
+			int32_t reserveAmmo;
+		} ammoData = {cGun().currentClipAmmo, cGun().clipSize, cGun().currentReserveAmmo};
 		LZR::mqtt.publish_to(LZR::player.get_topic_base() +"/Stats/Ammo", &ammoData, sizeof(ammoData), 0, true);
 
-		mqttAmmo = cGun().currentAmmo;
+		mqttAmmo = cGun().currentClipAmmo;
 		lastMQTTPush = xTaskGetTickCount();
 	}
 
