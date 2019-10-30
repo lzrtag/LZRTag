@@ -46,7 +46,10 @@ module LZRTag
 			end
 
 			def _pub_to(key, data, retain: false)
-				@mqtt.publish_to("Lasertag/Players/#{@DeviceID}/#{key}", data, retain: retain);
+				@mqtt.publish_to("Lasertag/Players/#{@DeviceID}/#{key}", data, retain: retain, qos: 1);
+				if(data == "")
+					@mqtt.publish_to("Lasertag/Players/#{@DeviceID}/#{key}", " ", retain: false);
+				end
 			end
 			private :_pub_to
 
