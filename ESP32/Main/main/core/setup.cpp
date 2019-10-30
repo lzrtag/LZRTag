@@ -145,6 +145,7 @@ void take_battery_measurement() {
 		battery_avg += s;
 
 	battery.set_voltage(battery_avg / battery_samples.size());
+
 	battery.is_charging = !gpio_get_level(PIN_BAT_CHGING);
 
 	// Small debounce for battery percentage
@@ -274,7 +275,7 @@ void setup() {
     	vTaskDelay(3*600);
     	shutdown_system();
     }
-    else if(main_weapon_status == CHARGING) {
+    else if(main_weapon_status == CHARGING && !read_nav_switch()) {
     	ESP_LOGI("LZR::Core", "Charging detected, entering CHG mode");
 
     	LZR::FX::target_mode = LZR::CHARGE;
