@@ -23,8 +23,11 @@ namespace Weapons {
 // DPS Multiplicator: 1.7716
 
 Lasertag::GunSpecs mylin {
-	.maxAmmo = 8,
-	.currentAmmo = 8,
+	.weaponSwitchDelay = 3*600,
+
+	.currentReserveAmmo = -1,
+	.clipSize = 12,
+	.currentClipAmmo = 12,
 
 	.postTriggerTicks = 108,
 	.postTriggerRelease = false,
@@ -39,9 +42,8 @@ Lasertag::GunSpecs mylin {
 	.postSalveDelay = 0,
 	.postSalveRelease = true,
 
-	.postShotReloadBlock = 3*600,
-	.postReloadReloadBlock = 600,
-	.perReloadRecharge = 1,
+	.perReloadDelay = 40*60,
+	.perReloadRecharge = 12,
 
 	.perShotHeatup = 0.4,
 	.perTickCooldown = 0.98,

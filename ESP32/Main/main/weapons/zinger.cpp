@@ -24,8 +24,11 @@ namespace Weapons {
 // DPS Multiplicator: 0.61666
 
 Lasertag::GunSpecs zinger {
-	.maxAmmo = 30,
-	.currentAmmo = 30,
+	.weaponSwitchDelay = 1*600,
+
+	.currentReserveAmmo = -1,
+	.clipSize = 18,
+	.currentClipAmmo = 18,
 
 	.postTriggerTicks = 0,
 	.postTriggerRelease = false,
@@ -40,9 +43,8 @@ Lasertag::GunSpecs zinger {
 	.postSalveDelay = 0,
 	.postSalveRelease = false,
 
-	.postShotReloadBlock = 5*600,
-	.postReloadReloadBlock = 200,
-	.perReloadRecharge = 1,
+	.perReloadDelay = 15*60,
+	.perReloadRecharge = 6,
 
 	.perShotHeatup = 0.02,
 	.perTickCooldown = 0.9975,

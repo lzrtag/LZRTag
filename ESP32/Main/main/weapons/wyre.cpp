@@ -30,8 +30,12 @@ namespace Weapons {
 // DPS Val: 0.9138
 
 Lasertag::GunSpecs wyre {
-	.maxAmmo = 18,
-	.currentAmmo = 18,
+	.weaponSwitchDelay = 3*600,
+
+	.currentReserveAmmo = -1,
+
+	.clipSize= 18,
+	.currentClipAmmo = 18,
 
 	.postTriggerTicks = 0,
 	.postTriggerRelease = false,
@@ -46,9 +50,8 @@ Lasertag::GunSpecs wyre {
 	.postSalveDelay = 50,
 	.postSalveRelease = false,
 
-	.postShotReloadBlock = 5*600,
-	.postReloadReloadBlock = 2*600,
-	.perReloadRecharge = 4,
+	.perReloadDelay = 1000,
+	.perReloadRecharge = 6,
 
 	.perShotHeatup = 0.05,
 	.perTickCooldown = 0.9983,
