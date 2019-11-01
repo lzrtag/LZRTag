@@ -30,10 +30,9 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 		fireState(NO_GUN),
 		currentGunID(0),
 		shotTick(0), salveCounter(0), lastShotTick(0),
-		emptyClickPlayed(false),
 		lastTick(0),
 		gunHeat(0),
-		triggerPin(trgPin),
+		triggerPin(trgPin), pressAlreadyTriggered(false),
 		shot_performed(false),
 		audio(audio) {
 
@@ -68,7 +67,7 @@ void GunHandler::handle_shot() {
 	// This also plays the empty click
 	else if(cGun().currentClipAmmo == 0) {
 		audio.insert_cassette(emptyClick);
-		emptyClickPlayed = true;
+		pressAlreadyTriggered = true;
 
 		fireState = POST_SALVE_RELEASE;
 		shotTick = xTaskGetTickCount() + cGun().postSalveDelay;
@@ -104,6 +103,11 @@ void GunHandler::shot_tick() {
 		}
 	}
 
+	if(cGun().currentClipAmmo == 0 && triggerPressed() && !pressAlreadyTriggered) {
+		audio.insert_cassette(emptyClick);
+		pressAlreadyTriggered = true;
+	}
+
 	while(true) {
 		switch(fireState) {
 		case NO_GUN:
@@ -122,7 +126,14 @@ void GunHandler::shot_tick() {
 				fireState = WAIT_ON_VALID;
 				continue;
 			}
-			if(cGun().currentClipAmmo == cGun().clipSize) {
+			// We don't need to reload if our clip ammo is at or above maximum
+			if(cGun().currentClipAmmo >= cGun().clipSize) {
+				fireState = WAIT_ON_VALID;
+				continue;
+			}
+			// If we have ammo, trying to shoot will cancel reloading
+			// Useful for shotgun-type weapons with piecewise reloading
+			if(cGun().currentClipAmmo > 0 && triggerPressed()) {
 				fireState = WAIT_ON_VALID;
 				continue;
 			}
@@ -185,13 +196,11 @@ void GunHandler::shot_tick() {
 			// If we don't have enough ammo and already couldn't force a reload above,
 			// play an "empty clip" click
 			if(cGun().currentClipAmmo == 0) {
-				if(!emptyClickPlayed) {
-					audio.insert_cassette(emptyClick);
-					emptyClickPlayed = true;
-				}
-
 				break;
 			}
+
+			// Mark that this press was already handled - used later!
+			pressAlreadyTriggered = true;
 
 			// Otherwise, continue with our magic~
 			if(cGun().postTriggerTicks != 0)
@@ -212,6 +221,7 @@ void GunHandler::shot_tick() {
 			if(xTaskGetTickCount() >= shotTick) {
 				salveCounter = cGun().shotsPerSalve;
 				handle_shot();
+				break;
 			}
 		break;
 
@@ -229,8 +239,9 @@ void GunHandler::shot_tick() {
 			continue;
 
 		case POST_SALVE_RELEASE:
-			if(triggerPressed() && cGun().postSalveRelease)
+			if(pressAlreadyTriggered && cGun().postSalveRelease)
 				break;
+
 			fireState = POST_SALVE_DELAY;
 			continue;
 
@@ -249,8 +260,11 @@ void GunHandler::shot_tick() {
 		break;
 	}
 
-	if(!triggerPressed())
-		emptyClickPlayed = false;
+	// Clear the trigger handle flag on release
+	// Is used to require re-pressing the trigger for some actions
+	if(!triggerPressed()) {
+		pressAlreadyTriggered = false;
+	}
 }
 
 void GunHandler::fx_tick() {

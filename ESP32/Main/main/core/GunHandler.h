@@ -82,13 +82,12 @@ private:
 	int salveCounter;
 	TickType_t lastShotTick;
 
-	bool emptyClickPlayed;
-
 	TickType_t lastTick;
 
 	float gunHeat;
 
 	const gpio_num_t triggerPin;
+	bool pressAlreadyTriggered;
 
 	bool shot_performed;
 	void handle_shot();
