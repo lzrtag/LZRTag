@@ -252,6 +252,10 @@ module LZRTag
 				return @GunDamageMultipliers[number-1] || 1;
 			end
 
+			def reload()
+				_pub_to("CFG/Reload", "1");
+			end
+
 			def check_beacons()
 				bIDs = @beaconTimes.keys;
 				bIDs.each do |bID|
