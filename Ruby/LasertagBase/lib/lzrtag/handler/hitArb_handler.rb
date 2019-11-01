@@ -60,9 +60,9 @@ module LZRTag
 				hookList = Array.new();
 				hookList << @hooks;
 				if(@currentGame)
-					hookList << @currentGame.hookList
+					hookList << @currentGame.hookList.values
 				end
-				hookList.flatten
+				hookList.flatten!
 
 				hookList.each do |h|
 					begin
