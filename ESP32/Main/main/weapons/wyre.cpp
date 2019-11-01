@@ -50,8 +50,8 @@ Lasertag::GunSpecs wyre {
 	.postSalveDelay = 50,
 	.postSalveRelease = false,
 
-	.perReloadDelay = 1000,
-	.perReloadRecharge = 6,
+	.perReloadDelay = 33*60,
+	.perReloadRecharge = 18,
 
 	.perShotHeatup = 0.05,
 	.perTickCooldown = 0.9983,
