@@ -132,7 +132,7 @@ void GunHandler::shot_tick() {
 			// Cap refill amount to how much we have left
 			// This also handles infinite refill ammo (reserveAmmo < 0)
 			auto refillAmount = cGun().perReloadRecharge;
-			if((cGun().currentReserveAmmo >= 0) || (refillAmount > cGun().currentReserveAmmo)) {
+			if((cGun().currentReserveAmmo >= 0) && (refillAmount > cGun().currentReserveAmmo)) {
 				refillAmount = cGun().currentReserveAmmo;
 			}
 
@@ -151,7 +151,7 @@ void GunHandler::shot_tick() {
 			// If our clip isn't full yet, continue reloading, except when the
 			// trigger is pressed
 			// Think of a shotgun that is loaded clip by clip
-			if((cGun().currentClipAmmo < cGun().clipSize) && !triggerPressed()) {
+			if((cGun().currentClipAmmo < cGun().clipSize) && (!triggerPressed())) {
 				shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
 				ESP_LOGD(GUN_TAG, "Reloaded a little, continuing");
 			}
@@ -281,6 +281,7 @@ void GunHandler::tick() {
 	fx_tick();
 
 	if((cGun().currentClipAmmo != mqttAmmo) && (xTaskGetTickCount() > (lastMQTTPush+300))) {
+		ESP_LOGD(GUN_TAG, "Weapon is: %d/%d (%d)", cGun().currentClipAmmo, cGun().clipSize, cGun().currentReserveAmmo);
 		struct {
 			int32_t currentAmmo;
 			int32_t clipSize;
