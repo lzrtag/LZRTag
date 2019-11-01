@@ -16,6 +16,9 @@
 #include "sounds/own_death.h"
 #include "sounds/own_hit.h"
 
+#include "sounds/empty_click.h"
+#include "sounds/reload_full.h"
+
 #include "../core/setup.h"
 
 using namespace Xasin::Peripheral;
@@ -31,6 +34,8 @@ auto cassette_minor_score	= AudioCassette(sound_minor_score, sizeof(sound_minor_
 auto cassette_death 		= AudioCassette(sound_own_death, sizeof(sound_own_death));
 auto cassette_hit			= AudioCassette(sound_own_hit, 	 sizeof(sound_own_hit));
 
+auto cassette_click 	   = AudioCassette(empty_click, sizeof(empty_click));
+auto cassette_reload_full = AudioCassette(reload_full, sizeof(reload_full));
 
 void play_audio(std::string aName) {
 	if(aName == "GAME START")
@@ -43,6 +48,10 @@ void play_audio(std::string aName) {
 		audioManager.insert_cassette(cassette_death);
 	else if(aName == "HIT")
 		audioManager.insert_cassette(cassette_hit);
+	else if(aName == "CLICK")
+		audioManager.insert_cassette(cassette_click);
+	else if(aName == "RELOAD FULL")
+		audioManager.insert_cassette(cassette_reload_full);
 }
 
 void init() {

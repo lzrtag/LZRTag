@@ -14,16 +14,12 @@
 #include "../weapons/mylin.h"
 #include "../weapons/zinger.h"
 
-#include "empty_click.h"
-#include "reload_full.h"
+#include "../fx/sounds.h"
 
 #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_log.h"
 
 namespace Lasertag {
-
-const AudioCassette emptyClick(empty_click, sizeof(empty_click));
-const AudioCassette reloadFull(reload_full, sizeof(reload_full));
 
 GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 	:	mqttAmmo(0), lastMQTTPush(0),
@@ -66,7 +62,7 @@ void GunHandler::handle_shot() {
 	// We have to abort the salve if we have no ammo left
 	// This also plays the empty click
 	else if(cGun().currentClipAmmo == 0) {
-		audio.insert_cassette(emptyClick);
+		LZR::Sounds::play_audio("CLICK");
 		pressAlreadyTriggered = true;
 
 		fireState = POST_SALVE_RELEASE;
@@ -100,11 +96,12 @@ void GunHandler::shot_tick() {
 		else {
 			fireState = WEAPON_SWITCH_DELAY;
 			shotTick = xTaskGetTickCount() + cGun().weaponSwitchDelay;
+			LZR::Sounds::play_audio("SWITCH WEAPON");
 		}
 	}
 
 	if(cGun().currentClipAmmo == 0 && triggerPressed() && !pressAlreadyTriggered) {
-		audio.insert_cassette(emptyClick);
+		LZR::Sounds::play_audio("CLICK");
 		pressAlreadyTriggered = true;
 	}
 
@@ -114,6 +111,10 @@ void GunHandler::shot_tick() {
 			break;
 
 		case WEAPON_SWITCH_DELAY:
+			if(triggerPressed() && !pressAlreadyTriggered) {
+				pressAlreadyTriggered = true;
+				LZR::Sounds::play_audio("DENY");
+			}
 			if(xTaskGetTickCount() < shotTick)
 				break;
 			fireState = WAIT_ON_VALID;
@@ -121,6 +122,12 @@ void GunHandler::shot_tick() {
 		break;
 
 		case RELOAD_DELAY: {
+			// Tell the player we're reloading by beeping a bit :P
+			if(triggerPressed() && !pressAlreadyTriggered) {
+				pressAlreadyTriggered = true;
+				LZR::Sounds::play_audio("DENY");
+			}
+
 			// Detect infinite clip ammo and skip reload
 			if(cGun().currentClipAmmo < 0) {
 				fireState = WAIT_ON_VALID;
@@ -159,6 +166,9 @@ void GunHandler::shot_tick() {
 			}
 			cGun().currentClipAmmo = newAmmo;
 
+			// Clear the reloading flag from the player
+			LZR::player.should_reload = false;
+
 			// If our clip isn't full yet, continue reloading, except when the
 			// trigger is pressed
 			// Think of a shotgun that is loaded clip by clip
@@ -169,6 +179,7 @@ void GunHandler::shot_tick() {
 			else {
 				fireState = WAIT_ON_VALID;
 				ESP_LOGD(GUN_TAG, "Reload complete!");
+				LZR::Sounds::play_audio("RELOAD FULL");
 				continue;
 			}
 
@@ -182,8 +193,9 @@ void GunHandler::shot_tick() {
 				break;
 			// First, check if a reload needs to be forced. This happens only
 			// when we have no more ammo at all, but have some in reserve
-			if(cGun().currentClipAmmo == 0 && cGun().currentReserveAmmo != 0) {
-				ESP_LOGD(GUN_TAG, "Forcing reload!");
+			if((cGun().currentClipAmmo == 0 && cGun().currentReserveAmmo != 0)
+					||
+				(LZR::player.should_reload)) {
 				shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
 				fireState = RELOAD_DELAY;
 				continue;
