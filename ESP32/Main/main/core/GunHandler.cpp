@@ -43,9 +43,9 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 			if(0 >= currentGunID || currentGunID > 3)
 				return;
 
-			if(data.data == "SetReserve")
+			if(data.topic == "SetReserve")
 				cGun().currentReserveAmmo = atoi(data.data.data());
-			else if(data.data == "SetClip")
+			else if(data.topic == "SetClip")
 				cGun().currentClipAmmo = atoi(data.data.data());
 		});
 }
