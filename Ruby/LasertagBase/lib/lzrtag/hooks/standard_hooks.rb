@@ -197,5 +197,11 @@ module LZRTag
 				hitPlayer.hit();
 			end
 		end
+
+		class GunSelector < Base
+			describe_option :guns, "Which guns are selectable"
+			describe_option :phaseFilter, "Which phase to be active during"
+			describe_option :teamFilter,  "Which team to be active for"
+		end
 	end
 end

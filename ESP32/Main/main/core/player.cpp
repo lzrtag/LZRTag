@@ -26,7 +26,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 	deadUntil(0), hitUntil(0), vibrateUntil(0),
 	currentGun(2), shotLocked(0),
 	deviceID(devID),
-	mqtt(mqtt) {
+	mqtt(mqtt), should_reload(false) {
 
 	if(deviceID == "") {
 			uint8_t smacc[6] = {};
@@ -90,6 +90,8 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			hitUntil = xTaskGetTickCount() + atof(data.data.data())*600;
 		else if(data.topic == "Vibrate")
 			vibrateUntil = xTaskGetTickCount() + atof(data.data.data())*600;
+		else if(data.topic == "Reload")
+			should_reload = true;
 	}, 1);
 }
 

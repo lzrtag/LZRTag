@@ -43,6 +43,8 @@ private:
 public:
 	Xasin::MQTT::Handler &mqtt;
 
+	bool should_reload;
+
 	Player(const std::string devID, Xasin::MQTT::Handler &mqtt);
 
 	void init();
