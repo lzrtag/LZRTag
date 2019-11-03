@@ -37,6 +37,17 @@ GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
 	gpio_pullup_en(triggerPin);
 
 	esp_log_level_set(GUN_TAG, ESP_LOG_DEBUG);
+
+	LZR::player.mqtt.subscribe_to(LZR::player.get_topic_base() + "/Stats/Ammo/#",
+		[this](Xasin::MQTT::MQTT_Packet data) {
+			if(0 >= currentGunID || currentGunID > 3)
+				return;
+
+			if(data.data == "SetReserve")
+				cGun().currentReserveAmmo = atoi(data.data.data());
+			else if(data.data == "SetClip")
+				cGun().currentClipAmmo = atoi(data.data.data());
+		});
 }
 
 GunSpecs &GunHandler::cGun() {
