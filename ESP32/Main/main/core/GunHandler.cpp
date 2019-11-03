@@ -138,9 +138,14 @@ void GunHandler::shot_tick() {
 				fireState = WAIT_ON_VALID;
 				continue;
 			}
-			// If we have ammo, trying to shoot will cancel reloading
+			// Equally, if we have nothing more to reload with, skip.
+			if(cGun().currentReserveAmmo == 0) {
+				fireState = WAIT_ON_VALID;
+				continue;
+			}
+			// If we aren't forced to reload (by i.e. empty ammo or player command)
 			// Useful for shotgun-type weapons with piecewise reloading
-			if(cGun().currentClipAmmo > 0 && triggerPressed()) {
+			if(!LZR::play.should_reload > 0 && triggerPressed()) {
 				fireState = WAIT_ON_VALID;
 				continue;
 			}
@@ -175,10 +180,9 @@ void GunHandler::shot_tick() {
 			// Clear the reloading flag from the player
 			LZR::player.should_reload = false;
 
-			// If our clip isn't full yet, continue reloading, except when the
-			// trigger is pressed
+			// If our clip isn't full yet, continue reloading if we can.
 			// Think of a shotgun that is loaded clip by clip
-			if((cGun().currentClipAmmo < cGun().clipSize) && (!triggerPressed())) {
+			if((cGun().currentClipAmmo < cGun().clipSize) && cGun().currentReserveAmmo != 0) {
 				shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
 				ESP_LOGD(GUN_TAG, "Reloaded a little, continuing");
 			}
@@ -197,11 +201,15 @@ void GunHandler::shot_tick() {
 			// disabled!
 			if(!LZR::player.can_shoot())
 				break;
+
 			// First, check if a reload needs to be forced. This happens only
-			// when we have no more ammo at all, but have some in reserve
+			// when we have no more ammo at all, but have some in reserve, or
+			// if the player actively wants to reload
 			if((cGun().currentClipAmmo == 0 && cGun().currentReserveAmmo != 0)
 					||
 				(LZR::player.should_reload)) {
+
+				LZR::player.should_reload = true;
 				shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
 				fireState = RELOAD_DELAY;
 				continue;
