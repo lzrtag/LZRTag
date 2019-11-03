@@ -111,11 +111,6 @@ void GunHandler::shot_tick() {
 		}
 	}
 
-	if(cGun().currentClipAmmo == 0 && triggerPressed() && !pressAlreadyTriggered) {
-		LZR::Sounds::play_audio("CLICK");
-		pressAlreadyTriggered = true;
-	}
-
 	while(true) {
 		switch(fireState) {
 		case NO_GUN:
@@ -133,12 +128,6 @@ void GunHandler::shot_tick() {
 		break;
 
 		case RELOAD_DELAY: {
-			// Tell the player we're reloading by beeping a bit :P
-			if(triggerPressed() && !pressAlreadyTriggered) {
-				pressAlreadyTriggered = true;
-				LZR::Sounds::play_audio("DENY");
-			}
-
 			// Detect infinite clip ammo and skip reload
 			if(cGun().currentClipAmmo < 0) {
 				fireState = WAIT_ON_VALID;
@@ -155,6 +144,12 @@ void GunHandler::shot_tick() {
 				fireState = WAIT_ON_VALID;
 				continue;
 			}
+			// Tell the player we're reloading by beeping a bit :P
+			if(triggerPressed() && !pressAlreadyTriggered) {
+				pressAlreadyTriggered = true;
+				LZR::Sounds::play_audio("DENY");
+			}
+
 			if(xTaskGetTickCount() < shotTick)
 				break;
 
@@ -216,9 +211,13 @@ void GunHandler::shot_tick() {
 			if(!triggerPressed())
 				break;
 
-			// If we don't have enough ammo and already couldn't force a reload above,
-			// play an "empty clip" click
+			// Play an empty clip sound if we don't have any more ammo and
+			// reloading didn't work either.
 			if(cGun().currentClipAmmo == 0) {
+				if(!pressAlreadyTriggered)
+					LZR::Sounds::play_audio("CLICK");
+				pressAlreadyTriggered = true;
+
 				break;
 			}
 
