@@ -39,12 +39,12 @@ class TestGame < LZRTag::Game::Base
 
 	hook :teamSelect, LZRTag::Hook::TeamSelector
 	hook :regenerator, LZRTag::Hook::Regenerator, {
-		regRate: 7,
-		regDelay: 3,
-		autoReviveThreshold: 21
+		regRate: 3,
+		regDelay: 5,
+		autoReviveThreshold: 30
 	}
 	hook :damager, LZRTag::Hook::Damager, {
-		dmgPerShot: 25
+		dmgPerShot: 35
 	}
 
 	phase_prep :starting do
