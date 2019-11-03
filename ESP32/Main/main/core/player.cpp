@@ -92,7 +92,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			vibrateUntil = xTaskGetTickCount() + atof(data.data.data())*600;
 		else if(data.topic == "Reload")
 			should_reload = true;
-	}, 1);
+	}, 0);
 }
 
 void Player::init() {
