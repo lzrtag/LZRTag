@@ -28,18 +28,18 @@ using namespace Xasin::Peripheral;
 namespace LZR {
 namespace Sounds {
 
-auto cassette_game_start	= AudioCassette(sound_game_start, sizeof(sound_game_start));
+auto cassette_game_start	= AudioCassette(sound_game_start, sizeof(sound_game_start), 40000);
 
-auto cassette_kill_scored 	= AudioCassette(sound_kill_score, sizeof(sound_kill_score));
-auto cassette_minor_score	= AudioCassette(sound_minor_score, sizeof(sound_minor_score));
+auto cassette_kill_scored 	= AudioCassette(sound_kill_score, sizeof(sound_kill_score), 15000);
+auto cassette_minor_score	= AudioCassette(sound_minor_score, sizeof(sound_minor_score), 23000);
 
-auto cassette_death 		= AudioCassette(sound_own_death, sizeof(sound_own_death));
-auto cassette_hit			= AudioCassette(sound_own_hit, 	 sizeof(sound_own_hit));
+auto cassette_death 		= AudioCassette(sound_own_death, sizeof(sound_own_death), 40000);
+auto cassette_hit			= AudioCassette(sound_own_hit, 	 sizeof(sound_own_hit), 20000);
 
-auto cassette_click 	   = AudioCassette(empty_click, sizeof(empty_click));
-auto cassette_reload_full = AudioCassette(reload_full, sizeof(reload_full));
+auto cassette_click 	   = AudioCassette(empty_click, sizeof(empty_click), 15000);
+auto cassette_reload_full = AudioCassette(reload_full, sizeof(reload_full), 12000);
 
-auto cassette_deny = AudioCassette(raw_denybeep, sizeof(raw_denybeep));
+auto cassette_deny = AudioCassette(raw_denybeep, sizeof(raw_denybeep), 20000);
 
 void play_audio(std::string aName) {
 	if(aName == "GAME START")
