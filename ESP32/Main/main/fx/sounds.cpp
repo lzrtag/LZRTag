@@ -19,6 +19,8 @@
 #include "sounds/empty_click.h"
 #include "sounds/reload_full.h"
 
+#include "sounds/denybeep.h"
+
 #include "../core/setup.h"
 
 using namespace Xasin::Peripheral;
@@ -37,6 +39,8 @@ auto cassette_hit			= AudioCassette(sound_own_hit, 	 sizeof(sound_own_hit));
 auto cassette_click 	   = AudioCassette(empty_click, sizeof(empty_click));
 auto cassette_reload_full = AudioCassette(reload_full, sizeof(reload_full));
 
+auto cassette_deny = AudioCassette(raw_denybeep, sizeof(raw_denybeep));
+
 void play_audio(std::string aName) {
 	if(aName == "GAME START")
 		audioManager.insert_cassette(cassette_game_start);
@@ -52,6 +56,8 @@ void play_audio(std::string aName) {
 		audioManager.insert_cassette(cassette_click);
 	else if(aName == "RELOAD FULL")
 		audioManager.insert_cassette(cassette_reload_full);
+	else if(aName == "DENY")
+		audioManager.insert_cassette(cassette_deny);
 }
 
 void init() {
