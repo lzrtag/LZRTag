@@ -31,7 +31,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 	if(deviceID == "") {
 			uint8_t smacc[6] = {};
 
-			char macStr[14] = {};
+			char macStr[20] = {};
 
 			esp_read_mac(smacc, ESP_MAC_WIFI_STA);
 
