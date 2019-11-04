@@ -143,9 +143,10 @@ void GunHandler::shot_tick() {
 				fireState = WAIT_ON_VALID;
 				continue;
 			}
-			// If we aren't forced to reload (by i.e. empty ammo or player command)
+			// Skip reloading if we aren't being forced to reload and the player
+			// pressed the trigger.
 			// Useful for shotgun-type weapons with piecewise reloading
-			if(!LZR::play.should_reload > 0 && triggerPressed()) {
+			if(!LZR::player.should_reload && triggerPressed()) {
 				fireState = WAIT_ON_VALID;
 				continue;
 			}
