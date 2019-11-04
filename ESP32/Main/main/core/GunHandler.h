@@ -95,6 +95,10 @@ private:
 	void shot_tick();
 	void fx_tick();
 
+	void deny_beep();
+
+	void set_fire_state(FIRE_STATE nextState);
+
 public:
 	AudioHandler &audio;
 

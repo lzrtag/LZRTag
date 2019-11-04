@@ -19,6 +19,8 @@
 #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #include "esp_log.h"
 
+#include <cmath>
+
 namespace Lasertag {
 
 GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
@@ -95,6 +97,42 @@ void GunHandler::handle_shot() {
 	LZR::IR::send_signal();
 }
 
+void GunHandler::deny_beep() {
+	if(triggerPressed() && !pressAlreadyTriggered) {
+		pressAlreadyTriggered = true;
+		LZR::Sounds::play_audio("DENY");
+	}
+}
+
+void GunHandler::set_fire_state(FIRE_STATE newState) {
+	if(newState == fireState)
+		return;
+
+	fireState = newState;
+	shotTick = xTaskGetTickCount();
+	switch(fireState) {
+		default: shotTick = 0; break;
+
+		case WEAPON_SWITCH_DELAY:
+			shotTick += cGun().weaponSwitchDelay;
+		break;
+		case RELOAD_DELAY:
+			shotTick += cGun().perReloadDelay;
+		break;
+
+		case POST_TRIGGER_RELEASE:
+		case POST_TRIGGER_DELAY:
+			shotTick += cGun().postTriggerTicks;
+		break;
+		case POST_SHOT_DELAY:
+			shotTick += (cGun().perShotDelay*(95 + esp_random()%10))/100;
+		break;
+		case POST_SALVE_RELEASE:
+		case POST_SALVE_DELAY:
+			shotTick += cGun().postSalveDelay;
+		break;
+	}
+}
 void GunHandler::shot_tick() {
 	shot_performed = false;
 
