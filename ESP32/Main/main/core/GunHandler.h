@@ -99,6 +99,9 @@ private:
 
 	void set_fire_state(FIRE_STATE nextState);
 
+	void handle_reload_delay();
+	void handle_wait_valid();
+
 public:
 	AudioHandler &audio;
 

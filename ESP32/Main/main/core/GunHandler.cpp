@@ -86,8 +86,7 @@ void GunHandler::handle_shot() {
 
 	gunHeat += cGun().perShotHeatup;
 
-	fireState = POST_SHOT_DELAY;
-	shotTick  = xTaskGetTickCount() + (cGun().perShotDelay*(95 + esp_random()%10))/100;
+	set_fire_state(POST_SHOT_DELAY);
 	lastShotTick = xTaskGetTickCount();
 
 	shot_performed = true;
@@ -133,6 +132,111 @@ void GunHandler::set_fire_state(FIRE_STATE newState) {
 		break;
 	}
 }
+
+void GunHandler::handle_reload_delay() {
+	// Detect infinite clip ammo and skip reload
+	if(cGun().currentClipAmmo < 0) {
+		set_fire_state(WAIT_ON_VALID);
+		return;
+	}
+	// We don't need to reload if our clip ammo is at or above maximum
+	if(cGun().currentClipAmmo >= cGun().clipSize) {
+		set_fire_state(WAIT_ON_VALID);
+		return;
+	}
+	// Equally, if we have nothing more to reload with, skip.
+	if(cGun().currentReserveAmmo == 0) {
+		set_fire_state(WAIT_ON_VALID);
+		return;
+	}
+	// Skip reloading if we aren't being forced to reload and the player
+	// pressed the trigger.
+	// Useful for shotgun-type weapons with piecewise reloading
+	if(!LZR::player.should_reload && triggerPressed()) {
+		set_fire_state(WAIT_ON_VALID);
+		return;
+	}
+	deny_beep();
+
+	if(xTaskGetTickCount() < shotTick)
+		return;
+
+	// Clear the reloading flag from the player
+	LZR::player.should_reload = false;
+
+	// Cap refill amount to how much we have left
+	// This also handles infinite refill ammo (reserveAmmo < 0)
+	auto refillAmount = cGun().perReloadRecharge;
+	if(cGun().currentReserveAmmo >= 0)
+		refillAmount = fmin(refillAmount, cGun().currentReserveAmmo);
+
+	// Cap the refilled ammo amount to our clip size
+	auto newAmmo = fmin(cGun().clipSize, cGun().currentClipAmmo + refillAmount);
+
+	// Subtract the amount of ammo we are refilling from the reserve ammo
+	// Also tracking infinite reserve ammo
+	if(cGun().currentReserveAmmo >= 0) {
+		cGun().currentReserveAmmo -= newAmmo - cGun().currentClipAmmo;
+	}
+	cGun().currentClipAmmo = newAmmo;
+
+	// If our clip isn't full yet, continue reloading if we can.
+	// Think of a shotgun that is loaded clip by clip
+	if((cGun().currentClipAmmo < cGun().clipSize) && cGun().currentReserveAmmo != 0) {
+		shotTick += cGun().perReloadDelay;
+		ESP_LOGD(GUN_TAG, "Reloaded a little, continuing");
+	}
+	else {
+		set_fire_state(WAIT_ON_VALID);
+		ESP_LOGD(GUN_TAG, "Reload complete!");
+		LZR::Sounds::play_audio("RELOAD FULL");
+	}
+}
+
+void GunHandler::handle_wait_valid() {
+	// Players may not shoot nor reload if they are
+	// disabled!
+	if(!LZR::player.can_shoot()) {
+		deny_beep();
+		return;
+	}
+
+	// First, check if a reload needs to be forced. This happens only
+	// when we have no more ammo at all, but have some in reserve, or
+	// if the player actively wants to reload
+	if((cGun().currentClipAmmo == 0 && cGun().currentReserveAmmo != 0)
+			||
+		(LZR::player.should_reload)) {
+		LZR::player.should_reload = true;
+
+		set_fire_state(RELOAD_DELAY);
+		return;
+	}
+
+	// Wait for the user to press the trigger
+	if(!triggerPressed())
+		return;
+
+	// Play an empty clip sound if we don't have any more ammo and
+	// reloading didn't work either.
+	if(cGun().currentClipAmmo == 0) {
+		if(!pressAlreadyTriggered)
+			LZR::Sounds::play_audio("CLICK");
+		pressAlreadyTriggered = true;
+
+		return;
+	}
+
+	// Mark that this press was already handled - used later!
+	pressAlreadyTriggered = true;
+
+	// Otherwise, continue with our magic~
+	if(cGun().postTriggerTicks != 0)
+		audio.insert_cassette(cGun().chargeSounds);
+
+	set_fire_state(POST_TRIGGER_RELEASE);
+}
+
 void GunHandler::shot_tick() {
 	shot_performed = false;
 
@@ -149,136 +253,31 @@ void GunHandler::shot_tick() {
 		}
 	}
 
-	while(true) {
+	FIRE_STATE oldState;
+	do {
+		oldState = fireState;
+
+
 		switch(fireState) {
 		case NO_GUN:
 			break;
 
 		case WEAPON_SWITCH_DELAY:
-			if(triggerPressed() && !pressAlreadyTriggered) {
-				pressAlreadyTriggered = true;
-				LZR::Sounds::play_audio("DENY");
-			}
+			deny_beep();
+
 			if(xTaskGetTickCount() < shotTick)
 				break;
+
 			fireState = WAIT_ON_VALID;
-			continue;
 		break;
 
-		case RELOAD_DELAY: {
-			// Detect infinite clip ammo and skip reload
-			if(cGun().currentClipAmmo < 0) {
-				fireState = WAIT_ON_VALID;
-				continue;
-			}
-			// We don't need to reload if our clip ammo is at or above maximum
-			if(cGun().currentClipAmmo >= cGun().clipSize) {
-				fireState = WAIT_ON_VALID;
-				continue;
-			}
-			// Equally, if we have nothing more to reload with, skip.
-			if(cGun().currentReserveAmmo == 0) {
-				fireState = WAIT_ON_VALID;
-				continue;
-			}
-			// Skip reloading if we aren't being forced to reload and the player
-			// pressed the trigger.
-			// Useful for shotgun-type weapons with piecewise reloading
-			if(!LZR::player.should_reload && triggerPressed()) {
-				fireState = WAIT_ON_VALID;
-				continue;
-			}
-			// Tell the player we're reloading by beeping a bit :P
-			if(triggerPressed() && !pressAlreadyTriggered) {
-				pressAlreadyTriggered = true;
-				LZR::Sounds::play_audio("DENY");
-			}
-
-			if(xTaskGetTickCount() < shotTick)
-				break;
-
-			// Cap refill amount to how much we have left
-			// This also handles infinite refill ammo (reserveAmmo < 0)
-			auto refillAmount = cGun().perReloadRecharge;
-			if((cGun().currentReserveAmmo >= 0) && (refillAmount > cGun().currentReserveAmmo)) {
-				refillAmount = cGun().currentReserveAmmo;
-			}
-
-			// Cap the refilled ammo amount to our clip size
-			auto newAmmo = cGun().currentClipAmmo + refillAmount;
-			if(newAmmo > cGun().clipSize)
-				newAmmo = cGun().clipSize;
-
-			// Subtract the amount of ammo we are refilling from the reserve ammo
-			// Also tracking infinite reserve ammo
-			if(cGun().currentReserveAmmo >= 0) {
-				cGun().currentReserveAmmo -= newAmmo - cGun().currentClipAmmo;
-			}
-			cGun().currentClipAmmo = newAmmo;
-
-			// Clear the reloading flag from the player
-			LZR::player.should_reload = false;
-
-			// If our clip isn't full yet, continue reloading if we can.
-			// Think of a shotgun that is loaded clip by clip
-			if((cGun().currentClipAmmo < cGun().clipSize) && cGun().currentReserveAmmo != 0) {
-				shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
-				ESP_LOGD(GUN_TAG, "Reloaded a little, continuing");
-			}
-			else {
-				fireState = WAIT_ON_VALID;
-				ESP_LOGD(GUN_TAG, "Reload complete!");
-				LZR::Sounds::play_audio("RELOAD FULL");
-				continue;
-			}
-
-			break;
-		}
+		case RELOAD_DELAY:
+			handle_reload_delay();
+		break;
 
 		case WAIT_ON_VALID:
-			// Players may not shoot nor reload if they are
-			// disabled!
-			if(!LZR::player.can_shoot())
-				break;
-
-			// First, check if a reload needs to be forced. This happens only
-			// when we have no more ammo at all, but have some in reserve, or
-			// if the player actively wants to reload
-			if((cGun().currentClipAmmo == 0 && cGun().currentReserveAmmo != 0)
-					||
-				(LZR::player.should_reload)) {
-
-				LZR::player.should_reload = true;
-				shotTick = xTaskGetTickCount() + cGun().perReloadDelay;
-				fireState = RELOAD_DELAY;
-				continue;
-			}
-
-			// Wait for the user to press the trigger
-			if(!triggerPressed())
-				break;
-
-			// Play an empty clip sound if we don't have any more ammo and
-			// reloading didn't work either.
-			if(cGun().currentClipAmmo == 0) {
-				if(!pressAlreadyTriggered)
-					LZR::Sounds::play_audio("CLICK");
-				pressAlreadyTriggered = true;
-
-				break;
-			}
-
-			// Mark that this press was already handled - used later!
-			pressAlreadyTriggered = true;
-
-			// Otherwise, continue with our magic~
-			if(cGun().postTriggerTicks != 0)
-				audio.insert_cassette(cGun().chargeSounds);
-
-			shotTick  = xTaskGetTickCount() + cGun().postTriggerTicks;
-			fireState = POST_TRIGGER_RELEASE;
-			continue;
-
+			handle_wait_valid();
+		break;
 		case POST_TRIGGER_RELEASE:
 			if(triggerPressed() && cGun().postTriggerRelease)
 				break;
@@ -303,16 +302,15 @@ void GunHandler::shot_tick() {
 				break;
 			}
 
-			fireState = POST_SALVE_RELEASE;
-			shotTick = xTaskGetTickCount() + cGun().postSalveDelay;
-			continue;
+			set_fire_state(POST_SALVE_RELEASE);
+		break;
 
 		case POST_SALVE_RELEASE:
 			if(pressAlreadyTriggered && cGun().postSalveRelease)
 				break;
 
 			fireState = POST_SALVE_DELAY;
-			continue;
+		break;
 
 		case POST_SALVE_DELAY:
 			if(xTaskGetTickCount() >= shotTick) {
@@ -325,9 +323,7 @@ void GunHandler::shot_tick() {
 				}
 			}
 		}
-
-		break;
-	}
+	} while(oldState != fireState);
 
 	// Clear the trigger handle flag on release
 	// Is used to require re-pressing the trigger for some actions
