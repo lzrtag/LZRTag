@@ -27,7 +27,7 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-$mqtt = MQTT::SubHandler.new("mqtt://192.168.250.1");
+$mqtt = MQTT::SubHandler.new("mqtt://192.168.6.29");
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
@@ -46,6 +46,8 @@ class TestGame < LZRTag::Game::Base
 	hook :damager, LZRTag::Hook::Damager, {
 		dmgPerShot: 35
 	}
+
+	hook :guns, LZRTag::Hook::GunSelector
 
 	phase_prep :starting do
 		@handler.gamePhase = :teamSelect
