@@ -26,12 +26,12 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 	deadUntil(0), hitUntil(0), vibrateUntil(0),
 	currentGun(2), shotLocked(0),
 	deviceID(devID),
-	mqtt(mqtt) {
+	mqtt(mqtt), should_reload(false) {
 
 	if(deviceID == "") {
 			uint8_t smacc[6] = {};
 
-			char macStr[14] = {};
+			char macStr[20] = {};
 
 			esp_read_mac(smacc, ESP_MAC_WIFI_STA);
 
@@ -90,7 +90,9 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			hitUntil = xTaskGetTickCount() + atof(data.data.data())*600;
 		else if(data.topic == "Vibrate")
 			vibrateUntil = xTaskGetTickCount() + atof(data.data.data())*600;
-	}, 1);
+		else if(data.topic == "Reload")
+			should_reload = true;
+	}, 0);
 }
 
 void Player::init() {

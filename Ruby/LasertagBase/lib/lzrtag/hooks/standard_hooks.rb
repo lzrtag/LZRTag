@@ -166,7 +166,7 @@ module LZRTag
 			describe_option :dmgPerShot, "Base damage per shot"
 			describe_option :useDamageMultiplier, "Shall shots be adjusted per-gun?"
 			describe_option :friendlyFire, "Shall friendly-fire be enabled"
-			describe_option :hitThreshold, "Limit below dead players will not be hit"
+			describe_option :hitThreshold, "Limit below which dead players will not be hit"
 
 			def initialize(handler, **options)
 				super(handler);
@@ -195,6 +195,34 @@ module LZRTag
 
 				hitPlayer.damage_by(@dmgPerShot * shotMultiplier, sourcePlayer);
 				hitPlayer.hit();
+			end
+		end
+
+		class GunSelector < Base
+			describe_option :phaseFilter, "Which phase to be active during"
+			describe_option :teamFilter,  "Which team to be active for"
+
+			def initialize(handler, **opts)
+				super(handler);
+
+				@phaseFilter = opts[:phaseFilter] || [:running]
+				@teamFilter  = opts[:teamFilter] || (0..7).to_a
+
+				@guns = [1, 2];
+			end
+
+			on :navSwitchPressed do |pl, dir|
+				next unless @phaseFilter.include? @handler.gamePhase
+				next unless @teamFilter.include? pl.team
+
+				if(dir == 1)
+					pl.reload
+				elsif dir == 2
+					pl.gunNo = 3;
+				elsif dir == 3
+					oldInd = @guns.find_index(pl.gunNo) || 0;
+					pl.gunNo = @guns[(1+oldInd) % @guns.length] || 1
+				end
 			end
 		end
 	end

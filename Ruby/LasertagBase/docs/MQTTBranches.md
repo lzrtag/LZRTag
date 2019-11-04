@@ -10,7 +10,7 @@
 - Lasertag/Game/ParticipatingPlayers
 - Lasertag/Game/KnownGames
 - Lasertag/Game/CurrentGame
-- Lasertag/Game/Phase/Current 
+- Lasertag/Game/Phase/Current
 
 ## Weapon Branches
 The weapons are the main unit of the Lasertag system. As such, they use a specific
@@ -51,6 +51,7 @@ They are slow-changing configuration parameters for the weapons.
 |Heartbeat|"1" or "0"|Enables/Disables heartbeat of the weapon|Yes|
 |Hit|STR Number|Number, in seconds, to make the gun show that it's hit|No|
 |Vibrate|STR Number|Number, in seconds, for which to make the gun vibrate|No|
+|Reload|"1"|Trigger a gun-side reloading|No|
 
 ### Sound attributes
 
@@ -83,5 +84,6 @@ They all relate to various game statistics that do not directly influence the ha
 |Key|Data|Descrition|Retained|
 |--|--|--|--|
 |HP|STR Number|Float number, 0  to 100 (or more with shields)|Yes|
-|Ammo|uint32_t[2]|Current and Max ammo of the weapon|Yes|
-|Ammo/Set|STR Number|Give the player some ammo (*WIP*)|No|
+|Ammo|uint32_t[3]|Current Clip ammo, max clip size and reserve ammo|No|
+|Ammo/SetClip|STR Number|Set the amount of ammo in the player's clip|No|
+|Ammo/SetReserve|STR Number| Set the amount of ammo in the player's reserve|No|

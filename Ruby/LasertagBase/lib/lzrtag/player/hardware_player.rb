@@ -41,15 +41,21 @@ module LZRTag
 			# Especially useful to determine when to revive a player
 			attr_reader :deathChangeTime
 
-			# Current ammo of the weapon.
-			# TODO one day this should be settable. Right now, it's just reading
-			attr_reader :ammo
-			# Maximum ammo the weapon can have with the currently equipped gun.
-			attr_reader :maxAmmo
 			# Number of the current gun.
 			# The application can freely choose which gun profile the set is using,
 			# which influences shot speeds, sounds, reloading, etc.
 			attr_reader :gunNo
+
+			# Current amount of reserve ammo (i.e. clips the player can reload with)
+			# Can be set to -1 to enable infinite reserve ammo (default), or
+			# any other value to give the player limited ammo
+			attr_reader :reserveAmmo
+			# Current ammo in the clip. Can be set to -1 for infinite shots (no
+			# reloading necessary at all), or any other numeric value. Default is
+			# a single clip (gun-dependant)
+			attr_reader :clipAmmo
+			# Size of the clip of the currently equipped gun. Can not be set!
+			attr_reader :clipSize
 
 			# Returns the gyro pose of the set.
 			# This is either:
@@ -79,8 +85,10 @@ module LZRTag
 				@dead = false;
 				@deathChangeTime = Time.now();
 
-				@ammo = 0;
-				@maxAmmo = 0;
+				@reserveAmmo = 0;
+				@clipAmmo 	 = 0;
+				@clipSize 	 = 0;
+
 				@gunNo = 0;
 
 				@gyroPose = :unknown;
@@ -126,11 +134,12 @@ module LZRTag
 
 					@handler.send_event(@dead ? :playerKilled : :playerRevived, self);
 				when "Stats/Ammo"
-					return if(data.size != 8)
+					return if(data.size != 12)
 
 					outData = data.unpack("L<*");
-					@ammo = outData[0];
-					@maxAmmo = outData[1];
+					@clipAmmo = outData[0];
+					@clipSize = outData[1];
+					@reserveAmmo = outData[2];
 				when "Position"
 					begin
 						@position = JSON.parse(data, symbolize_names: true);
@@ -217,14 +226,19 @@ module LZRTag
 				_set_dead(false, player)
 			end
 
-			def ammo=(n)
-				unless (n.is_a?(Integer) and (n >= 0))
-					raise ArgumentError, "Ammo amount needs to be a positive number!"
+			def reserveAmmo=(n)
+				unless (n.is_a?(Integer))
+					raise ArgumentError, "Ammo amount needs to be a number!"
 				end
 
-				@ammo = n;
+				_pub_to("Stats/Ammo/SetReserve", n);
+			end
+			def clipAmmo=(n)
+				unless (n.is_a?(Integer))
+					raise ArgumentError, "Ammo amount needs to be a number!"
+				end
 
-				_pub_to("Stats/Ammo/Set", n);
+				_pub_to("Stats/Ammo/SetClip", n);
 			end
 
 			def gunNo=(n)
@@ -250,6 +264,10 @@ module LZRTag
 				number ||= @gunNo
 
 				return @GunDamageMultipliers[number-1] || 1;
+			end
+
+			def reload()
+				_pub_to("CFG/Reload", "1");
 			end
 
 			def check_beacons()

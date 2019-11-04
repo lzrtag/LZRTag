@@ -24,6 +24,9 @@ using namespace Xasin::Peripheral;
 namespace Lasertag {
 
 enum FIRE_STATE {
+	NO_GUN,
+	WEAPON_SWITCH_DELAY,
+	RELOAD_DELAY,
 	WAIT_ON_VALID,
 	POST_TRIGGER_DELAY,
 	POST_TRIGGER_RELEASE,
@@ -36,8 +39,11 @@ enum FIRE_STATE {
 
 class GunSpecs {
 public:
-	int  maxAmmo;
-	int  currentAmmo;
+	int weaponSwitchDelay;
+
+	int currentReserveAmmo;
+	int clipSize;
+	int currentClipAmmo;
 
 	int  postTriggerTicks;
 	bool postTriggerRelease;
@@ -52,8 +58,7 @@ public:
 	int	 postSalveDelay;
 	bool postSalveRelease;
 
-	int	 postShotReloadBlock;
-	int	 postReloadReloadBlock;
+	int  perReloadDelay;
 	int  perReloadRecharge;
 
 	double perShotHeatup;
@@ -71,26 +76,31 @@ private:
 
 	FIRE_STATE 		fireState;
 
+	int currentGunID;
+
 	TickType_t shotTick;
 	int salveCounter;
 	TickType_t lastShotTick;
-
-	bool emptyClickPlayed;
-
-	TickType_t reloadTick;
 
 	TickType_t lastTick;
 
 	float gunHeat;
 
 	const gpio_num_t triggerPin;
+	bool pressAlreadyTriggered;
 
 	bool shot_performed;
 	void handle_shot();
 
 	void shot_tick();
-	void reload_tick();
 	void fx_tick();
+
+	void deny_beep();
+
+	void set_fire_state(FIRE_STATE nextState);
+
+	void handle_reload_delay();
+	void handle_wait_valid();
 
 public:
 	AudioHandler &audio;

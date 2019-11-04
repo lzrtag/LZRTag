@@ -44,7 +44,7 @@ void app_main()
 
     esp_event_loop_init(event_handler, 0);
 
-    LZR::audioManager.volumeMod = 200;
+    LZR::audioManager.volumeMod = 150;
 
     LZR::setup();
 
