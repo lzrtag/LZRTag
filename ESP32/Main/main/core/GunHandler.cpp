@@ -134,21 +134,16 @@ void GunHandler::set_fire_state(FIRE_STATE newState) {
 }
 
 void GunHandler::handle_reload_delay() {
-	// Detect infinite clip ammo and skip reload
-	if(cGun().currentClipAmmo < 0) {
+
+	if(		(cGun().currentClipAmmo < 0)				// Detect infinite clip ammo and skip reload
+		||	(cGun().currentClipAmmo >= cGun().clipSize) // We don't need to reload if our clip ammo is at or above maximum
+		||	(cGun().currentReserveAmmo == 0)) {			// Equally, if we have nothing more to reload with, skip.
+
 		set_fire_state(WAIT_ON_VALID);
+		LZR::player.should_reload = false;
 		return;
 	}
-	// We don't need to reload if our clip ammo is at or above maximum
-	if(cGun().currentClipAmmo >= cGun().clipSize) {
-		set_fire_state(WAIT_ON_VALID);
-		return;
-	}
-	// Equally, if we have nothing more to reload with, skip.
-	if(cGun().currentReserveAmmo == 0) {
-		set_fire_state(WAIT_ON_VALID);
-		return;
-	}
+
 	// Skip reloading if we aren't being forced to reload and the player
 	// pressed the trigger.
 	// Useful for shotgun-type weapons with piecewise reloading
