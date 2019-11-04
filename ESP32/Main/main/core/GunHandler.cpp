@@ -16,7 +16,7 @@
 
 #include "../fx/sounds.h"
 
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+#define LOG_LOCAL_LEVEL ESP_LOG_INFO
 #include "esp_log.h"
 
 #include <cmath>
@@ -78,8 +78,7 @@ void GunHandler::handle_shot() {
 		LZR::Sounds::play_audio("CLICK");
 		pressAlreadyTriggered = true;
 
-		fireState = POST_SALVE_RELEASE;
-		shotTick = xTaskGetTickCount() + cGun().postSalveDelay;
+		set_fire_state(POST_SALVE_RELEASE);
 
 		return;
 	}
@@ -170,9 +169,8 @@ void GunHandler::handle_reload_delay() {
 
 	// Subtract the amount of ammo we are refilling from the reserve ammo
 	// Also tracking infinite reserve ammo
-	if(cGun().currentReserveAmmo >= 0) {
+	if(cGun().currentReserveAmmo >= 0)
 		cGun().currentReserveAmmo -= newAmmo - cGun().currentClipAmmo;
-	}
 	cGun().currentClipAmmo = newAmmo;
 
 	// If our clip isn't full yet, continue reloading if we can.
@@ -278,7 +276,7 @@ void GunHandler::shot_tick() {
 				break;
 
 			fireState = POST_TRIGGER_DELAY;
-			continue;
+		break;
 
 		case POST_TRIGGER_DELAY:
 			if(xTaskGetTickCount() >= shotTick) {
@@ -310,13 +308,13 @@ void GunHandler::shot_tick() {
 		case POST_SALVE_DELAY:
 			if(xTaskGetTickCount() >= shotTick) {
 				fireState = WAIT_ON_VALID;
-				continue;
 
 				if(!triggerPressed() && !cGun().postSalveRelease && !cGun().postTriggerRelease) {
 					if(gunHeat > 0.4)
 						audio.insert_cassette(cGun().cooldownSounds);
 				}
 			}
+		break;
 		}
 	} while(oldState != fireState);
 
@@ -361,7 +359,7 @@ void GunHandler::tick() {
 			int32_t clipSize;
 			int32_t reserveAmmo;
 		} ammoData = {cGun().currentClipAmmo, cGun().clipSize, cGun().currentReserveAmmo};
-		LZR::mqtt.publish_to(LZR::player.get_topic_base() +"/Stats/Ammo", &ammoData, sizeof(ammoData), 0, true);
+		LZR::mqtt.publish_to(LZR::player.get_topic_base() +"/Stats/Ammo", &ammoData, sizeof(ammoData), 0);
 
 		mqttAmmo = cGun().currentClipAmmo;
 		lastMQTTPush = xTaskGetTickCount();

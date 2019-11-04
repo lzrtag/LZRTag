@@ -84,6 +84,6 @@ They all relate to various game statistics that do not directly influence the ha
 |Key|Data|Descrition|Retained|
 |--|--|--|--|
 |HP|STR Number|Float number, 0  to 100 (or more with shields)|Yes|
-|Ammo|uint32_t[3]|Current Clip ammo, max clip size and reserve ammo|Yes|
+|Ammo|uint32_t[3]|Current Clip ammo, max clip size and reserve ammo|No|
 |Ammo/SetClip|STR Number|Set the amount of ammo in the player's clip|No|
 |Ammo/SetReserve|STR Number| Set the amount of ammo in the player's reserve|No|
