@@ -206,13 +206,14 @@ module LZRTag
 
 			def _set_dead(d, player = nil)
 				dead = (d ? true : false);
-				return if @dead == dead;
+				return false if @dead == dead;
 				@dead = dead;
 
 				@deathChangeTime = Time.now();
 
 				_pub_to "CFG/Dead", @dead ? "1" : "0", retain: true;
 				@handler.send_event(@dead ? :playerKilled : :playerRevived, self, player);
+				return true;
 			end
 			def dead=(d)
 				_set_dead(d);

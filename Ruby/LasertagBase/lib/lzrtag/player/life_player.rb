@@ -45,17 +45,21 @@ module LZRTag
 
 				nLife = @life + amount;
 				nLife = @maxLife if(nLife > @maxLife)
-				return if nLife == @life;
+				return 0 if nLife == @life;
 
 				oLife = @life;
 				@life = nLife;
 
-				@handler.send_event(:playerRegenerated, self, @life - oLife, source);
+				lifeDiff = @life - oLife;
+
+				@handler.send_event(:playerRegenerated, self, lifeDiff, source);
 				if(@life == maxLife)
 					@handler.send_event(:playerFullyRegenerated, self, source);
 				end
 
 				_pub_to("Stats/HP", @life.to_s, retain: true);
+
+				return lifeDiff
 			end
 
 			# Damage a player by a given amount with given source.

@@ -5,7 +5,7 @@ require 'xasin_logger'
 
 require_relative '../hooks/base_hook.rb'
 
-require_relative '../player/life_player.rb'
+require_relative '../player/stats_player.rb'
 
 module LZRTag
 	module Handler
@@ -30,7 +30,7 @@ module LZRTag
 			# Returns the ID-Table, a Hash of Players and their matched IDs
 			attr_reader :idTable
 
-			def initialize(mqtt, playerClass = Player::Life, clean_on_exit: true)
+			def initialize(mqtt, playerClass = Player::Statistics, clean_on_exit: true)
 				init_x_log("LZRTag Base", nil);
 
 				@mqtt = mqtt;

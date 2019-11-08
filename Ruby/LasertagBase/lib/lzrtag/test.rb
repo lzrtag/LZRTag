@@ -27,7 +27,7 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-$mqtt = MQTT::SubHandler.new("mqtt://192.168.6.29");
+$mqtt = MQTT::SubHandler.new("mqtt://192.168.250.1");
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
@@ -39,12 +39,12 @@ class TestGame < LZRTag::Game::Base
 
 	hook :teamSelect, LZRTag::Hook::TeamSelector
 	hook :regenerator, LZRTag::Hook::Regenerator, {
-		regRate: 3,
-		regDelay: 5,
-		autoReviveThreshold: 30
+		regRate: 5,
+		regDelay: 2,
+		autoReviveThreshold: 10
 	}
 	hook :damager, LZRTag::Hook::Damager, {
-		dmgPerShot: 35
+		dmgPerShot: 10
 	}
 
 	hook :guns, LZRTag::Hook::GunSelector
@@ -64,7 +64,6 @@ class TestGame < LZRTag::Game::Base
 		@nextBeep = -10;
 
 		@handler.each_participating do |pl|
-			pl.sound("GAME START");
 			pl.brightness = :idle;
 
 			pl.heartbeat = true;
@@ -73,10 +72,12 @@ class TestGame < LZRTag::Game::Base
 
 	phase :countdown do |dT|
 		if(@phaseTime >= 0)
-			@handler.each_participating do |pl| pl.noise(frequency: 1000); end
 			@handler.set_phase(:running)
 		elsif(@phaseTime > @nextBeep)
-			@handler.each_participating do |pl| pl.noise(); end
+			#@handler.each_participating do |pl| pl.noise(); end
+			if(@nextBeep == -4)
+				@handler.each_participating do |pl| pl.sound("GAME START"); end
+			end
 			@nextBeep += 1;
 		end
 	end
@@ -96,6 +97,15 @@ class TestGame < LZRTag::Game::Base
 
 	phase :running do
 		@handler.stop_game() if @phaseTime > 0
+	end
+
+	phase_end :running do
+		@handler.each_participating do |pl|
+			pl.heartbeat = false;
+			pl.brightness = :idle;
+			pl.gunNo = 0;
+			pl.dead = false;
+		end
 	end
 end
 
