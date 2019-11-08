@@ -12,29 +12,31 @@ module LZRTag
 		class Count < HitArb
 			# Returns a Hash with keys 0..7, describing which teams have
 			# how many players
-			attr_reader :teamCount
+			attr_reader :teamMap
 			# Returns a Hash with keys equal to player's brightnesses, describing
 			# how many players have which brightness
-			attr_reader :brightnessCount
+			attr_reader :brightnessMap
 
 			# Returns a hash with keys of beacon numbers, describing
 			# how many players are in which beacon
-			attr_reader :beaconCount
+			attr_reader :beaconMap
 
 			def initialize(*args, **argHash)
 				super(*args, **argHash);
 
-				@teamCount = Hash.new();
+				@teamMap = Hash.new();
 				7.times do |i|
-					@teamCount[i] = 0;
+					@teamMap[i] = Array.new;
 				end
 
-				@brightnessCount = Hash.new();
+				@brightnessMap = Hash.new();
 				Player::Hardware.getBrightnessKeys().each do |bKey|
-					@brightnessCount[bKey] = 0;
+					@brightnessMap[bKey] = Array.new;
 				end
 
-				@beaconCount = Hash.new(0);
+				@beaconMap = Hash.new() do |h, k|
+					h[k] = Array.new();
+				end
 			end
 
 			# @private
@@ -43,22 +45,31 @@ module LZRTag
 
 				case evtName
 				when :playerRegistered
-					@teamCount[data[0].team] += 1;
-					@brightnessCount[data[0].brightness] += 1;
+					@teamMap[data[0].team] << data[0];
+					@brightnessMap[data[0].brightness] << data[0];
 				when :playerUnregistered
-					@teamCount[data[0].team] -= 1;
-					@brightnessCount[data[0].brightness] -= 1;
+					@teamMap[data[0].team].delete data[0];
+					@brightnessMap[data[0].brightness].delete data[0];
 				when :playerTeamChanged
-					@teamCount[data[1]] -= 1;
-					@teamCount[data[0].team] += 1;
+					@teamMap[data[1]].delete data[0];
+					@teamMap[data[0].team] << data[0];
 				when :playerBrightnessChanged
-					@brightnessCount[data[1]] -= 1;
-					@brightnessCount[data[0].brightness] += 1;
+					@brightnessMap[data[1]].delete data[0];
+					@brightnessMap[data[0].brightness] << data[0];
 				when :playerEnteredBeacon
-					@beaconCount[data[1]] += 1;
+					@beaconMap[data[1]] << data[0];
 				when :playerLeftBeacon
-					@beaconCount[data[1]] -= 1;
+					@beaconMap[data[1]].delete data[0];
 				end
+			end
+
+			def get_team_killcount(team)
+				total = 0;
+				@teamMap[team].each do |pl|
+					total += pl.stats["Kills"];
+				end
+
+				return total;
 			end
 		end
 	end

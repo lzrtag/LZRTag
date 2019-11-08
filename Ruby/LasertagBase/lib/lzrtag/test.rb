@@ -27,7 +27,7 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-$mqtt = MQTT::SubHandler.new("mqtt://192.168.250.1");
+$mqtt = MQTT::SubHandler.new("mqtt://192.168.6.29");
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
@@ -54,7 +54,7 @@ class TestGame < LZRTag::Game::Base
 	end
 
 	phase :teamSelect do |dT|
-		if((@handler.brightnessCount[:active] >= 1) && (@handler.brightnessCount[:teamSelect] == 0))
+		if((!@handler.brightnessMap[:active].empty?) && (@handler.brightnessMap[:teamSelect].empty?))
 			@handler.set_phase(:countdown)
 		end
 	end
@@ -88,7 +88,7 @@ class TestGame < LZRTag::Game::Base
 
 
 	phase_prep :running do
-		@phaseTime = -3*60;
+		@phaseTime = -1*60;
 
 		@handler.each_participating do |pl|
 			pl.brightness = :active
@@ -100,7 +100,11 @@ class TestGame < LZRTag::Game::Base
 	end
 
 	phase_end :running do
+		puts "\n\nGAME COMPLETED\nSTATS:\n%8s | %8s | %8s | %8s" % ["Name", "Kills", "Deaths", "K/D"];
+
 		@handler.each_participating do |pl|
+			puts "%8s | %8d | %8d | %8d" % [pl.name, pl.stats["Kills"], pl.stats["Deaths"], pl.ratio_kd];
+
 			pl.heartbeat = false;
 			pl.brightness = :idle;
 			pl.gunNo = 0;
