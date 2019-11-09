@@ -63,6 +63,38 @@ module LZRTag
 				return @stats["Kills"]/([1, @stats["Deaths"]].max);
 			end
 
+
+			def self.print_start_line()
+				stats = ["Kills", "Deaths", "DMG Done", "DMG Rec", "Healed"]
+				sep = "\u2501" * 10;
+
+				puts "\u250F" + sep + ("\u252F" + sep) * (stats.count) + "\u2513";
+				puts "\u2503" + (" %8s \u2502" * (stats.count) + " %8s \u2503") % ["Name", stats].flatten;
+				puts "\u2523" + sep + ("\u253F" + sep)*(stats.count) + "\u252B";
+			end
+
+			def self.print_end_line()
+				stats = ["Kills", "Deaths", "DMG Done", "DMG Rec", "Healed"]
+				sep = "\u2501" * 10;
+
+				puts "\u2517" + sep + ("\u2537" + sep)*(stats.count) + "\u251B";
+			end
+
+			def print_stat_line()
+				outStr = "\u2503 %8s ";
+				strArgs = [@name];
+
+				@stats.each do |key, val|
+					strArgs << val;
+					outStr += "\u2502 %8d ";
+				end
+				outStr += "\u2503";
+
+				puts outStr % strArgs;
+			end
+
+
+
 			def clear_all_topics()
 				super();
 

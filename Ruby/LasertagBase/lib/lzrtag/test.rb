@@ -88,7 +88,7 @@ class TestGame < LZRTag::Game::Base
 
 
 	phase_prep :running do
-		@phaseTime = -1*60;
+		@phaseTime = -2*60;
 
 		@handler.each_participating do |pl|
 			pl.brightness = :active
@@ -100,16 +100,20 @@ class TestGame < LZRTag::Game::Base
 	end
 
 	phase_end :running do
-		puts "\n\nGAME COMPLETED\nSTATS:\n%8s | %8s | %8s | %8s" % ["Name", "Kills", "Deaths", "K/D"];
+		puts "\n\nGAME COMPLETED\nSTATS:\n";
 
+		LZRTag::Player::Statistics.print_start_line();
 		@handler.each_participating do |pl|
-			puts "%8s | %8d | %8d | %8d" % [pl.name, pl.stats["Kills"], pl.stats["Deaths"], pl.ratio_kd];
+			#puts "%8s | %8d | %8d | %8d" % [pl.name, pl.stats["Kills"], pl.stats["Deaths"], pl.ratio_kd];
+			pl.print_stat_line();
 
 			pl.heartbeat = false;
 			pl.brightness = :idle;
 			pl.gunNo = 0;
 			pl.dead = false;
 		end
+
+		LZRTag::Player::Statistics.print_end_line();
 	end
 end
 
