@@ -2,7 +2,7 @@
 <export version="D">
   <design>
     <source>/home/xasin/XasWorks/LZRTag/Electronics/MainBoard_Rev2/MainBoard.sch</source>
-    <date>Sat 31 Aug 2019 20:53:34 CEST</date>
+    <date>Sun 12 Jan 2020 17:51:55 CET</date>
     <tool>Eeschema 5.0.2+dfsg1-1~bpo9+1</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
@@ -71,7 +71,7 @@
       <tstamp>5C2BAF8A</tstamp>
     </comp>
     <comp ref="C2">
-      <value>150nF</value>
+      <value>100nF</value>
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C_Small" description="Unpolarized capacitor, small symbol"/>
@@ -83,7 +83,7 @@
       <footprint>Connector_Dsub:DSUB-9_Female_Horizontal_P2.77x2.84mm_EdgePinOffset4.94mm_Housed_MountingHolesOffset7.48mm</footprint>
       <datasheet> ~</datasheet>
       <fields>
-        <field name="Digi-Key">AE10921-ND</field>
+        <field name="Digi-Key_PN">AE10921-ND</field>
         <field name="MPN">A-DF 09 A/KG-T2S</field>
       </fields>
       <libsource lib="Connector" part="DB9_Female" description="9-pin female D-SUB connector"/>
@@ -229,7 +229,7 @@
       <tstamp>5D67DBF1</tstamp>
     </comp>
     <comp ref="R1">
-      <value>220</value>
+      <value>220R</value>
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R_Small" description="Resistor, small symbol"/>
@@ -237,7 +237,7 @@
       <tstamp>5D6959C1</tstamp>
     </comp>
     <comp ref="R7">
-      <value>220</value>
+      <value>220R</value>
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R_Small" description="Resistor, small symbol"/>
@@ -272,12 +272,15 @@
       <value>Conn_01x02_Male</value>
       <footprint>Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digi-Key_PN">668-1517-ND</field>
+      </fields>
       <libsource lib="Connector" part="Conn_01x02_Male" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5D694850</tstamp>
     </comp>
     <comp ref="R8">
-      <value>220</value>
+      <value>220R</value>
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R_Small" description="Resistor, small symbol"/>
@@ -285,7 +288,7 @@
       <tstamp>5D69D2A7</tstamp>
     </comp>
     <comp ref="R9">
-      <value>220</value>
+      <value>220R</value>
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R_Small" description="Resistor, small symbol"/>
@@ -298,6 +301,7 @@
       <datasheet>~</datasheet>
       <fields>
         <field name="Digi-Key">455-1749-1-ND</field>
+        <field name="Digi-Key_PN">455-1749-1-ND</field>
         <field name="MPN">S2B-PH-SM4-TB(LF)(SN)</field>
       </fields>
       <libsource lib="Device" part="Battery_Cell" description="Single-cell battery"/>
@@ -336,6 +340,9 @@
       <value>D_Schottky</value>
       <footprint>Diode_SMD:D_0603_1608Metric</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digi-Key_PN">CD0603-B0340RCT-ND</field>
+      </fields>
       <libsource lib="Device" part="D_Schottky" description="Schottky diode"/>
       <sheetpath names="/PowerHandling/" tstamps="/5C2BB052/"/>
       <tstamp>5C2CAD82</tstamp>
@@ -367,6 +374,9 @@
     <comp ref="SWPWR1">
       <value>SW_SPST</value>
       <footprint>Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical</footprint>
+      <fields>
+        <field name="Digi-Key_PN">CKN9565-ND</field>
+      </fields>
       <libsource lib="Switch" part="SW_SPST" description="Single Pole Single Throw (SPST) switch"/>
       <sheetpath names="/PowerHandling/" tstamps="/5C2BB052/"/>
       <tstamp>5C2D1614</tstamp>
@@ -440,6 +450,9 @@
       <value>USB_B_Micro</value>
       <footprint>Connector_USB:USB_Micro-B_Wuerth_629105150521</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digi-Key_PN">732-5960-1-ND</field>
+      </fields>
       <libsource lib="Connector" part="USB_B_Micro" description="USB Micro Type B connector"/>
       <sheetpath names="/USB Connection/" tstamps="/5C2BC95D/"/>
       <tstamp>5C2BCA10</tstamp>
@@ -480,6 +493,9 @@
       <value>FT231XS</value>
       <footprint>Package_SO:SSOP-20_3.9x8.7mm_P0.635mm</footprint>
       <datasheet>http://www.ftdichip.com/Products/ICs/FT231X.html</datasheet>
+      <fields>
+        <field name="Digi-Key_PN">768-1129-1-ND</field>
+      </fields>
       <libsource lib="Interface_USB" part="FT231XS" description="Full Speed USB to Full Handshake UART, SSOP-20"/>
       <sheetpath names="/USB Connection/" tstamps="/5C2BC95D/"/>
       <tstamp>5C7F8FA0</tstamp>
@@ -488,6 +504,9 @@
       <value>Q_NPN_BEC</value>
       <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digi-Key_PN">1727-2956-1-ND</field>
+      </fields>
       <libsource lib="Device" part="Q_NPN_BEC" description="NPN transistor, base/emitter/collector"/>
       <sheetpath names="/USB Connection/" tstamps="/5C2BC95D/"/>
       <tstamp>5C7FCD9D</tstamp>
@@ -496,6 +515,9 @@
       <value>Q_NPN_BEC</value>
       <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digi-Key_PN">1727-2956-1-ND</field>
+      </fields>
       <libsource lib="Device" part="Q_NPN_BEC" description="NPN transistor, base/emitter/collector"/>
       <sheetpath names="/USB Connection/" tstamps="/5C2BC95D/"/>
       <tstamp>5C80008F</tstamp>
@@ -588,6 +610,9 @@
       <value>D_Schottky</value>
       <footprint>Diode_SMD:D_0603_1608Metric</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digi-Key_PN">CD0603-B0340RCT-ND</field>
+      </fields>
       <libsource lib="Device" part="D_Schottky" description="Schottky diode"/>
       <sheetpath names="/Peripheral Devices/" tstamps="/5C2D6974/"/>
       <tstamp>5C2E26B7</tstamp>
@@ -616,7 +641,7 @@
       <footprint>LED_THT:LED_D3.0mm_IRBlack</footprint>
       <datasheet>http://cdn-reichelt.de/documents/datenblatt/A500/SFH4346.pdf</datasheet>
       <fields>
-        <field name="Digi-Key">475-3581-ND</field>
+        <field name="Digi-Key_PN">475-3581-ND</field>
         <field name="MPN">SFH 4346</field>
       </fields>
       <libsource lib="LED" part="SFH4346" description="Infrared LED , 3mm LED package"/>
@@ -624,7 +649,7 @@
       <tstamp>5C2EAE56</tstamp>
     </comp>
     <comp ref="R30">
-      <value>220</value>
+      <value>220R</value>
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
@@ -697,6 +722,9 @@
       <value>Conn_01x04_Male</value>
       <footprint>MainBoard_Rev2:nav_switch_COM_08184</footprint>
       <datasheet>~</datasheet>
+      <fields>
+        <field name="Digi-Key_PN">1568-1827-ND</field>
+      </fields>
       <libsource lib="Connector" part="Conn_01x04_Male" description="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
       <sheetpath names="/Peripheral Devices/" tstamps="/5C2D6974/"/>
       <tstamp>5D685BA0</tstamp>
