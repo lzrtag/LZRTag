@@ -1,0 +1,3 @@
+[submodule "XasCode"]
+	path = XasCode
+	url = git@github.com:XasWorks/XasCode.git
