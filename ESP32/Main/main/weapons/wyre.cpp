@@ -21,7 +21,7 @@ namespace Weapons {
 #include "wyre_fire_4.h"
 #include "wyre_fire_5.h"
 
-#define AC(name) AudioCassette(name, sizeof(name))
+#define AC(name) Xasin::Audio::opus_audio_bundle_t({0, sizeof(name), 120, name})
 
 // Effective shot rate:
 // 18*90 + 9*50 + 3000 + 4*1200 = 9870 Ticks
@@ -30,8 +30,12 @@ namespace Weapons {
 // DPS Val: 0.9138
 
 Lasertag::GunSpecs wyre {
-	.maxAmmo = 18,
-	.currentAmmo = 18,
+	.weaponSwitchDelay = 3*600,
+
+	.currentReserveAmmo = -1,
+
+	.clipSize= 18,
+	.currentClipAmmo = 18,
 
 	.postTriggerTicks = 0,
 	.postTriggerRelease = false,
@@ -46,9 +50,8 @@ Lasertag::GunSpecs wyre {
 	.postSalveDelay = 50,
 	.postSalveRelease = false,
 
-	.postShotReloadBlock = 5*600,
-	.postReloadReloadBlock = 2*600,
-	.perReloadRecharge = 4,
+	.perReloadDelay = 33*60,
+	.perReloadRecharge = 18,
 
 	.perShotHeatup = 0.05,
 	.perTickCooldown = 0.9983,
@@ -64,7 +67,7 @@ Lasertag::GunSpecs wyre {
 			AC(wyre_fire_5),
 	},
 	.cooldownSounds = {
-			AudioCassette(wyre_cooldown, sizeof(wyre_cooldown))
+			AC(wyre_cooldown)
 	}
 };
 }

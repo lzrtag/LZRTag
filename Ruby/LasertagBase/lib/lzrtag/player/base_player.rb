@@ -3,15 +3,31 @@ require 'mqtt/sub_handler'
 
 module LZRTag
 	module Player
+		# The base player class.
+		# This class is not instantiated by the user, but instead on a on-demand basis
+		# by the LZRTag::Handler::Base when a new PlayerID needs to be registered. The player classes
+		# process and send MQTT data, handle events, and keep track of per-player infos like life,
+		# damage, ammo, team, etc. etc.
 		class Base
 			attr_reader :handler
+			# @return [String] The player's DeviceID, which is derived from the ESP's MAC
 			attr_reader :DeviceID
 
+			# @return [String] Name of the player, set externally
 			attr_reader :name
 
+			# @return [String] status-string of the player. Should be "OK"
 			attr_reader :status
 
+			attr_reader :connected
+
+			# @return [Time] Time at which the player status was last updated
+			attr_reader :last_status_update
+
+			# @return [Integer] 0..255, shot ID of the player
 			attr_reader   :id
+			# @return [Hash<Time>] Hash of the last few recorded shot times,
+			#  used for hit arbitration
 			attr_accessor :hitIDTimetable
 
 			def initialize(deviceID, handler)
@@ -23,41 +39,60 @@ module LZRTag
 				@status = "";
 				@name   = "";
 
+				@last_status_update = Time.at(0);
+				@connected = false;
+
 				@hitIDTimetable = Hash.new(Time.new(0));
 			end
 
 			def _pub_to(key, data, retain: false)
-				@mqtt.publish_to("Lasertag/Players/#{@DeviceID}/#{key}", data, retain: retain);
+				@mqtt.publish_to("Lasertag/Players/#{@DeviceID}/#{key}", data, retain: retain, qos: 1);
 			end
 			private :_pub_to
-			def _console(cmd)
-				_pub_to("Console/In", cmd);
-			end
-			private :_console
 
+			# @private
 			def on_mqtt_data(data, topic)
 				case topic[1..topic.length].join("/")
 				when "Connection"
 					return if @status == data;
-					oldStatus = @status;
 					@status = data;
-					if(@status == "OK")
-						@handler.send_event(:playerConnected, self);
-					elsif(oldStatus == "OK")
-						@handler.send_event(:playerDisconnected, self);
-					end
-				when "Name"
+
+					return if @status == "OK"
+					return if @status == ""
+					return if !@connected
+					@connected = false;
+					@handler.send_event(:playerDisconnected, self);
+
+				when "CFG/Name"
 					@name = data;
+				when "Ping"
+					@last_status_update = Time.now();
+
+					if(@status == "OK" && (!@connected))
+						@connected = true
+						@handler.send_event(:playerConnected, self);
+					end
 				end
 			end
 
-			def connected?()
-				return @status == "OK"
-			end
-			def clear_safemode()
-				_console('file.remove("BOOT_SAFECHECK")') if @status == "SAFEMODE"
+			def _tick_connection()
+				return unless @connected
+
+				if((Time.now() - @last_status_update) > 60)
+					@connected = false;
+					@handler.send_event(:playerDisconnected, self);
+				end
 			end
 
+			# @return [Boolean] Whether this player is connected
+			def connected?()
+				return @connected
+			end
+
+			# Set the Shot ID of the player.
+			# @note Do not call this function yourself - the Handler must
+			#   assign unique IDs to ensure proper game functionality!
+			# @private
 			def id=(n)
 				return if @id == n;
 
@@ -70,18 +105,20 @@ module LZRTag
 					@id = nil;
 				end
 
-				_pub_to("ID", @id, retain: true);
+				_pub_to("CFG/ID", @id, retain: true);
 			end
 
+			# Trigger a clear of all topics
+			# @note Do not call this function yourself, except when deregistering a player!
+			# @private
 			def clear_all_topics()
 				self.id = nil;
 			end
 
 			def inspect()
-				iString =  "#<Player:#{@name}##{@id ? @id : "OFFLINE"}, Team=#{@team}";
+				iString =  "#<Player:#{@deviceID}##{@id ? @id : "OFFLINE"}, Team=#{@team}";
 				iString += ", DEAD" if @dead
 				iString += ", Battery=#{@battery.round(2)}"
-				iString += ", Heap=#{@heap}" if @heap < 10000;
 				iString += ", Ping=#{@ping.ceil}ms>";
 
 				return iString;

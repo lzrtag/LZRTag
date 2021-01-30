@@ -22,7 +22,7 @@ F 0 "U1" H 5500 4850 50  0000 C CNN
 F 1 "ESP32-WROOM-32" H 5825 3700 50  0000 C CNN
 F 2 "RF_Module:ESP32-WROOM-32" H 5950 2000 50  0001 C CNN
 F 3 "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf" H 5650 3550 50  0001 C CNN
-F 4 "1904-1025-1-ND" H 5950 3500 50  0001 C CNN "Digi-Key"
+F 4 "1904-1025-1-ND" H 5950 3500 50  0001 C CNN "Digi-Key_PN"
 F 5 "ESP32-WROOM-32D (16MB)" H 5950 3500 50  0001 C CNN "MPN"
 	1    5950 3500
 	1    0    0    -1  
@@ -120,29 +120,16 @@ $EndComp
 Wire Wire Line
 	5950 1750 5950 1800
 $Comp
-L Device:C C1
-U 1 1 5C2D5556
-P 6400 1600
-F 0 "C1" V 6148 1600 50  0000 C CNN
-F 1 "10uF" V 6239 1600 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 6438 1450 50  0001 C CNN
-F 3 "~" H 6400 1600 50  0001 C CNN
-	1    6400 1600
-	0    1    1    0   
-$EndComp
-$Comp
 L Device:C_Small C2
 U 1 1 5C2D560A
 P 6400 1800
 F 0 "C2" V 6200 1900 50  0000 C CNN
-F 1 "150nF" V 6300 1800 50  0000 C CNN
+F 1 "100nF" V 6300 1800 50  0000 C CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 6400 1800 50  0001 C CNN
 F 3 "~" H 6400 1800 50  0001 C CNN
 	1    6400 1800
 	0    -1   -1   0   
 $EndComp
-Wire Wire Line
-	6250 1600 6250 1800
 Wire Wire Line
 	6250 1800 5950 1800
 Connection ~ 5950 1800
@@ -155,8 +142,6 @@ Wire Wire Line
 	6500 1800 6550 1800
 Wire Wire Line
 	6725 1800 6725 1875
-Wire Wire Line
-	6550 1600 6550 1800
 Connection ~ 6550 1800
 Wire Wire Line
 	6550 1800 6725 1800
@@ -183,6 +168,9 @@ F4 "BTN_In" I L 8050 2725 50
 F5 "Vibrate" I L 8050 2800 50 
 F6 "IR_OUT" I L 8050 2925 50 
 F7 "Audio_In" I L 8050 3000 50 
+F8 "BACK" I R 9575 2550 50 
+F9 "FWD" I R 9575 2625 50 
+F10 "DOWN" I R 9575 2700 50 
 $EndSheet
 Wire Wire Line
 	2800 3575 2600 3575
@@ -196,7 +184,7 @@ F 0 "J2" H 9479 4796 50  0000 L CNN
 F 1 "DB9_Female" H 9479 4705 50  0000 L CNN
 F 2 "Connector_Dsub:DSUB-9_Female_Horizontal_P2.77x2.84mm_EdgePinOffset4.94mm_Housed_MountingHolesOffset7.48mm" H 9300 4750 50  0001 C CNN
 F 3 " ~" H 9300 4750 50  0001 C CNN
-F 4 "AE10921-ND" H 9300 4750 50  0001 C CNN "Digi-Key"
+F 4 "AE10921-ND" H 9300 4750 50  0001 C CNN "Digi-Key_PN"
 F 5 "A-DF 09 A/KG-T2S" H 9300 4750 50  0001 C CNN "MPN"
 	1    9300 4750
 	1    0    0    -1  
@@ -272,8 +260,6 @@ Text Label 9850 2900 2    50   ~ 0
 LED_2
 Wire Wire Line
 	9575 2900 9850 2900
-Wire Wire Line
-	9000 4650 8500 4650
 Text Label 8500 4650 0    50   ~ 0
 LED_2
 Text Label 6900 4400 2    50   ~ 0
@@ -347,7 +333,7 @@ F 0 "D7" H 8350 4100 50  0000 C CNN
 F 1 "LED" H 8525 4050 50  0000 C CNN
 F 2 "LED_SMD:LED_0603_1608Metric" H 8375 4000 50  0001 C CNN
 F 3 "~" H 8375 4000 50  0001 C CNN
-F 4 "1830-1068-1-ND" H 8375 4000 50  0001 C CNN "Digi-Key"
+F 4 "1830-1068-1-ND" H 8375 4000 50  0001 C CNN "Digi-Key_PN"
 F 5 "IN-S63BT5B" H 8375 4000 50  0001 C CNN "MPN"
 	1    8375 4000
 	1    0    0    -1  
@@ -378,7 +364,7 @@ F 0 "D6" H 8350 3228 50  0000 C CNN
 F 1 "LED_Dual_AACC" H 8350 3319 50  0000 C CNN
 F 2 "LED_SMD:LED_RGB_1210" H 8350 3320 50  0001 C CNN
 F 3 "~" H 8380 3575 50  0001 C CNN
-F 4 "160-1172-1-ND" H 8350 3575 50  0001 C CNN "Digi-Key"
+F 4 "160-1172-1-ND" H 8350 3575 50  0001 C CNN "Digi-Key_PN"
 F 5 "LTST-C155GEKT" H 8350 3575 50  0001 C CNN "MPN"
 	1    8350 3575
 	-1   0    0    1   
@@ -410,8 +396,6 @@ F 3 "~" H 5250 1575 50  0001 C CNN
 	1    5250 1575
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	9000 4750 8500 4750
 Text Label 8500 4750 0    50   ~ 0
 IR_IN
 Text Label 8500 4850 0    50   ~ 0
@@ -448,10 +432,6 @@ F 3 "~" H 8025 4850 50  0001 C CNN
 	1    8025 4850
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	8225 4850 9000 4850
-Wire Wire Line
-	8025 4950 9000 4950
 Wire Wire Line
 	8025 4750 8025 4650
 Wire Wire Line
@@ -539,17 +519,6 @@ F 3 "~" H 1600 6425 50  0001 C CNN
 	1    1600 6425
 	1    0    0    -1  
 $EndComp
-$Comp
-L Mechanical:MountingHole H5
-U 1 1 5C311B5D
-P 1600 6650
-F 0 "H5" H 1700 6696 50  0000 L CNN
-F 1 "MountingHole" H 1700 6605 50  0000 L CNN
-F 2 "MainBoard_Rev2:QR_Link" H 1600 6650 50  0001 C CNN
-F 3 "~" H 1600 6650 50  0001 C CNN
-	1    1600 6650
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	6550 3700 6925 3700
 Text Label 6925 3700 2    50   ~ 0
@@ -612,18 +581,17 @@ Wire Wire Line
 Wire Wire Line
 	6550 3300 6925 3300
 $Comp
-L XasParts:MAX98357A AMP1
+L MainBoard-rescue:MAX98357A-XasParts AMP1
 U 1 1 5D27DFC9
 P 3925 6250
 F 0 "AMP1" H 4375 6250 50  0000 L CNN
 F 1 "MAX98357A" H 4350 6150 50  0000 L CNN
 F 2 "Package_DFN_QFN:QFN-16-1EP_3x3mm_P0.5mm_EP2.7x2.7mm_ThermalVias" H 4025 5900 50  0001 C CNN
 F 3 "" H 4025 5900 50  0001 C CNN
+F 4 "MAX98357AETE+TCT-ND" H 3925 6250 50  0001 C CNN "Digi-Key_PN"
 	1    3925 6250
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	3875 5200 3925 5200
 Wire Wire Line
 	3925 5200 3925 5075
 Connection ~ 3925 5200
@@ -672,9 +640,6 @@ Text Label 3200 6150 0    50   ~ 0
 AUDIO
 Wire Wire Line
 	3525 5700 3525 5200
-Wire Wire Line
-	3525 5200 3875 5200
-Connection ~ 3875 5200
 $Comp
 L power:GND #PWR0119
 U 1 1 5D29AF62
@@ -711,4 +676,154 @@ F 3 "" H 3325 5200 50  0001 C CNN
 	1    3325 5200
 	0    1    1    0   
 $EndComp
+$Comp
+L Device:C C5
+U 1 1 5D67DBF1
+P 6400 1150
+F 0 "C5" V 6148 1150 50  0000 C CNN
+F 1 "47uF" V 6239 1150 50  0000 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric" H 6438 1000 50  0001 C CNN
+F 3 "~" H 6400 1150 50  0001 C CNN
+	1    6400 1150
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3525 5200 3925 5200
+$Comp
+L Device:R_Small R1
+U 1 1 5D6959C1
+P 8875 4650
+F 0 "R1" V 8900 4725 50  0000 C CNN
+F 1 "220R" V 8900 4575 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 8875 4650 50  0001 C CNN
+F 3 "~" H 8875 4650 50  0001 C CNN
+	1    8875 4650
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R7
+U 1 1 5D695A6F
+P 8875 4750
+F 0 "R7" V 8925 4825 50  0000 C CNN
+F 1 "220R" V 8925 4675 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 8875 4750 50  0001 C CNN
+F 3 "~" H 8875 4750 50  0001 C CNN
+	1    8875 4750
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	8975 4750 9000 4750
+Wire Wire Line
+	8975 4650 9000 4650
+Wire Wire Line
+	8500 4650 8775 4650
+Wire Wire Line
+	8500 4750 8775 4750
+Wire Wire Line
+	6550 2800 7025 2800
+Wire Wire Line
+	6550 3800 7025 3800
+Wire Wire Line
+	6550 3900 7025 3900
+Text Label 7025 2800 2    50   ~ 0
+CTRL_BACK
+Text Label 7025 3800 2    50   ~ 0
+CTRL_FWD
+Text Label 7025 3900 2    50   ~ 0
+CTRL_DOWN
+Wire Wire Line
+	9575 2550 10175 2550
+Text Label 10175 2550 2    50   ~ 0
+CTRL_BACK
+Text Label 10175 2625 2    50   ~ 0
+CTRL_FWD
+Text Label 10175 2700 2    50   ~ 0
+CTRL_DOWN
+Wire Wire Line
+	10175 2700 9575 2700
+Wire Wire Line
+	10175 2625 9575 2625
+$Comp
+L Connector:TestPoint TP1
+U 1 1 5D6C79CC
+P 3200 5950
+F 0 "TP1" V 3175 6550 50  0000 C CNN
+F 1 "TestPoint" V 3175 6300 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_2.0x2.0mm" H 3400 5950 50  0001 C CNN
+F 3 "~" H 3400 5950 50  0001 C CNN
+	1    3200 5950
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:TestPoint TP2
+U 1 1 5D6C7B05
+P 3200 6050
+F 0 "TP2" V 3175 6650 50  0000 C CNN
+F 1 "TestPoint" V 3175 6400 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_2.0x2.0mm" H 3400 6050 50  0001 C CNN
+F 3 "~" H 3400 6050 50  0001 C CNN
+	1    3200 6050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector:TestPoint TP3
+U 1 1 5D6C7BE2
+P 3200 6150
+F 0 "TP3" V 3175 6750 50  0000 C CNN
+F 1 "TestPoint" V 3175 6500 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_2.0x2.0mm" H 3400 6150 50  0001 C CNN
+F 3 "~" H 3400 6150 50  0001 C CNN
+	1    3200 6150
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	6550 1150 6550 1800
+Wire Wire Line
+	6250 1150 6250 1800
+$Comp
+L Connector:Conn_01x02_Male J5
+U 1 1 5D694850
+P 4925 5900
+F 0 "J5" H 4898 5780 50  0000 R CNN
+F 1 "Conn_01x02_Male" H 4898 5871 50  0000 R CNN
+F 2 "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" H 4925 5900 50  0001 C CNN
+F 3 "~" H 4925 5900 50  0001 C CNN
+F 4 "668-1517-ND" H 4925 5900 50  0001 C CNN "Digi-Key_PN"
+	1    4925 5900
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4475 5800 4725 5800
+Wire Wire Line
+	4475 5900 4725 5900
+$Comp
+L Device:R_Small R8
+U 1 1 5D69D2A7
+P 8875 4850
+F 0 "R8" V 8925 4925 50  0000 C CNN
+F 1 "220R" V 8925 4775 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 8875 4850 50  0001 C CNN
+F 3 "~" H 8875 4850 50  0001 C CNN
+	1    8875 4850
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R9
+U 1 1 5D69D35B
+P 8875 4950
+F 0 "R9" V 8925 5025 50  0000 C CNN
+F 1 "220R" V 8925 4875 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 8875 4950 50  0001 C CNN
+F 3 "~" H 8875 4950 50  0001 C CNN
+	1    8875 4950
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	8975 4850 9000 4850
+Wire Wire Line
+	8975 4950 9000 4950
+Wire Wire Line
+	8775 4850 8225 4850
+Wire Wire Line
+	8775 4950 8025 4950
 $EndSCHEMATC

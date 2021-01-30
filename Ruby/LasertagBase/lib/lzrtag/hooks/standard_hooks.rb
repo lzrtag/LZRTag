@@ -7,11 +7,11 @@ module LZRTag
 			attr_accessor :eventWhitelist
 			attr_accessor :eventBlacklist
 
-			def initialize()
-				super();
+			def initialize(handler)
+				super(handler, "DBG");
 
 				@eventWhitelist = Array.new();
-				@eventBlacklist = Array.new();
+				@eventBlacklist = [:slowTick, :gameTick, :playerInBeacon];
 			end
 
 			def consume_event(evtName, data)
@@ -22,56 +22,135 @@ module LZRTag
 					return unless @eventWhitelist.include? evtName
 				end
 
-				puts "Caught event: #{evtName} with data: #{data}";
+				x_logd "Event: #{evtName} with data: #{data}";
 			end
 		end
 
-		class RandomTeam < Base
-			attr_accessor :teamWhitelist
+		class TeamSelector < Base
+			describe_option :possibleTeams, "List of teams that can be selected", {
+				type: Array
+			}
 
-			def initialize()
-				super();
+			def initialize(handler, possibleTeams: [1, 2, 3, 4])
+				super(handler, "Team Selector");
 
-				@teamWhitelist = (1..6).to_a;
+				@possibleTeams = possibleTeams;
 			end
 
-			def on_hookin(game)
-				super(game);
+			def in_phase
+				return @handler.gamePhase == :teamSelect;
+			end
+			def is_selecting(pl)
+				return ([:idle, :teamSelect].include? pl.brightness)
+			end
 
-				game.each do |pl|
-					reassignTeam(pl);
+			on :gamePhaseEnds do |oldPhase, nextPhase|
+				if((oldPhase == :teamSelect) && (nextPhase != :idle))
+					x_logi("Selecting active players!");
+
+					nextPlayers = Array.new();
+					@handler.each do |pl|
+						if([:active, :teamSelect].include? pl.brightness)
+							nextPlayers << pl;
+						else
+							pl.team = 0;
+							pl.brightness = :idle;
+						end
+					end
+
+					@handler.gamePlayers = nextPlayers;
+
+					x_logd("Participating players are: #{@handler.gamePlayers}")
 				end
 			end
 
-			def reassignTeam(player)
-				minCount = @handler.teamCount.values.min[1];
-				(@teamWhitelist.shuffle()).each do |t|
-					if(@handler.teamCount[t] == minCount)
-						player.team = t;
-						break;
+			on :gamePhaseStarts do |nextPhase, oldPhase|
+				case(nextPhase)
+				when :teamSelect
+					@handler.each do |pl|
+						pl.brightness = :idle;
+
+						unless(@possibleTeams.include?(pl.team))
+							pl.team = @possibleTeams.sample();
+						end
 					end
 				end
 			end
 
-			on :playerConnected do |player|
-				puts "Reassigning player: #{player}"
-				reassignTeam(player);
+			on :poseChanged do |pl, nPose|
+				next unless in_phase
+				next unless is_selecting(pl)
+
+				pl.brightness = (pl.gyroPose == :laidDown) ? :idle : :teamSelect;
+			end
+
+			on :navSwitchPressed do |player, dir|
+				next unless in_phase
+
+				newTeam = @possibleTeams.find_index(player.team) || 0;
+
+				newTeam += 1 if(dir == 2)
+				newTeam -= 1 if(dir == 3)
+
+				player.team = @possibleTeams[newTeam % @possibleTeams.length]
+				if(dir == 1)
+					player.brightness = :active
+				else
+					player.brightness = :teamSelect
+				end
+			end
+
+			on :playerEnteredBeacon do |pl, beacon|
+				next unless in_phase
+
+				next unless is_selecting(pl)
+				next unless(@possibleTeams.include? beacon)
+
+				pl.team = beacon;
+				pl.brightness = :teamSelect;
+			end
+
+			on :playerLeftBeacon do |pl, beacon|
+				next unless in_phase
+
+				next unless(pl.team == beacon)
+				next unless is_selecting(pl)
+
+				pl.team = 0;
+				pl.brightness = :idle
 			end
 		end
 
 		class Regenerator < Base
-			def initialize(regRate: 1, regDelay: 10, healDead: false, autoReviveThreshold: 30)
-				super();
 
-				@regRate = regRate;
-				@regDelay = regDelay;
+			describe_option :regRate, "Regeneraton rate, HP per second"
+			describe_option :regDelay, "Healing delay, in s, after a player was hit"
+			describe_option :healDead, "Whether or not to heal dead players"
 
-				@healDead = healDead;
-				@autoReviveThreshold = autoReviveThreshold;
+			describe_option :autoReviveThreshold, "The HP a player needs before he is revived"
+
+			describe_option :teamFilter, "Which teams this regenerator belongs to"
+			describe_option :phaseFilter, "During which phases this hook should be active"
+
+			def initialize(handler, **options)
+				super(handler);
+
+				@regRate = options[:regRate] || 1;
+				@regDelay = options[:regDelay] || 10;
+
+				@healDead = options[:healDead] || false;
+				@autoReviveThreshold = options[:autoReviveThreshold] || 30;
+
+				@teamFilter = options[:teamFilter] || (0..7).to_a
+				@phaseFilter = options[:phaseFilter] || [:running]
 			end
 
 			on :gameTick do |dT|
-				@handler.each do |pl|
+				next unless @phaseFilter.include? @handler.gamePhase
+
+				@handler.each_participating do |pl|
+					next unless @teamFilter.include? pl.team
+
 					if((Time.now() - pl.lastDamageTime) >= @regDelay)
 						pl.regenerate(dT * @regRate);
 					end
@@ -84,13 +163,18 @@ module LZRTag
 		end
 
 		class Damager < Base
-			def initialize(dmgPerShot: 40, useDamageMultiplier: true, friendlyFire: false, hitThreshold: 10)
-				super();
+			describe_option :dmgPerShot, "Base damage per shot"
+			describe_option :useDamageMultiplier, "Shall shots be adjusted per-gun?"
+			describe_option :friendlyFire, "Shall friendly-fire be enabled"
+			describe_option :hitThreshold, "Limit below which dead players will not be hit"
 
-				@dmgPerShot = dmgPerShot;
-				@useDamageMultiplier = useDamageMultiplier;
-				@friendlyFire = friendlyFire;
-				@hitThreshold = hitThreshold
+			def initialize(handler, **options)
+				super(handler);
+
+				@dmgPerShot = options[:dmgPerShot] || 40;
+				@useDamageMultiplier = options[:useDamageMultiplier] || true;
+				@friendlyFire = options[:friendlyFire] || false;
+				@hitThreshold = options[:hitThreshold] || 10;
 			end
 
 			def process_raw_hit(hitPlayer, sourcePlayer)
@@ -114,65 +198,30 @@ module LZRTag
 			end
 		end
 
-		class Configurator < Base
-			attr_accessor :inGameB, :outGameB
-			attr_reader   :fireConfig, :hitConfig
+		class GunSelector < Base
+			describe_option :phaseFilter, "Which phase to be active during"
+			describe_option :teamFilter,  "Which team to be active for"
 
-			def initialize()
-				super();
+			def initialize(handler, **opts)
+				super(handler);
 
-				@fireConfig = Hash.new();
-				@hitConfig = Hash.new();
+				@phaseFilter = opts[:phaseFilter] || [:running]
+				@teamFilter  = opts[:teamFilter] || (0..7).to_a
 
-				@outGameB = 1;
-				@inGameB  = 7;
+				@guns = [1, 2];
 			end
 
-			def fireConfig=(fC)
-				@fireConfig = fC || Hash.new();
+			on :navSwitchPressed do |pl, dir|
+				next unless @phaseFilter.include? @handler.gamePhase
+				next unless @teamFilter.include? pl.team
 
-				if(@handler and @handler.gameRunning)
-					@handler.each do |pl|
-						pl.fireConfig = @fireConfig;
-					end
-				end
-			end
-			def hitConfig=(hC)
-				@hitConfig = hC || Hash.new();
-				if(@handler)
-					@handler.each do |pl|
-						pl.hitConfig = @hitConfig;
-					end
-				end
-			end
-
-			on :gameStarted do
-				@handler.each do |pl|
-					if(@fireConfig)
-						pl.fireConfig = @fireConfig;
-					end
-					pl.brightness = @inGameB;
-					pl.ammo = @fireConfig[:ammoCap] || 5;
-				end
-			end
-			on :gameStopping do
-				@handler.each do |pl|
-					if(@fireConfig)
-						pl.fireConfig = nil;
-					end
-					pl.brightness = @outGameB;
-				end
-			end
-
-			on :playerConnected do |pl|
-				pl.hitConfig = @hitConfig;
-
-				if(@handler.gameRunning)
-					pl.fireConfig = @fireConfig;
-					pl.ammo = @fireConfig[:ammoCap] || 5;
-					pl.brightness = @inGameB;
-				else
-					pl.brightness = @outGameB;
+				if(dir == 1)
+					pl.reload
+				elsif dir == 2
+					pl.gunNo = 3;
+				elsif dir == 3
+					oldInd = @guns.find_index(pl.gunNo) || 0;
+					pl.gunNo = @guns[(1+oldInd) % @guns.length] || 1
 				end
 			end
 		end

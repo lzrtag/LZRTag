@@ -10,17 +10,39 @@
 
 #include "esp_log.h"
 
+#include "../fx/colorSets.h"
+
+#include "../../LZROptions.h"
+
 namespace LZR {
 
 Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
-	ID(3),
-	team(4), brightness(2), isMarked(false), heartbeat(false),
+	ID(0),
+	team(0), brightness(0),
+	isMarked(false),
+	markerColor(0),
+	heartbeat(false),
 	name(""),
-	deadUntil(0), hitUntil(0),
+	deadUntil(0), hitUntil(0), vibrateUntil(0),
 	currentGun(2), shotLocked(0),
-	mqtt(mqtt), deviceID(devID) {
+	deviceID(devID),
+	mqtt(mqtt), should_reload(false) {
 
-	mqtt.subscribe_to("Lasertag/Players/" + deviceID + "/#",
+	if(deviceID == "") {
+			uint8_t smacc[6] = {};
+
+			char macStr[20] = {};
+
+			esp_read_mac(smacc, ESP_MAC_WIFI_STA);
+
+			sprintf(macStr, "%02X.%02X.%02X.%02X.%02X.%02X",
+				smacc[0], smacc[1], smacc[2],
+			 	smacc[3], smacc[4], smacc[5]);
+
+			deviceID = macStr;
+		}
+
+	mqtt.subscribe_to("Lasertag/Players/" + deviceID + "/CFG/#",
 			[this](Xasin::MQTT::MQTT_Packet data) {
 
 		ESP_LOGD("LZR::Player", "Received %s data!", data.topic.data());
@@ -29,15 +51,24 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			ID = atoi(data.data.data());
 		else if(data.topic == "Team")
 			team = atoi(data.data.data());
-		else if(data.topic == "FX/Brightness")
+		else if(data.topic == "Brightness")
 			brightness = atoi(data.data.data());
 		else if(data.topic == "GunNo") {
 			currentGun = atoi(data.data.data());
 			shotLocked = currentGun <= 0;
 		}
-		else if(data.topic == "FX/Marked")
-			isMarked = (data.data == "1");
-		else if(data.topic == "FX/Heartbeat")
+		else if(data.topic == "Marked") {
+			isMarked = (data.data.length() >= 1);
+			uint32_t markerCode = atoi(data.data.data());
+
+			if(markerCode <= 0)
+				isMarked = false;
+			else if(markerCode < 8)
+				markerColor = LZR::teamColors[markerCode].vestShotEnergy;
+			else
+				markerColor = markerCode;
+		}
+		else if(data.topic == "Heartbeat")
 			heartbeat = (data.data == "1");
 		else if(data.topic == "Name")
 			name = data.data;
@@ -53,22 +84,28 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 		}
 		else if(data.topic == "Dead/Timed") {
 			deadUntil = xTaskGetTickCount() + atof(data.data.data())*600;
-			this->mqtt.publish_to(get_topic_base() + "/Dead", "true", 4, 1, true);
+			this->mqtt.publish_to(get_topic_base() + "/CFG/Dead", "true", 4, 1, true);
 		}
-		else if(data.topic == "FX/Hit")
+		else if(data.topic == "Hit")
 			hitUntil = xTaskGetTickCount() + atof(data.data.data())*600;
-	});
+		else if(data.topic == "Vibrate")
+			vibrateUntil = xTaskGetTickCount() + atof(data.data.data())*600;
+		else if(data.topic == "Reload")
+			should_reload = true;
+	}, 0);
 }
 
 void Player::init() {
-	mqtt.start("mqtt://192.168.250.1", get_topic_base() + "/Connection");
+	Xasin::MQTT::Handler::start_wifi(WIFI_STATION_SSID, WIFI_STATION_PASSWD);
+
+	mqtt.start(MQTT_SERVER_ADDR, get_topic_base() + "/Connection");
 	mqtt.set_status("OK");
 }
 
 void Player::tick() {
 	if((deadUntil != 0) && (xTaskGetTickCount() > deadUntil)) {
 		deadUntil = 0;
-		mqtt.publish_to(get_topic_base()+"/Dead", "0", 0, 1, true);
+		mqtt.publish_to(get_topic_base()+"/CFG/Dead", "0", 0, 1, true);
 	}
 }
 
@@ -76,6 +113,9 @@ std::string Player::get_topic_base() {
 	return "Lasertag/Players/" + deviceID;
 }
 
+std::string Player::get_device_id() {
+	return deviceID;
+}
 int Player::get_id() {
 	return ID;
 }
@@ -87,19 +127,28 @@ int Player::get_team() {
 		return 0;
 	return this->team;
 }
-int Player::get_brightness() {
+
+pattern_mode_t Player::get_brightness() {
+	if(mqtt.is_disconnected())
+		return pattern_mode_t::CONNECTING;
+
 	if(is_dead())
-		return 1;
+		return pattern_mode_t::DEAD;
 
 	if(brightness < 0)
-		return 0;
-	if(brightness > 3)
-		return 3;
-	return brightness;
+		return pattern_mode_t::IDLE;
+	if(brightness > (pattern_mode_t::PATTERN_MODE_MAX - pattern_mode_t::IDLE))
+		return pattern_mode_t::ACTIVE;
+
+	return static_cast<pattern_mode_t>(brightness + pattern_mode_t::IDLE);
+
 }
 
 bool Player::is_marked() {
 	return isMarked;
+}
+Xasin::NeoController::Color Player::get_marked_color() {
+	return markerColor;
 }
 bool Player::get_heartbeat() {
 	return heartbeat;
@@ -110,6 +159,10 @@ std::string Player::get_name() {
 }
 
 bool Player::can_shoot() {
+#ifdef LZR_DEBUG_MODE
+	return true;
+#endif
+
 	if(ID == 0)
 		return false;
 
@@ -129,6 +182,12 @@ bool Player::is_dead() {
 }
 bool Player::is_hit() {
 	return xTaskGetTickCount() < hitUntil;
+}
+bool Player::should_vibrate() {
+	if(is_hit())
+		return false;
+
+	return xTaskGetTickCount() < vibrateUntil;
 }
 
 }

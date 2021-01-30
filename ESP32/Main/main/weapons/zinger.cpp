@@ -15,7 +15,7 @@ namespace Weapons {
 #include "zinger_fire.h"
 #include "wyre_cooldown.h"
 
-#define AC(name) AudioCassette(name, sizeof(name))
+#define AC(name) Xasin::Audio::opus_audio_bundle_t({0, sizeof(name), 120, name})
 
 // Effective shot rate:
 // 30*70 + 3000 + 30*200  = 11100 Ticks
@@ -24,8 +24,11 @@ namespace Weapons {
 // DPS Multiplicator: 0.61666
 
 Lasertag::GunSpecs zinger {
-	.maxAmmo = 30,
-	.currentAmmo = 30,
+	.weaponSwitchDelay = 1*600,
+
+	.currentReserveAmmo = -1,
+	.clipSize = 18,
+	.currentClipAmmo = 18,
 
 	.postTriggerTicks = 0,
 	.postTriggerRelease = false,
@@ -40,9 +43,8 @@ Lasertag::GunSpecs zinger {
 	.postSalveDelay = 0,
 	.postSalveRelease = false,
 
-	.postShotReloadBlock = 5*600,
-	.postReloadReloadBlock = 200,
-	.perReloadRecharge = 1,
+	.perReloadDelay = 15*60,
+	.perReloadRecharge = 6,
 
 	.perShotHeatup = 0.02,
 	.perTickCooldown = 0.9975,

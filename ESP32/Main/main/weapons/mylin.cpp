@@ -14,7 +14,7 @@ namespace Weapons {
 #include "mylin_fire.h"
 #include "wyre_cooldown.h"
 
-#define AC(name) AudioCassette(name, sizeof(name))
+#define AC(name) Xasin::Audio::opus_audio_bundle_t({0, sizeof(name), 120, name})
 
 // Effective shot rate:
 // 8*108 + 8*100 + 8*30 + 1800 + 8*600 = 8504 Ticks
@@ -23,8 +23,11 @@ namespace Weapons {
 // DPS Multiplicator: 1.7716
 
 Lasertag::GunSpecs mylin {
-	.maxAmmo = 8,
-	.currentAmmo = 8,
+	.weaponSwitchDelay = 3*600,
+
+	.currentReserveAmmo = -1,
+	.clipSize = 12,
+	.currentClipAmmo = 12,
 
 	.postTriggerTicks = 108,
 	.postTriggerRelease = false,
@@ -39,15 +42,13 @@ Lasertag::GunSpecs mylin {
 	.postSalveDelay = 0,
 	.postSalveRelease = true,
 
-	.postShotReloadBlock = 3*600,
-	.postReloadReloadBlock = 600,
-	.perReloadRecharge = 1,
+	.perReloadDelay = 40*60,
+	.perReloadRecharge = 12,
 
 	.perShotHeatup = 0.4,
 	.perTickCooldown = 0.98,
 
 	.chargeSounds = {
-			AC(mylin_fire),
 	},
 	.shotSounds = {
 	},

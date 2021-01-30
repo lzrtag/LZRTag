@@ -34,5 +34,8 @@
 
 #define PIN_CONN_IND	GPIO_NUM_21
 
+#define PIN_CTRL_FWD	GPIO_NUM_22
+#define PIN_CTRL_BACK	GPIO_NUM_5
+#define PIN_CTRL_DOWN	GPIO_NUM_23
 
 #endif /* MAIN_IODEFS_H_ */

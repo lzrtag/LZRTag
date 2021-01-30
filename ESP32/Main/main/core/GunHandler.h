@@ -15,15 +15,16 @@
 
 #include <vector>
 
-#include "AudioHandler.h"
+#include <xasin/audio.h>
 
 #include "player.h"
-
-using namespace Xasin::Peripheral;
 
 namespace Lasertag {
 
 enum FIRE_STATE {
+	NO_GUN,
+	WEAPON_SWITCH_DELAY,
+	RELOAD_DELAY,
 	WAIT_ON_VALID,
 	POST_TRIGGER_DELAY,
 	POST_TRIGGER_RELEASE,
@@ -34,10 +35,15 @@ enum FIRE_STATE {
 
 #define GUN_TAG "LZR::Gun"
 
+typedef Xasin::Audio::OpusCassetteCollection GunSoundCollection;
+
 class GunSpecs {
 public:
-	int  maxAmmo;
-	int  currentAmmo;
+	int weaponSwitchDelay;
+
+	int currentReserveAmmo;
+	int clipSize;
+	int currentClipAmmo;
 
 	int  postTriggerTicks;
 	bool postTriggerRelease;
@@ -52,16 +58,15 @@ public:
 	int	 postSalveDelay;
 	bool postSalveRelease;
 
-	int	 postShotReloadBlock;
-	int	 postReloadReloadBlock;
+	int  perReloadDelay;
 	int  perReloadRecharge;
 
 	double perShotHeatup;
 	double perTickCooldown;
 
-	CassetteCollection	chargeSounds;
-	CassetteCollection	shotSounds;
-	CassetteCollection	cooldownSounds;
+	GunSoundCollection	chargeSounds;
+	GunSoundCollection	shotSounds;
+	GunSoundCollection	cooldownSounds;
 };
 
 class GunHandler {
@@ -71,33 +76,42 @@ private:
 
 	FIRE_STATE 		fireState;
 
+	int currentGunID;
+
 	TickType_t shotTick;
 	int salveCounter;
 	TickType_t lastShotTick;
 
-	bool emptyClickPlayed;
-
-	TickType_t reloadTick;
-
 	TickType_t lastTick;
+
+	Xasin::Audio::Source * last_shot_sound;
 
 	float gunHeat;
 
 	const gpio_num_t triggerPin;
+	bool pressAlreadyTriggered;
 
 	bool shot_performed;
 	void handle_shot();
 
 	void shot_tick();
-	void reload_tick();
 	void fx_tick();
 
+	void deny_beep();
+
+	void set_fire_state(FIRE_STATE nextState);
+
+	void handle_reload_delay();
+	void handle_wait_valid();
+
+	void add_sound(const GunSoundCollection &sounds);
+
 public:
-	AudioHandler &audio;
+	Xasin::Audio::TX &audio;
 
 	GunSpecs &cGun();
 
-	GunHandler(gpio_num_t trgtPin, AudioHandler &audio);
+	GunHandler(gpio_num_t trgtPin, Xasin::Audio::TX &audio);
 
 	bool triggerPressed();
 

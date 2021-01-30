@@ -1,0 +1,13 @@
+
+
+#ifndef LZRTAG_OPTIONS_H
+#define LZRTAG_OPTIONS_H
+
+#define MQTT_SERVER_ADDR "mqtt://192.168.178.230"
+
+#define WIFI_STATION_SSID   "TP-LINK_84CDC2\0"
+#define WIFI_STATION_PASSWD "f36eebda48\0"
+
+#define LZR_DEBUG_MODE
+
+#endif

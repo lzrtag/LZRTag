@@ -2,22 +2,15 @@
 
 require_relative '../lzrtag.rb'
 
-class DebugHook < LZRTag::Hook::Base
-	def initialize()
-		super();
-	end
+class DebugHook < LZRTag::Hook::Debug
+	def initialize(handler)
+		super(handler);
 
-	def consume_event(evtName, data)
-		super(evtName, data);
-
-		return if [:gameTick, :playerRegenerated, :gameStarted, :gameStarting].include? evtName
-		puts "Caught event: #{evtName} with data: #{data}";
+		@eventBlacklist = [:gameTick, :playerRegenerated, :gameStarted, :gameStarting];
+		@eventBlacklist.flatten!
 	end
 end
 
-DebugHook.on :playerDisconnected do |player|
-	puts "Yay, player #{player.DeviceID} disconnected!"
-end
 DebugHook.on :playerHurt do |player, fromPlayer|
 	player.sound("HIT");
 	fromPlayer.sound("MINOR SCORE");
@@ -34,41 +27,83 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-DebugHook.on :playerEnteredZone do |player, entered|
-	if(entered.include? "teamSetter")
-		player.team = (player.zoneIDs[:teamSetter][:team]).to_i;
-	end
-end
-
-$mqtt = MQTT::SubHandler.new("192.168.251.1");
-
-$myMapsData    = LZRTag::Map::MyMapsParser.new("Rainbow Road.kml");
-$rainbowMapSet = LZRTag::Map::Set.new($mqtt, $myMapsData.generate_zones());
-$rainbowMapSet.centerpoint = [9.716822475785307, 52.38715890804035, 0];
-#$rainbowMapSet.publish();
-
+$mqtt = MQTT::SubHandler.new("mqtt://192.168.6.29");
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
-$handler.add_hook(LZRTag::Hook::RandomTeam);
-$handler.add_hook(LZRTag::Hook::Damager.new(dmgPerShot: 25));
-$handler.add_hook(LZRTag::Hook::Regenerator.new(regRate: 7, regDelay: 3, autoReviveThreshold: 21));
 
-cfg = LZRTag::Hook::Configurator.new();
-cfg.fireConfig = {
-	shotLocked: false
-}
+class TestGame < LZRTag::Game::Base
+	def initialize(handler)
+		super(handler);
+	end
 
-$handler.add_hook(cfg);
+	hook :teamSelect, LZRTag::Hook::TeamSelector
+	hook :regenerator, LZRTag::Hook::Regenerator, {
+		regRate: 3,
+		regDelay: 5,
+		autoReviveThreshold: 30
+	}
+	hook :damager, LZRTag::Hook::Damager, {
+		dmgPerShot: 35
+	}
 
-sleep 4
+	hook :guns, LZRTag::Hook::GunSelector
 
-$handler.start_game(LZRTag::Game::Base.new($handler));
+	phase_prep :starting do
+		@handler.gamePhase = :teamSelect
+	end
 
-$handler.each do |pl|
-	pl.ammo = 100;
-	pl.gunNo = 2;
+	phase :teamSelect do |dT|
+		if((@handler.brightnessCount[:active] >= 1) && (@handler.brightnessCount[:teamSelect] == 0))
+			@handler.set_phase(:countdown)
+		end
+	end
+
+	phase_prep :countdown do
+		@phaseTime = -10;
+		@nextBeep = -10;
+
+		@handler.each_participating do |pl|
+			pl.sound("GAME START");
+			pl.brightness = :idle;
+
+			pl.heartbeat = true;
+		end
+	end
+
+	phase :countdown do |dT|
+		if(@phaseTime >= 0)
+			@handler.each_participating do |pl| pl.noise(frequency: 1000); end
+			@handler.set_phase(:running)
+		elsif(@phaseTime > @nextBeep)
+			@handler.each_participating do |pl| pl.noise(); end
+			@nextBeep += 1;
+		end
+	end
+
+	phase_end :countdown do
+		@handler.each_participating do |pl| pl.heartbeat = false; end
+	end
+
+
+	phase_prep :running do
+		@phaseTime = -3*60;
+
+		@handler.each_participating do |pl|
+			pl.brightness = :active
+		end
+	end
+
+	phase :running do
+		@handler.stop_game() if @phaseTime > 0
+	end
 end
+
+$handler.register_game("Test", TestGame);
+
+sleep 3
+
+$handler.start_game(TestGame);
 
 while(true) do
 	sleep 0.5;

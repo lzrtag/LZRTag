@@ -8,15 +8,17 @@
 #ifndef MAIN_SETUP_H_
 #define MAIN_SETUP_H_
 
-#include "BatteryManager.h"
+#include "xasin/BatteryManager.h"
 
-#include "AudioHandler.h"
-#include "NeoController.h"
+#include <xasin/audio.h>
+#include <xasin/neocontroller.h>
 
 #include "xasin/mqtt/Handler.h"
 
 #include "player.h"
 #include "GunHandler.h"
+
+#include "xasin/LSM6DS3.h"
 
 namespace LZR {
 
@@ -31,8 +33,9 @@ extern CORE_WEAPON_STATUS main_weapon_status;
 
 extern Housekeeping::BatteryManager battery;
 
-extern Xasin::Peripheral::AudioHandler audioManager;
-extern Peripheral::NeoController	RGBController;
+extern Xasin::Audio::TX	audioManager;
+extern Xasin::NeoController::NeoController RGBController;
+extern Xasin::I2C::LSM6DS3				gyro;
 
 extern Xasin::MQTT::Handler mqtt;
 
@@ -40,6 +43,8 @@ extern LZR::Player	player;
 extern Lasertag::GunHandler	gunHandler;
 
 void setup();
+
+uint8_t read_nav_switch();
 
 }
 
