@@ -10,8 +10,8 @@
 
 #include "xasin/BatteryManager.h"
 
-#include "AudioHandler.h"
-#include "NeoController.h"
+#include <xasin/audio.h>
+#include <xasin/neocontroller.h>
 
 #include "xasin/mqtt/Handler.h"
 
@@ -33,8 +33,8 @@ extern CORE_WEAPON_STATUS main_weapon_status;
 
 extern Housekeeping::BatteryManager battery;
 
-extern Xasin::Peripheral::AudioHandler	audioManager;
-extern Peripheral::NeoController		RGBController;
+extern Xasin::Audio::TX	audioManager;
+extern Xasin::NeoController::NeoController RGBController;
 extern Xasin::I2C::LSM6DS3				gyro;
 
 extern Xasin::MQTT::Handler mqtt;

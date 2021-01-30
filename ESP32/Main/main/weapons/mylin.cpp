@@ -14,7 +14,18 @@ namespace Weapons {
 #include "mylin_fire.h"
 #include "wyre_cooldown.h"
 
-#define AC(name) AudioCassette(name, sizeof(name), 60000)
+#include "BF-RINO/BF-RINO_shot_1.h"
+#include "BF-RINO/BF-RINO_shot_2.h"
+#include "BF-RINO/BF-RINO_shot_3.h"
+#include "BF-RINO/BF-RINO_shot_4.h"
+#include "BF-RINO/BF-RINO_shot_5.h"
+#include "BF-RINO/BF-RINO_shot_6.h"
+#include "BF-RINO/BF-RINO_shot_7.h"
+#include "BF-RINO/BF-RINO_shot_8.h"
+#include "BF-RINO/BF-RINO_shot_9.h"
+#include "BF-RINO/BF-RINO_shot_10.h"
+
+#define AC(name) Xasin::Audio::opus_audio_bundle_t({0, sizeof(name), 120, name})
 
 // Effective shot rate:
 // 8*108 + 8*100 + 8*30 + 1800 + 8*600 = 8504 Ticks
@@ -49,7 +60,16 @@ Lasertag::GunSpecs mylin {
 	.perTickCooldown = 0.98,
 
 	.chargeSounds = {
-			AC(mylin_fire),
+		(encoded_audio_BF_RINO_shot_1),
+		(encoded_audio_BF_RINO_shot_2),
+		(encoded_audio_BF_RINO_shot_3),
+		(encoded_audio_BF_RINO_shot_4),
+		(encoded_audio_BF_RINO_shot_5),
+		(encoded_audio_BF_RINO_shot_6),
+		(encoded_audio_BF_RINO_shot_7),
+		(encoded_audio_BF_RINO_shot_8),
+		(encoded_audio_BF_RINO_shot_9),
+		(encoded_audio_BF_RINO_shot_10),
 	},
 	.shotSounds = {
 	},

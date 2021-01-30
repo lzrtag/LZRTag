@@ -16,7 +16,7 @@ BasePattern::BasePattern() : enabled(true) {
 BasePattern::~BasePattern() {
 }
 
-void BasePattern::apply_color_at(Peripheral::Color &tgt, float pos) {
+void BasePattern::apply_color_at(Xasin::NeoController::Color &tgt, float pos) {
 }
 void BasePattern::tick() {
 }

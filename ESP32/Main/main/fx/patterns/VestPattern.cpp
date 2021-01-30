@@ -119,7 +119,7 @@ uint16_t VestPattern::get_patternfunc_at(float pos) {
 void VestPattern::tick() {
 }
 
-void VestPattern::apply_color_at(Peripheral::Color &tgt, float pos) {
+void VestPattern::apply_color_at(Xasin::NeoController::Color &tgt, float pos) {
 	if(!enabled)
 		return;
 

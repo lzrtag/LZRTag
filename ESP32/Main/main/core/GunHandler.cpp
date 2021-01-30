@@ -23,12 +23,13 @@
 
 namespace Lasertag {
 
-GunHandler::GunHandler(gpio_num_t trgPin, AudioHandler &audio)
+GunHandler::GunHandler(gpio_num_t trgPin, Xasin::Audio::TX &audio)
 	:	mqttAmmo(0), lastMQTTPush(0),
 		fireState(NO_GUN),
 		currentGunID(0),
 		shotTick(0), salveCounter(0), lastShotTick(0),
 		lastTick(0),
+		last_shot_sound(nullptr),
 		gunHeat(0),
 		triggerPin(trgPin), pressAlreadyTriggered(false),
 		shot_performed(false),
@@ -90,7 +91,7 @@ void GunHandler::handle_shot() {
 
 	shot_performed = true;
 
-	audio.insert_cassette(cGun().shotSounds);
+	add_sound(cGun().shotSounds);
 
 	LZR::IR::send_signal();
 }
@@ -224,8 +225,9 @@ void GunHandler::handle_wait_valid() {
 	pressAlreadyTriggered = true;
 
 	// Otherwise, continue with our magic~
-	if(cGun().postTriggerTicks != 0)
-		audio.insert_cassette(cGun().chargeSounds);
+	if(cGun().postTriggerTicks != 0) {
+		add_sound(cGun().chargeSounds);
+	}
 
 	set_fire_state(POST_TRIGGER_RELEASE);
 }
@@ -311,7 +313,7 @@ void GunHandler::shot_tick() {
 
 				if(!triggerPressed() && !cGun().postSalveRelease && !cGun().postTriggerRelease) {
 					if(gunHeat > 0.4)
-						audio.insert_cassette(cGun().cooldownSounds);
+						add_sound(cGun().cooldownSounds);
 				}
 			}
 		break;
@@ -330,7 +332,7 @@ void GunHandler::fx_tick() {
 
 //	TickType_t cooldownSoundTick = lastShotTick + cGun().postShotCooldownTicks;
 //	if(xTaskGetTickCount() >= cooldownSoundTick && lastTick < cooldownSoundTick)
-//		audio.insert_cassette(cGun().cooldownSounds);
+//		Xasin::Audio::ByteCassette::play(audio, cGun().cooldownSounds);
 }
 
 bool GunHandler::was_shot_tick() {
@@ -346,6 +348,19 @@ uint8_t GunHandler::getGunHeat() {
 		return 0;
 
 	return gunHeat * (255-3) + 3;
+}
+
+void GunHandler::add_sound(const GunSoundCollection &sounds) {
+	if(sounds.size() == 0)
+		return;
+
+	auto next_sound = audio.play(sounds, false);
+
+	if(last_shot_sound != nullptr) {
+		last_shot_sound->fade_out();
+		last_shot_sound->release();
+	}
+	last_shot_sound = next_sound;
 }
 
 void GunHandler::tick() {

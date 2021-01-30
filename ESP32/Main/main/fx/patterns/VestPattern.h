@@ -53,13 +53,13 @@ public:
 	uint16_t 	pattern_trap_percent;
 	int32_t		pattern_shift;
 
-	Peripheral::Color overlayColor;
+	Xasin::NeoController::Color overlayColor;
 	bool overlay;
 
 	VestPattern();
 
 	void tick();
-	void apply_color_at(Peripheral::Color &tgt, float pos);
+	void apply_color_at(Xasin::NeoController::Color &tgt, float pos);
 
 	void set_5050_trapez(int32_t ticks, float fillPercent);
 };

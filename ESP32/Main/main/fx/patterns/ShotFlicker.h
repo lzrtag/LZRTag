@@ -26,7 +26,7 @@ public:
 
 	void tick();
 
-	void apply_color_at(Peripheral::Color &tgt, float pos);
+	void apply_color_at(Xasin::NeoController::Color &tgt, float pos);
 };
 
 } /* namespace FX */

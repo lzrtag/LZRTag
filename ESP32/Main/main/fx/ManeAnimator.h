@@ -9,6 +9,7 @@
 #define MAIN_MANEANIMATOR_H_
 
 #include <vector>
+#include <stdint.h>
 
 class ManeAnimator {
 public:

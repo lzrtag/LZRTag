@@ -28,8 +28,8 @@ void ShotFlicker::tick() {
 		anim.points[0].pos = 1;
 	anim.tick();
 }
-void ShotFlicker::apply_color_at(Peripheral::Color &tgt, float index) {
-	Peripheral::Color shotColor = bufferedColors.vestShotEnergy;
+void ShotFlicker::apply_color_at(Xasin::NeoController::Color &tgt, float index) {
+	Xasin::NeoController::Color shotColor = bufferedColors.vestShotEnergy;
 
 	if(index < 0)
 		index = 0;

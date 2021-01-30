@@ -8,14 +8,14 @@
 #ifndef MAIN_FX_ANIMATORTHREAD_H_
 #define MAIN_FX_ANIMATORTHREAD_H_
 
-#include "Color.h"
+#include <xasin/neocontroller.h>
 #include "../IODefs.h"
 
 #define VEST_LEDS WS2812_NUMBER-1
 
 namespace LZR {
 
-using namespace Peripheral;
+using namespace Xasin::NeoController;
 
 struct ColorSet {
 	Color muzzleFlash;
@@ -38,7 +38,7 @@ enum pattern_mode_t : uint16_t {
 	OFF,
 	BATTERY_LEVEL,
 	CHARGE,
-	
+
 	CONNECTING,
 
 	PLAYER_DECIDED,

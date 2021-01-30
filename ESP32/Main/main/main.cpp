@@ -23,7 +23,9 @@
 
 #include "fx/animatorThread.h"
 
-using namespace Peripheral;
+#include "test.h"
+
+using namespace Xasin::NeoController;
 
 esp_err_t event_handler(void *context, system_event_t *event) {
 	Xasin::MQTT::Handler::try_wifi_reconnect(event);
@@ -37,16 +39,22 @@ extern "C"
 void app_main()
 {
     nvs_flash_init();
-    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
-    esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
+    //esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
+    //esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_ON);
 
     tcpip_adapter_init();
 
     esp_event_loop_init(event_handler, 0);
 
-    LZR::audioManager.volumeMod = 150;
-
     LZR::setup();
+
+	 vTaskDelay(1800);
+
+	 auto s = LZR::audioManager.play(encoded_audio_test);
+
+	 vTaskDelay(1200);
+
+	 s->fade_out();
 
     while(true) {
 		 vTaskDelay(10*600);

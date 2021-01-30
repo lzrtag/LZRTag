@@ -21,7 +21,7 @@ namespace Weapons {
 #include "wyre_fire_4.h"
 #include "wyre_fire_5.h"
 
-#define AC(name) AudioCassette(name, sizeof(name))
+#define AC(name) Xasin::Audio::opus_audio_bundle_t({0, sizeof(name), 120, name})
 
 // Effective shot rate:
 // 18*90 + 9*50 + 3000 + 4*1200 = 9870 Ticks
@@ -67,7 +67,7 @@ Lasertag::GunSpecs wyre {
 			AC(wyre_fire_5),
 	},
 	.cooldownSounds = {
-			AudioCassette(wyre_cooldown, sizeof(wyre_cooldown))
+			AC(wyre_cooldown)
 	}
 };
 }

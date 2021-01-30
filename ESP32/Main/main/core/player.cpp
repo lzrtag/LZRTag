@@ -147,7 +147,7 @@ pattern_mode_t Player::get_brightness() {
 bool Player::is_marked() {
 	return isMarked;
 }
-Peripheral::Color Player::get_marked_color() {
+Xasin::NeoController::Color Player::get_marked_color() {
 	return markerColor;
 }
 bool Player::get_heartbeat() {
@@ -159,6 +159,10 @@ std::string Player::get_name() {
 }
 
 bool Player::can_shoot() {
+#ifdef LZR_DEBUG_MODE
+	return true;
+#endif
+
 	if(ID == 0)
 		return false;
 

@@ -15,7 +15,7 @@ namespace Weapons {
 #include "zinger_fire.h"
 #include "wyre_cooldown.h"
 
-#define AC(name) AudioCassette(name, sizeof(name))
+#define AC(name) Xasin::Audio::opus_audio_bundle_t({0, sizeof(name), 120, name})
 
 // Effective shot rate:
 // 30*70 + 3000 + 30*200  = 11100 Ticks

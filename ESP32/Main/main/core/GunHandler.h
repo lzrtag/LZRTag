@@ -15,11 +15,9 @@
 
 #include <vector>
 
-#include "AudioHandler.h"
+#include <xasin/audio.h>
 
 #include "player.h"
-
-using namespace Xasin::Peripheral;
 
 namespace Lasertag {
 
@@ -36,6 +34,8 @@ enum FIRE_STATE {
 };
 
 #define GUN_TAG "LZR::Gun"
+
+typedef Xasin::Audio::OpusCassetteCollection GunSoundCollection;
 
 class GunSpecs {
 public:
@@ -64,9 +64,9 @@ public:
 	double perShotHeatup;
 	double perTickCooldown;
 
-	CassetteCollection	chargeSounds;
-	CassetteCollection	shotSounds;
-	CassetteCollection	cooldownSounds;
+	GunSoundCollection	chargeSounds;
+	GunSoundCollection	shotSounds;
+	GunSoundCollection	cooldownSounds;
 };
 
 class GunHandler {
@@ -83,6 +83,8 @@ private:
 	TickType_t lastShotTick;
 
 	TickType_t lastTick;
+
+	Xasin::Audio::Source * last_shot_sound;
 
 	float gunHeat;
 
@@ -102,12 +104,14 @@ private:
 	void handle_reload_delay();
 	void handle_wait_valid();
 
+	void add_sound(const GunSoundCollection &sounds);
+
 public:
-	AudioHandler &audio;
+	Xasin::Audio::TX &audio;
 
 	GunSpecs &cGun();
 
-	GunHandler(gpio_num_t trgtPin, AudioHandler &audio);
+	GunHandler(gpio_num_t trgtPin, Xasin::Audio::TX &audio);
 
 	bool triggerPressed();
 

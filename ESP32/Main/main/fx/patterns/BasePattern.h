@@ -8,7 +8,7 @@
 #ifndef MAIN_FX_PATTERNS_BASEPATTERN_H_
 #define MAIN_FX_PATTERNS_BASEPATTERN_H_
 
-#include "Color.h"
+#include <xasin/neocontroller.h>
 
 namespace LZR {
 namespace FX {
@@ -21,7 +21,7 @@ public:
 	virtual ~BasePattern();
 
 	virtual void tick();
-	virtual void apply_color_at(Peripheral::Color &tgt, float pos);
+	virtual void apply_color_at(Xasin::NeoController::Color &tgt, float pos);
 };
 
 } /* namespace FX */

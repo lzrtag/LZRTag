@@ -25,7 +25,7 @@ private:
 	int brightness;
 
 	bool isMarked;
-	Peripheral::Color markerColor;
+	Xasin::NeoController::Color markerColor;
 
 	bool heartbeat;
 
@@ -59,7 +59,7 @@ public:
 	pattern_mode_t get_brightness();
 
 	bool 		is_marked();
-	Peripheral::Color get_marked_color();
+	Xasin::NeoController::Color get_marked_color();
 
 	bool get_heartbeat();
 

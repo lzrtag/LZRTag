@@ -24,14 +24,21 @@ CORE_WEAPON_STATUS main_weapon_status = INITIALIZING;
 
 Housekeeping::BatteryManager battery = Housekeeping::BatteryManager();
 
-Xasin::Peripheral::AudioHandler  audioManager = Xasin::Peripheral::AudioHandler();
-Peripheral::NeoController 	RGBController = Peripheral::NeoController(PIN_WS2812_OUT, RMT_CHANNEL_0, WS2812_NUMBER);
+Xasin::Audio::TX  audioManager;
+Xasin::NeoController::NeoController 	RGBController = Xasin::NeoController::NeoController(PIN_WS2812_OUT, RMT_CHANNEL_0, WS2812_NUMBER);
 Xasin::I2C::LSM6DS3			gyro = Xasin::I2C::LSM6DS3();
 
 Xasin::MQTT::Handler mqtt = Xasin::MQTT::Handler();
 
 LZR::Player player = LZR::Player("", mqtt);
 Lasertag::GunHandler gunHandler = Lasertag::GunHandler(PIN_TRIGR, audioManager);
+
+void core_processing_task(void *args) {
+	while(true) {
+		xTaskNotifyWait(0, 0, nullptr, portMAX_DELAY);
+		audioManager.largestack_process();
+	}
+}
 
 void setup_io_pins() {
 	gpio_config_t outCFG = {};
@@ -103,20 +110,23 @@ void set_ledc() {
 
 void power_config() {
 	esp_pm_config_esp32_t pCFG;
-	pCFG.max_freq_mhz = 80;
-	pCFG.min_freq_mhz = 80;
+	pCFG.max_freq_mhz = 240;
+	pCFG.min_freq_mhz = 240;
 	pCFG.light_sleep_enable = false;
 	esp_pm_configure(&pCFG);
 }
 
 void setup_audio() {
-    i2s_pin_config_t i2sPins = {
-    		PIN_I2S_BLCK,
-			PIN_I2S_LRCK,
-			PIN_I2S_DATA,
-			-1
-    };
-    audioManager.start_thread(i2sPins);
+	TaskHandle_t processing_task;
+	xTaskCreate(core_processing_task, "LARGE", 32768, nullptr, 9, &processing_task);
+
+	i2s_pin_config_t i2sPins = {
+		PIN_I2S_BLCK,
+		PIN_I2S_LRCK,
+		PIN_I2S_DATA,
+		-1
+	};
+	audioManager.init(processing_task, i2sPins);
 }
 
 std::array<uint16_t, 20> battery_samples;
@@ -244,8 +254,13 @@ void shutdown_system() {
 	LZR::FX::target_mode = LZR::OFF;
 	vTaskDelay(100);
 
-	esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
-	esp_deep_sleep_start();
+	ESP_LOGE("CORE", "Proper deep-sleep was not configured yet!!");
+
+	// TODO Add proper power-down, the ESP-IDF's power
+	// management changed!
+
+	//esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
+	//esp_deep_sleep_start();
 }
 
 void setup() {
@@ -283,8 +298,8 @@ void setup() {
     else {
     	player.init();
 
-        vTaskDelay(3*600);
-        LZR::FX::target_mode = LZR::PLAYER_DECIDED;
+      vTaskDelay(3*600);
+      LZR::FX::target_mode = LZR::PLAYER_DECIDED;
 
     	setup_ping_req();
 

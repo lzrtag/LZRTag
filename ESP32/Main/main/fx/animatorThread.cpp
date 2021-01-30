@@ -28,7 +28,7 @@
 
 namespace LZR {
 
-using namespace Peripheral;
+using namespace Xasin::NeoController;
 
 ColorSet currentColors = teamColors[0];
 ColorSet bufferedColors = currentColors;
