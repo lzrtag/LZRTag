@@ -61,7 +61,7 @@ void play_audio(std::string aName) {
 }
 
 void init() {
-	mqtt.subscribe_to(player.get_topic_base() + "/Sound/#", [](Xasin::MQTT::MQTT_Packet data) {
+	mqtt.subscribe_to("Sound/#", [](Xasin::MQTT::MQTT_Packet data) {
 		if(data.topic == "File")
 			play_audio(data.data);
 // 		else if(data.topic == "Note") {

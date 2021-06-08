@@ -18,6 +18,10 @@
 
 #include "esp_log.h"
 
+#include "weapon_defs.h"
+
+#include <xnm/net_helpers.h>
+
 namespace LZR {
 
 CORE_WEAPON_STATUS main_weapon_status = INITIALIZING;
@@ -31,7 +35,7 @@ Xasin::I2C::LSM6DS3			gyro = Xasin::I2C::LSM6DS3();
 Xasin::MQTT::Handler mqtt = Xasin::MQTT::Handler();
 
 LZR::Player player = LZR::Player("", mqtt);
-Lasertag::GunHandler gunHandler = Lasertag::GunHandler(PIN_TRIGR, audioManager);
+LZRTag::Weapon::Handler gunHandler(audioManager);
 
 void core_processing_task(void *args) {
 	while(true) {
@@ -118,7 +122,7 @@ void power_config() {
 
 void setup_audio() {
 	TaskHandle_t processing_task;
-	xTaskCreate(core_processing_task, "LARGE", 32768, nullptr, 9, &processing_task);
+	xTaskCreate(core_processing_task, "LARGE", 32768, nullptr, 5, &processing_task);
 
 	i2s_pin_config_t i2sPins = {
 		PIN_I2S_BLCK,
@@ -127,6 +131,8 @@ void setup_audio() {
 		-1
 	};
 	audioManager.init(processing_task, i2sPins);
+
+	audioManager.volume_mod = 160;
 }
 
 std::array<uint16_t, 20> battery_samples;
@@ -140,7 +146,7 @@ void take_battery_measurement() {
 		vTaskDelay(4);
 	}
 	rawBattery = rawBattery/6;
-	rawBattery = ((3300 * rawBattery)/ 4096) * 3/2 * (3853/3691.0); // TODO Measure proper ADC correction factors
+	rawBattery = ((3300 * rawBattery)/ 4096) * 3/2 * (3853/3500.0); // TODO Measure proper ADC correction factors
 
 	if(battery_sample_pos == -1)
 		battery_samples.fill(rawBattery);
@@ -183,7 +189,7 @@ void take_battery_measurement() {
 }
 
 void setup_ping_req() {
-	mqtt.subscribe_to(player.get_topic_base() + "/Ping",
+	mqtt.subscribe_to("Ping",
 			[](Xasin::MQTT::MQTT_Packet data) {
 
 		struct {
@@ -196,13 +202,13 @@ void setup_ping_req() {
 		.ping = uint32_t((xTaskGetTickCount() - *reinterpret_cast<const uint32_t*>(data.data.data()))/0.6)
 		};
 
-		mqtt.publish_to(player.get_topic_base() + "/HW/Ping", &sysData, sizeof(sysData), 1);
+		mqtt.publish_to("HW/Ping", &sysData, sizeof(sysData), 1);
 	});
 }
 
 void send_ping_req() {
 	uint32_t outData = xTaskGetTickCount();
-	mqtt.publish_to(player.get_topic_base() + "/Ping", &outData, 4, 0);
+	mqtt.publish_to("Ping", &outData, 4, 0);
 }
 
 int old_switch_position = 255;
@@ -222,7 +228,7 @@ void navswitch_tick() {
 		if((!LZR::mqtt.is_disconnected()) && (old_switch_position != 0)) {
 			uint8_t dataBuffer = '0' + old_switch_position;
 
-			mqtt.publish_to(LZR::player.get_topic_base() + "/HW/NSwitch", &dataBuffer, 1, 0, 2);
+			mqtt.publish_to("HW/NSwitch", &dataBuffer, 1, 0, 2);
 		}
 	}
 }
@@ -247,6 +253,9 @@ void housekeeping_thread(void *args) {
 		GYR::tick();
 
 		vTaskDelay(30);
+
+		if(XNM::NetHelpers::OTA::get_state() == XNM::NetHelpers::OTA::REBOOT_NEEDED)
+			esp_restart();
 	}
 }
 
@@ -278,8 +287,11 @@ void setup() {
 	xTaskCreate(housekeeping_thread, "Housekeeping", 3*1024, nullptr, 10, nullptr);
 
 	setup_audio();
-
 	start_animation_thread();
+
+	gunHandler.start_thread();
+
+	gunHandler.set_weapon(new LZRTag::Weapon::ShotWeapon(gunHandler, whip_config));
 
     LZR::FX::target_mode = LZR::BATTERY_LEVEL;
     vTaskDelay(200);
@@ -298,8 +310,8 @@ void setup() {
     else {
     	player.init();
 
-      vTaskDelay(3*600);
-      LZR::FX::target_mode = LZR::PLAYER_DECIDED;
+      	vTaskDelay(3*600);
+      	LZR::FX::target_mode = LZR::PLAYER_DECIDED;
 
     	setup_ping_req();
 

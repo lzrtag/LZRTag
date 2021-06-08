@@ -16,7 +16,7 @@
 #include "xasin/mqtt/Handler.h"
 
 #include "player.h"
-#include "GunHandler.h"
+#include <lzrtag/weapon.h>
 
 #include "xasin/LSM6DS3.h"
 
@@ -40,7 +40,8 @@ extern Xasin::I2C::LSM6DS3				gyro;
 extern Xasin::MQTT::Handler mqtt;
 
 extern LZR::Player	player;
-extern Lasertag::GunHandler	gunHandler;
+
+extern LZRTag::Weapon::Handler gunHandler;
 
 void setup();
 

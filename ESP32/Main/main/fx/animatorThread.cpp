@@ -137,7 +137,7 @@ void vibr_motor_tick() {
 
 	bool vibrOn = false;
 
-	if(gunHandler.timeSinceLastShot() <= gunHandler.cGun().postShotVibrationTicks)
+	if((xTaskGetTickCount() - gunHandler.get_last_shot_tick()) < 60)
 		vibrOn = true;
 	else if(player.is_hit() && player.is_dead())
 		vibrOn = (vibr_motor_count & 0b1);
@@ -151,7 +151,7 @@ void vibr_motor_tick() {
 	gpio_set_level(PIN_VBRT, vibrOn);
 }
 
-#define COLOR_FADE(cName, alpha) bufferedColors.cName.merge_overlay(currentColors.cName, alpha)
+#define COLOR_FADE(cName, alpha) bufferedColors.cName.merge_transition(currentColors.cName, alpha)
 #define FX_FADE(fxName, alpha)	 bufferedFX.fxName = (bufferedFX.fxName * (1-alpha) + currentFX.fxName * alpha)
 
 void vest_tick() {
@@ -159,10 +159,10 @@ void vest_tick() {
 	////////////////////
 	// Vest color fading
 	////////////////////
-	COLOR_FADE(muzzleFlash, 13);
-	COLOR_FADE(muzzleHeat,  10);
-	COLOR_FADE(vestBase, 	6);
-	COLOR_FADE(vestShotEnergy, 10);
+	COLOR_FADE(muzzleFlash, 5000);
+	COLOR_FADE(muzzleHeat,  5000);
+	COLOR_FADE(vestBase, 	2000);
+	COLOR_FADE(vestShotEnergy, 5000);
 
 	FX_FADE(minBaseGlow, 0.02);
 	FX_FADE(maxBaseGlow, 0.02);
@@ -174,21 +174,21 @@ void vest_tick() {
 	// Muzzle heatup
 	////////////////////
 	Color newMuzzleColor = 	bufferedColors.muzzleHeat;
-	newMuzzleColor.bMod(gunHandler.getGunHeat()*0.6);
+	newMuzzleColor.bMod(gunHandler.get_gun_heat() * 0.6F);
 
 	////////////////////
 	// Muzzle flash for shots
 	////////////////////
 	if(gunHandler.was_shot_tick())
-		newMuzzleColor.merge_overlay(bufferedColors.muzzleFlash);
+	 	newMuzzleColor.merge_overlay(bufferedColors.muzzleFlash);
 	RGBController.colors[0] = newMuzzleColor;
 
 	////////////////////
 	// Generation of vest base color + heatup
 	////////////////////
 	Color currentVestColor = bufferedColors.vestBase;
-	currentVestColor.bMod(bufferedFX.minBaseGlow +
-			(bufferedFX.maxBaseGlow - bufferedFX.minBaseGlow)*gunHandler.getGunHeat()/255.0);
+	 currentVestColor.bMod(bufferedFX.minBaseGlow +
+	 		(bufferedFX.maxBaseGlow - bufferedFX.minBaseGlow)*gunHandler.get_gun_heat()/255.0);
 
 	// Reset of all colors
 	RGBController.colors.fill(0, 1, -1);
@@ -219,11 +219,13 @@ void vest_tick() {
 
 void animation_thread(void *args) {
 	while(true) {
+		gunHandler.update_btn(!gpio_get_level(PIN_TRIGR));
+		gunHandler.fx_tick();
+
 		status_led_tick();
 
 		if(main_weapon_status == NOMINAL) {
 			player.tick();
-			gunHandler.tick();
 
 			currentColors = teamColors[player.get_team()];
 			currentFX = brightnessLevels[player.get_brightness()];

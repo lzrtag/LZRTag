@@ -38,8 +38,6 @@ private:
 	int 	currentGun;
 	bool	shotLocked;
 
-	std::string deviceID;
-
 public:
 	Xasin::MQTT::Handler &mqtt;
 
@@ -49,9 +47,6 @@ public:
 
 	void init();
 	void tick();
-
-	std::string get_device_id();
-	std::string get_topic_base();
 
 	int get_id();
 

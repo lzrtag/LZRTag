@@ -18,31 +18,16 @@ namespace LZR {
 
 Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 	ID(0),
-	team(0), brightness(0),
+	team(1), brightness(3),
 	isMarked(false),
 	markerColor(0),
 	heartbeat(false),
 	name(""),
 	deadUntil(0), hitUntil(0), vibrateUntil(0),
 	currentGun(2), shotLocked(0),
-	deviceID(devID),
 	mqtt(mqtt), should_reload(false) {
 
-	if(deviceID == "") {
-			uint8_t smacc[6] = {};
-
-			char macStr[20] = {};
-
-			esp_read_mac(smacc, ESP_MAC_WIFI_STA);
-
-			sprintf(macStr, "%02X.%02X.%02X.%02X.%02X.%02X",
-				smacc[0], smacc[1], smacc[2],
-			 	smacc[3], smacc[4], smacc[5]);
-
-			deviceID = macStr;
-		}
-
-	mqtt.subscribe_to("Lasertag/Players/" + deviceID + "/CFG/#",
+	mqtt.subscribe_to("CFG/#",
 			[this](Xasin::MQTT::MQTT_Packet data) {
 
 		ESP_LOGD("LZR::Player", "Received %s data!", data.topic.data());
@@ -84,7 +69,7 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 		}
 		else if(data.topic == "Dead/Timed") {
 			deadUntil = xTaskGetTickCount() + atof(data.data.data())*600;
-			this->mqtt.publish_to(get_topic_base() + "/CFG/Dead", "true", 4, 1, true);
+			this->mqtt.publish_to("CFG/Dead", "true", 4, 1, true);
 		}
 		else if(data.topic == "Hit")
 			hitUntil = xTaskGetTickCount() + atof(data.data.data())*600;
@@ -98,24 +83,17 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 void Player::init() {
 	Xasin::MQTT::Handler::start_wifi(WIFI_STATION_SSID, WIFI_STATION_PASSWD);
 
-	mqtt.start(MQTT_SERVER_ADDR, get_topic_base() + "/Connection");
+	mqtt.start(MQTT_SERVER_ADDR);
 	mqtt.set_status("OK");
 }
 
 void Player::tick() {
 	if((deadUntil != 0) && (xTaskGetTickCount() > deadUntil)) {
 		deadUntil = 0;
-		mqtt.publish_to(get_topic_base()+"/CFG/Dead", "0", 0, 1, true);
+		mqtt.publish_to("CFG/Dead", "0", 0, 1, true);
 	}
 }
 
-std::string Player::get_topic_base() {
-	return "Lasertag/Players/" + deviceID;
-}
-
-std::string Player::get_device_id() {
-	return deviceID;
-}
 int Player::get_id() {
 	return ID;
 }

@@ -17,6 +17,8 @@
 #include "cJSON.h"
 #include <cstring>
 
+#include <xnm/net_helpers.h>
+
 namespace LZR {
 namespace IR {
 
@@ -42,7 +44,7 @@ void send_hit_event(uint8_t pID, uint8_t arbCode) {
 	auto output = cJSON_CreateObject();
 
 	cJSON_AddNumberToObject(output, "shooterID", pID);
-	cJSON_AddStringToObject(output, "target", player.get_device_id().data());
+	cJSON_AddStringToObject(output, "target", XNM::NetHelpers::get_device_id().data());
 	cJSON_AddNumberToObject(output, "arbCode", arbCode);
 
 	char outStr[100] = {};
@@ -66,7 +68,7 @@ void init() {
 			if(!mqtt.is_disconnected()) {
 				char oBuff[10] = {};
 				sprintf(oBuff, "%d", beaconID);
-				mqtt.publish_to(player.get_topic_base() + "/HW/BeaconDetect", oBuff, strlen(oBuff));
+				mqtt.publish_to("HW/BeaconDetect", oBuff, strlen(oBuff));
 			}
 		}
 		else if(channel >= 130 && channel < 134) {
