@@ -11,40 +11,64 @@
 #include "esp_log.h"
 
 #include "../fx/colorSets.h"
-
 #include "../../LZROptions.h"
+
+#include <cJSON.h>
 
 namespace LZR {
 
 Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 	ID(0),
-	team(1), brightness(3),
+	team(0), brightness(0),
 	isMarked(false),
 	markerColor(0),
 	heartbeat(false),
 	name(""),
 	deadUntil(0), hitUntil(0), vibrateUntil(0),
-	currentGun(2), shotLocked(0),
+	currentGun(0), shotLocked(0),
 	mqtt(mqtt), should_reload(false) {
 
-	mqtt.subscribe_to("CFG/#",
+	mqtt.subscribe_to("event/#",
+		[this](Xasin::MQTT::MQTT_Packet data) {
+			if(data.topic == "hit")
+				hitUntil = xTaskGetTickCount() + atof(data.data.data())*600;
+			else if(data.topic == "vibrate")
+				vibrateUntil = xTaskGetTickCount() + atof(data.data.data())*600;
+			else if(data.topic == "reload")
+				should_reload = true;
+		}
+	, 0);
+
+	mqtt.subscribe_to("get/#",
 			[this](Xasin::MQTT::MQTT_Packet data) {
 
-		ESP_LOGD("LZR::Player", "Received %s data!", data.topic.data());
+		cJSON * json;
+		if(data.data.size() > 0)
+			json = cJSON_Parse(data.data.data());
+		else
+			json = cJSON_CreateNull();
 
-		if(data.topic == "ID")
-			ID = atoi(data.data.data());
-		else if(data.topic == "Team")
-			team = atoi(data.data.data());
-		else if(data.topic == "Brightness")
-			brightness = atoi(data.data.data());
-		else if(data.topic == "GunNo") {
-			currentGun = atoi(data.data.data());
+		if(json == nullptr)
+			return;
+
+		if(data.topic == "id" && (cJSON_IsNumber(json) || cJSON_IsNull(json)))
+			ID = json->valueint;
+		else if(data.topic == "team" && (cJSON_IsNumber(json) || cJSON_IsNull(json)))
+			team = json->valueint;
+		else if(data.topic == "brightness" && (cJSON_IsNumber(json) || cJSON_IsNull(json)))
+			brightness = json->valueint;
+		else if(data.topic == "gun_config") {
+			if(cJSON_IsNull(json)) {
+				currentGun = 0;
+			}
+			else if(cJSON_IsNumber(json))
+				currentGun = json->valueint;
+			
 			shotLocked = currentGun <= 0;
 		}
-		else if(data.topic == "Marked") {
-			isMarked = (data.data.length() >= 1);
-			uint32_t markerCode = atoi(data.data.data());
+		else if(data.topic == "mark_config") {
+			isMarked = !cJSON_IsFalse(json);
+			uint32_t markerCode = json->valueint;
 
 			if(markerCode <= 0)
 				isMarked = false;
@@ -53,12 +77,12 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 			else
 				markerColor = markerCode;
 		}
-		else if(data.topic == "Heartbeat")
-			heartbeat = (data.data == "1");
-		else if(data.topic == "Name")
-			name = data.data;
-		else if(data.topic == "Dead") {
-			if((data.data.size() != 0) && (data.data == "1")) {
+		else if(data.topic == "heartbeat")
+			heartbeat = cJSON_IsTrue(json);
+		else if(data.topic == "name")
+			name = json->valuestring;
+		else if(data.topic == "dead") {
+			if(cJSON_IsTrue(json)) {
 				if(deadUntil == 0) {
 					deadUntil = portMAX_DELAY;
 				}
@@ -67,17 +91,9 @@ Player::Player(const std::string devID, Xasin::MQTT::Handler &mqtt) :
 				deadUntil = 0;
 			}
 		}
-		else if(data.topic == "Dead/Timed") {
-			deadUntil = xTaskGetTickCount() + atof(data.data.data())*600;
-			this->mqtt.publish_to("CFG/Dead", "true", 4, 1, true);
-		}
-		else if(data.topic == "Hit")
-			hitUntil = xTaskGetTickCount() + atof(data.data.data())*600;
-		else if(data.topic == "Vibrate")
-			vibrateUntil = xTaskGetTickCount() + atof(data.data.data())*600;
-		else if(data.topic == "Reload")
-			should_reload = true;
-	}, 0);
+
+		cJSON_Delete(json);
+	}, 1);
 }
 
 void Player::init() {
@@ -90,7 +106,7 @@ void Player::init() {
 void Player::tick() {
 	if((deadUntil != 0) && (xTaskGetTickCount() > deadUntil)) {
 		deadUntil = 0;
-		mqtt.publish_to("CFG/Dead", "0", 0, 1, true);
+		mqtt.publish_to("get/dead", "false", 0, 1, true);
 	}
 }
 
@@ -137,10 +153,6 @@ std::string Player::get_name() {
 }
 
 bool Player::can_shoot() {
-#ifdef LZR_DEBUG_MODE
-	return true;
-#endif
-
 	if(ID == 0)
 		return false;
 
@@ -151,8 +163,43 @@ bool Player::can_shoot() {
 
 	return true;
 }
+
 int Player::get_gun_num() {
 	return currentGun;
+}
+void Player::set_gun_ammo(int32_t current, int32_t clipsize, int32_t total) {
+	if(gun_ammo_info == nullptr) {
+		gun_ammo_info = cJSON_CreateObject();
+		cJSON_AddNumberToObject(gun_ammo_info, "current", 0);
+		cJSON_AddNumberToObject(gun_ammo_info, "clipsize", 0);
+		cJSON_AddNumberToObject(gun_ammo_info, "total", 0);
+	}
+
+	bool changed = false;
+
+	cJSON * json = cJSON_GetObjectItem(gun_ammo_info, "current");
+	if(json->valueint != current) {
+		changed = true;
+		cJSON_SetNumberValue(json, current);
+	}
+
+	json = cJSON_GetObjectItem(gun_ammo_info, "clipsize");
+	if(json->valueint != clipsize) {
+		changed = true;
+		cJSON_SetNumberValue(json, clipsize);
+	}
+
+	json = cJSON_GetObjectItem(gun_ammo_info, "total");
+	if(json->valueint != total) {
+		changed = true;
+		cJSON_SetNumberValue(json, total);
+	}
+
+	if(changed) {
+		char * printed = cJSON_PrintUnformatted(gun_ammo_info);
+		mqtt.publish_to("get/ammo", printed, strlen(printed), true, 0);
+		cJSON_free(printed);
+	}
 }
 
 bool Player::is_dead() {

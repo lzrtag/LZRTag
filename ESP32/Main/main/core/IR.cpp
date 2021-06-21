@@ -50,7 +50,7 @@ void send_hit_event(uint8_t pID, uint8_t arbCode) {
 	char outStr[100] = {};
 	cJSON_PrintPreallocated(output, outStr, 100, false);
 
-	mqtt.publish_to("Lasertag/Game/Events/Hits", outStr, strlen(outStr));
+	mqtt.publish_to("event/ir_hit", outStr, strlen(outStr));
 
 	cJSON_Delete(output);
 }
@@ -68,7 +68,7 @@ void init() {
 			if(!mqtt.is_disconnected()) {
 				char oBuff[10] = {};
 				sprintf(oBuff, "%d", beaconID);
-				mqtt.publish_to("HW/BeaconDetect", oBuff, strlen(oBuff));
+				mqtt.publish_to("event/ir_beacon", oBuff, strlen(oBuff));
 			}
 		}
 		else if(channel >= 130 && channel < 134) {
