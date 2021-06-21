@@ -50,6 +50,8 @@ enum pattern_mode_t : uint16_t {
 	DEAD,
 	ACTIVE,
 
+	OTA,
+
 	PATTERN_MODE_MAX, // Not to be used, just a placeholder
 };
 

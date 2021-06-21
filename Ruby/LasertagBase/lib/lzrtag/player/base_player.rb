@@ -1,8 +1,16 @@
 
 require 'mqtt/sub_handler'
 
+require 'json-schema'
+
 module LZRTag
 	module Player
+		PING_SCHEMA = {
+			type: :object,
+			required: ['ping'],
+			properties: { 'ping' => { type: :numeric }}
+		}
+
 		# The base player class.
 		# This class is not instantiated by the user, but instead on a on-demand basis
 		# by the LZRTag::Handler::Base when a new PlayerID needs to be registered. The player classes
@@ -46,26 +54,27 @@ module LZRTag
 			end
 
 			def _pub_to(key, data, retain: false)
-				@mqtt.publish_to("Lasertag/Players/#{@DeviceID}/#{key}", data, retain: retain, qos: 1);
+				@mqtt.publish_to("/esp32/lzrtag/#{@DeviceID}/#{key}", data, retain: retain, qos: 1);
 			end
 			private :_pub_to
 
 			# @private
 			def on_mqtt_data(data, topic)
 				case topic[1..topic.length].join("/")
-				when "Connection"
+				when "status"
 					return if @status == data;
 					@status = data;
 
 					return if @status == "OK"
 					return if @status == ""
 					return if !@connected
+					
 					@connected = false;
 					@handler.send_event(:playerDisconnected, self);
 
-				when "CFG/Name"
+				when "get/name"
 					@name = data;
-				when "Ping"
+				when "get/_ping"
 					@last_status_update = Time.now();
 
 					if(@status == "OK" && (!@connected))
@@ -105,7 +114,11 @@ module LZRTag
 					@id = nil;
 				end
 
-				_pub_to("CFG/ID", @id, retain: true);
+				if(@id.nil?)
+					_pub_to("get/id", '', retain: true);
+				else
+					_pub_to("get/id", @id.to_json, retain: true);
+				end
 			end
 
 			# Trigger a clear of all topics

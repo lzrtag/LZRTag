@@ -61,7 +61,7 @@ module LZRTag
 					end
 				end
 
-				@mqtt.subscribe_to "Lasertag/Players/#" do |data, topic|
+				@mqtt.subscribe_to "/esp32/lzrtag/+/#" do |data, topic|
 					dID = topic[0];
 					if(not @players.key? dID)
 						@playerSynchMutex.synchronize {
@@ -70,7 +70,7 @@ module LZRTag
 						send_event(:playerRegistered, @players[dID]);
 						x_logi("New player registered: #{dID}");
 					end
-
+					
 					@players[dID].on_mqtt_data(data, topic);
 				end
 

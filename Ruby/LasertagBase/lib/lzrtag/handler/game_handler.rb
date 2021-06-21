@@ -98,9 +98,14 @@ module LZRTag
 
 						@lastTick = Time.now();
 						while(@currentGame == @nextGame)
-							sleep @currentGame.tickTime
+							sleepTime = @currentGame.tickTime - (Time.now() - @lastTick)
+
+							sleep sleepTime if sleepTime > 0
+
 							dT = Time.now() - @lastTick;
-							@lastTick = Time.now();
+							@lastTick += @currentGame.tickTime;
+
+							@lastTick = Time.now() if(Time.now() - @lastTick > 5 * @currentGame.tickTime)
 
 							send_event(:gameTick, dT);
 						end
@@ -190,7 +195,7 @@ module LZRTag
 			# Returns an Array<Symbol> of the currently allowed phases of this game.
 			# This list can also be retrieved via MQTT, under Lasertag/Game/CurrentGame
 			def get_allowed_phases()
-				allowedPhases = [:idle]
+				allowedPhases = [:idle, :starting, :stopping]
 				if(@currentGame)
 					allowedPhases = [allowedPhases, @currentGame.phases].flatten
 				end
@@ -215,8 +220,9 @@ module LZRTag
 				oldPhase = @gamePhase
 				send_event(:gamePhaseEnds, oldPhase, nextPhase)
 
-				@mqtt.publish_to "Lasertag/Game/Phase/Current", @gamePhase.to_s, retain: true
 				@gamePhase = nextPhase;
+
+				@mqtt.publish_to "Lasertag/Game/Phase/Current", @gamePhase.to_s, retain: true
 				send_event(:gamePhaseStarts, nextPhase, oldPhase);
 			end
 			# Alias for set_phase

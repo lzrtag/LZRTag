@@ -1,3 +1,6 @@
-nvs,		data,	nvs,	0x9000,	0x6000,	
-phy_init,	data,	phy,	0xf000,	0x1000,
-factory,	app,	factory,0x10000, 6M, 
+nvs,		data,	nvs,	0x09000,	0x4000,
+otadata,	data,	ota,	0x0d000,	0x2000,	
+phy_init,	data,	phy,	0x0f000,	0x1000,
+ota_0,		app,	ota_0,	0x10000,	3M,
+ota_1,		app,	ota_1,		,	3M,
+

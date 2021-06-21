@@ -13,6 +13,8 @@
 
 #include "../fx/animatorThread.h"
 
+#include <cJSON.h>
+
 namespace LZR {
 
 class Player {
@@ -36,9 +38,10 @@ private:
 	TickType_t vibrateUntil;
 
 	int 	currentGun;
-	bool	shotLocked;
 
-	std::string deviceID;
+	cJSON * gun_ammo_info;
+
+	bool	shotLocked;
 
 public:
 	Xasin::MQTT::Handler &mqtt;
@@ -49,9 +52,6 @@ public:
 
 	void init();
 	void tick();
-
-	std::string get_device_id();
-	std::string get_topic_base();
 
 	int get_id();
 
@@ -67,6 +67,7 @@ public:
 
 	bool can_shoot();
 	int  get_gun_num();
+	void set_gun_ammo(int32_t current, int32_t clipsize, int32_t total);
 
 	bool is_dead();
 	bool is_hit();

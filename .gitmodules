@@ -1,3 +1,9 @@
 [submodule "XasCode"]
 	path = XasCode
 	url = git@github.com:XasWorks/XasCode.git
+[submodule "ESP32/Main/lzrtag-esp-components"]
+	path = ESP32/Main/lzrtag-esp-components
+	url = git@github.com:lzrtag/lzrtag-esp-components.git
+[submodule "ESP32/Main/sounds/lzrtag-sfx"]
+	path = ESP32/Main/sounds/lzrtag-sfx
+	url = git@github.com:lzrtag/lzrtag-sfx.git

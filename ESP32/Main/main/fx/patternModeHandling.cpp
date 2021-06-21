@@ -10,6 +10,8 @@
 
 #include "patterns/VestPattern.h"
 
+#include <xnm/net_helpers.h>
+
 #include <vector>
 
 namespace LZR {
@@ -48,6 +50,7 @@ void switch_to_mode(pattern_mode_t pMode) {
 	break;
 	}
 
+	case OTA:
 	case CHARGE: {
 		switch_to_mode(IDLE);
 
@@ -168,6 +171,9 @@ void mode_tick() {
 	if(target_mode == pattern_mode_t::PLAYER_DECIDED)
 		targetPattern = LZR::player.get_brightness();
 
+	if(XNM::NetHelpers::OTA::get_state() == XNM::NetHelpers::OTA::DOWNLOADING)
+		targetPattern = OTA;
+
 	if(targetPattern != current_mode)
 		switch_to_mode(targetPattern);
 
@@ -207,6 +213,10 @@ void mode_tick() {
 	case ACTIVE:
 		modePatterns[0].overlayColor = bufferedColors.vestBase;
 		modePatterns[1].overlayColor = bufferedColors.vestShotEnergy;
+	break;
+
+	case OTA:
+		modePatterns[0].overlayColor = Color(Material::BLUE, 200, 35);
 	break;
 	}
 

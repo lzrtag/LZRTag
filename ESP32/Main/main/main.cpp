@@ -23,6 +23,8 @@
 
 #include "fx/animatorThread.h"
 
+#include <xnm/net_helpers.h>
+
 #include "test.h"
 
 using namespace Xasin::NeoController;
@@ -48,13 +50,10 @@ void app_main()
 
     LZR::setup();
 
-	 vTaskDelay(1800);
+    XNM::NetHelpers::init_global_r3_ca();
+    XNM::NetHelpers::set_mqtt(LZR::mqtt);
 
-	 auto s = LZR::audioManager.play(encoded_audio_test);
-
-	 vTaskDelay(1200);
-
-	 s->fade_out();
+    XNM::NetHelpers::init();
 
     while(true) {
 		 vTaskDelay(10*600);

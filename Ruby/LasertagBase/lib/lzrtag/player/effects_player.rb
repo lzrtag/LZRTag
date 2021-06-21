@@ -30,14 +30,14 @@ module LZRTag
 			# @param duration [Numeric] Number (in s) to vibrate for.
 			def vibrate(duration)
 				raise ArgumentError, "Vibration-duration out of range (between 0 and 65.536)" unless duration.is_a? Numeric and duration <= 65.536 and duration >= 0
-				_pub_to("CFG/Vibrate", duration);
+				_pub_to("event/vibrate", duration.to_json);
 			end
 
 			def heartbeat=(data)
 				return if (@heartbeat == data);
 
 				@heartbeat = data;
-				_pub_to("CFG/Heartbeat", @heartbeat ? "1" : "0", retain: true);
+				_pub_to("get/heartbeat", @heartbeat.to_json, retain: true);
 			end
 
 			def marked=(data)
@@ -45,9 +45,9 @@ module LZRTag
 
 				@marked = data;
 				if data.is_a? Numeric
-					_pub_to("CFG/Marked", @marked.to_s, retain: true)
+					_pub_to("get/mark_config", @marked.to_json, retain: true)
 				else
-					_pub_to("CFG/Marked", "0", retain: true)
+					_pub_to("get/mark_config", false.to_json, retain: true)
 				end
 			end
 
@@ -80,14 +80,14 @@ module LZRTag
 			# for a short moment. The length can be specified.
 			# @param hitLength [Numeric,nil] Length (in s) of the hit.
 			def hit(hitLength = nil)
-				_pub_to("CFG/Hit", hitLength || 0.7)
+				_pub_to("event/hit", (hitLength || 0.7).to_json)
 			end
 
 			# @private
 			def clear_all_topics()
 				super();
 
-				["CFG/Heartbeat", "CFG/Marked"].each do |t|
+				["get/heartbeat", "get/mark_config"].each do |t|
 					_pub_to(t, "", retain: true)
 				end
 			end

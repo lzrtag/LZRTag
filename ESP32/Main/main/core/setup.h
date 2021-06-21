@@ -16,9 +16,11 @@
 #include "xasin/mqtt/Handler.h"
 
 #include "player.h"
-#include "GunHandler.h"
+#include <lzrtag/weapon.h>
 
 #include "xasin/LSM6DS3.h"
+
+#include <xasin/xai2c/DRV2605.h>
 
 namespace LZR {
 
@@ -35,12 +37,16 @@ extern Housekeeping::BatteryManager battery;
 
 extern Xasin::Audio::TX	audioManager;
 extern Xasin::NeoController::NeoController RGBController;
+
 extern Xasin::I2C::LSM6DS3				gyro;
+extern Xasin::I2C::DRV2605				drv;
 
 extern Xasin::MQTT::Handler mqtt;
 
 extern LZR::Player	player;
-extern Lasertag::GunHandler	gunHandler;
+
+extern std::vector<LZRTag::Weapon::BaseWeapon *> weapons;
+extern LZRTag::Weapon::Handler gunHandler;
 
 void setup();
 

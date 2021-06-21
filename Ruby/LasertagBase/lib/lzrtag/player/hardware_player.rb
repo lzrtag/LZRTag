@@ -117,40 +117,47 @@ module LZRTag
 			# The user must not call this, since it is handled by the
 			# LZRTag base handler
 			def on_mqtt_data(data, topic)
-				case topic[1..topic.length].join("/")
-				when "HW/Ping"
-					if(data.size == 3*4)
-						parsedData = data.unpack("L<*");
+				super(data, topic);
 
-						@battery = parsedData[0].to_f/1000;
-						@ping 	= parsedData[2].to_f;
+				case topic[1..topic.length].join("/")
+				when "get/_ping"
+					begin
+						data = JSON.parse(data)
+					rescue
+					else
+						@battery = data['battery']['percentage'];
+						@ping = data['ping']
 					end
-				when "CFG/Dead"
-					dead = (data == "1")
+				when "get/dead"
+					dead = (data == "true")
 					return if @dead == dead;
+
 					@dead = dead;
 
 					@deathChangeTime = Time.now();
 
 					@handler.send_event(@dead ? :playerKilled : :playerRevived, self);
-				when "Stats/Ammo"
-					return if(data.size != 12)
+				when "get/ammo"
+					begin
+						data = JSON.parse(data);
+					rescue
+						return
+					end
 
-					outData = data.unpack("L<*");
-					@clipAmmo = outData[0];
-					@clipSize = outData[1];
-					@reserveAmmo = outData[2];
+					@clipAmmo = data['current']
+					@clipSize = data['clipsize'];
+					@reserveAmmo = data['total'];
 				when "Position"
 					begin
 						@position = JSON.parse(data, symbolize_names: true);
 					rescue
 					end
-				when "HW/NSwitch"
+				when "get/nav_switch"
 					@handler.send_event(:navSwitchPressed, self, data.to_i)
-				when "HW/Gyro"
+				when "get/gyro"
 					@gyroPose = data.to_sym
 					@handler.send_event(:poseChanged, self, @gyroPose);
-				when "HW/BeaconDetect"
+				when "event/ir_beacon"
 					beaconID = data.to_i;
 					unless(@beaconTimes[beaconID])
 						@handler.send_event(:playerEnteredBeacon, self, beaconID);
@@ -171,8 +178,6 @@ module LZRTag
 					if(data[:exited])
 						@handler.send_event(:playerExitedZone, self, data[:exited])
 					end
-				else
-					super(data, topic);
 				end
 			end
 
@@ -184,7 +189,7 @@ module LZRTag
 				oldT = @team;
 				@team = n;
 
-				_pub_to "CFG/Team", @team, retain: true;
+				_pub_to "get/team", @team.to_json, retain: true;
 				@handler.send_event :playerTeamChanged, self, oldT;
 
 				@team;
@@ -198,7 +203,7 @@ module LZRTag
 
 				n = @BrightnessMap.find_index(n)
 
-				_pub_to "CFG/Brightness", n, retain: true;
+				_pub_to "get/brightness", n.to_json, retain: true;
 				@handler.send_event :playerBrightnessChanged, self, oldB;
 
 				@brightness;
@@ -211,7 +216,7 @@ module LZRTag
 
 				@deathChangeTime = Time.now();
 
-				_pub_to "CFG/Dead", @dead ? "1" : "0", retain: true;
+				_pub_to "get/dead", @dead.to_json, retain: true;
 				@handler.send_event(@dead ? :playerKilled : :playerRevived, self, player);
 			end
 			def dead=(d)
@@ -252,7 +257,7 @@ module LZRTag
 				@gunNo = n;
 				@handler.send_event(:playerGunChanged, self, n, oldGun);
 
-				_pub_to("CFG/GunNo", n, retain: true);
+				_pub_to("get/gun_config", n.to_json, retain: true);
 			end
 
 			# Return the averaged damage the player's gun should do.
@@ -267,7 +272,7 @@ module LZRTag
 			end
 
 			def reload()
-				_pub_to("CFG/Reload", "1");
+				_pub_to("event/reload", "1");
 			end
 
 			def check_beacons()
@@ -283,7 +288,7 @@ module LZRTag
 			def clear_all_topics()
 				super();
 
-				[	"CFG/Dead", "CFG/GunNo", "CFG/Brightness", "CFG/Team"].each do |t|
+				[	"get/dead", "get/gun_config", "get/brightness", "get/team"].each do |t|
 					_pub_to(t, "", retain: true);
 				end
 			end

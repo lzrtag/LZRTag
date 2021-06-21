@@ -22,12 +22,12 @@ module LZRTag
 			def initialize(*data, **options)
 				super(*data, **options);
 
-				@mqtt.subscribe_to "Lasertag/Game/Events/Hits" do |data|
+				@mqtt.subscribe_to "/esp32/lzrtag/+/event/ir_hit" do |data|
 					begin
 						data = JSON.parse(data, symbolize_names: true);
 
 						_handle_hitArb(data);
-					rescue JSON::ParserError
+					#rescue JSON::ParserError
 					end
 				end
 			end
@@ -52,8 +52,9 @@ module LZRTag
 					return
 				end
 
-				return if (sourcePlayer.hitIDTimetable[arbCode] + 1) > Time.now();
-
+				if (sourcePlayer.hitIDTimetable[arbCode] + 0.2) > Time.now();
+					return 
+				end
 				veto = false;
 				arbitrateShot = true;
 

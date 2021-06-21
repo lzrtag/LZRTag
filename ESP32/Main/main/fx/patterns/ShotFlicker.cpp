@@ -16,10 +16,10 @@ ShotFlicker::ShotFlicker(float length, int points) :
 		BasePattern(), anim(points),
 		maxLen(length), pointCount(points) {
 
-	anim.baseTug   = 0.0013;
+	anim.baseTug   = 0.002;
 	anim.basePoint = 0.0;
 	anim.dampening = 0.94;
-	anim.ptpTug    = 0.015;
+	anim.ptpTug    = 0.02;
 	anim.wrap 	   = true;
 }
 

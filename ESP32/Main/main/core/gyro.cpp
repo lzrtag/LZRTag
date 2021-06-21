@@ -57,7 +57,7 @@ void tick() {
 	if((position_debounce > debounce_time) && !LZR::mqtt.is_disconnected()) {
 		const char *posName = name_list[current_gyro];
 
-		LZR::mqtt.publish_to(player.get_topic_base() + "/HW/Gyro", posName, strlen(posName), true);
+		LZR::mqtt.publish_to("get/gyro", posName, strlen(posName), true);
 
 		printf("GYRO switch to mode: %s\n", posName);
 

@@ -27,7 +27,7 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-$mqtt = MQTT::SubHandler.new("mqtt://192.168.6.29");
+$mqtt = MQTT::SubHandler.new("mqtt://192.168.178.230");
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
@@ -39,7 +39,7 @@ class TestGame < LZRTag::Game::Base
 
 	hook :teamSelect, LZRTag::Hook::TeamSelector
 	hook :regenerator, LZRTag::Hook::Regenerator, {
-		regRate: 3,
+		regRate: 30,
 		regDelay: 5,
 		autoReviveThreshold: 30
 	}
@@ -99,7 +99,7 @@ class TestGame < LZRTag::Game::Base
 	end
 end
 
-$handler.register_game("Test", TestGame);
+$handler.register_game("Demo Deathmatch", TestGame);
 
 sleep 3
 
