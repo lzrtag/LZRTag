@@ -51,11 +51,11 @@ module LZRTag
 				@life = nLife;
 
 				@handler.send_event(:playerRegenerated, self, @life - oLife, source);
-				if(@life == maxLife)
+				if(@life == @maxLife)
 					@handler.send_event(:playerFullyRegenerated, self, source);
 				end
 
-				_pub_to("Stats/HP", @life.to_s, retain: true);
+				_pub_to("get/life", {life: @life, max: @maxLife}.to_json, retain: true);
 			end
 
 			# Damage a player by a given amount with given source.
@@ -83,7 +83,7 @@ module LZRTag
 					@life = nLife;
 
 					@handler.send_event :playerHurt, self, sourcePlayer, oLife - @life;
-					_pub_to("Stats/HP", @life.to_s, retain: true);
+					_pub_to("get/life", {life: @life, max: @maxLife}.to_json, retain: true);
 
 					kill_by(sourcePlayer) if(nLife <= 0);
 				end
@@ -99,17 +99,15 @@ module LZRTag
 				@maxLife = newVal;
 				if(@life > @maxLife)
 					@life = @maxLife;
-					_pub_to("Stats/HP", @life, retain: true);
 				end
-
-				_pub_to("CFG/MaxLife", @maxLife, retain: true);
+				
+				_pub_to("get/life", {life: @life, max: @maxLife}.to_json, retain: true);
 			end
 
 			# @private
 			def clear_all_topics()
 				super();
-				_pub_to("Stats/HP", "", retain: true);
-				_pub_to("CFG/MaxLife", "", retain: true);
+				_pub_to("get/life", "", retain: true);
 			end
 		end
 	end

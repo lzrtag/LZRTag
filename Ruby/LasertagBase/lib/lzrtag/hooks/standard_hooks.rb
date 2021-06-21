@@ -187,6 +187,8 @@ module LZRTag
 			end
 
 			on :playerHit do |hitPlayer, sourcePlayer|
+				puts "Got a hit!"
+				
 				shotMultiplier = 1;
 
 				if((@useDamageMultiplier) && (!sourcePlayer.nil?))
@@ -208,7 +210,7 @@ module LZRTag
 				@phaseFilter = opts[:phaseFilter] || [:running]
 				@teamFilter  = opts[:teamFilter] || (0..7).to_a
 
-				@guns = [1, 2];
+				@guns = [1, 2, 3, 4, 5];
 			end
 
 			on :navSwitchPressed do |pl, dir|

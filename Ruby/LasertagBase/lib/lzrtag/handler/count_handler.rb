@@ -24,15 +24,9 @@ module LZRTag
 			def initialize(*args, **argHash)
 				super(*args, **argHash);
 
-				@teamCount = Hash.new();
-				7.times do |i|
-					@teamCount[i] = 0;
-				end
+				@teamCount = Hash.new(0);
 
-				@brightnessCount = Hash.new();
-				Player::Hardware.getBrightnessKeys().each do |bKey|
-					@brightnessCount[bKey] = 0;
-				end
+				@brightnessCount = Hash.new(0);
 
 				@beaconCount = Hash.new(0);
 			end
