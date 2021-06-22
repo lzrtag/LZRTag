@@ -15,9 +15,11 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L Connector:USB_B_Micro J3
+L MainBoard-rescue:USB_B_Micro-Connector J3
 U 1 1 5C2BCA10
 P 3700 3850
+AR Path="/5C2BCA10" Ref="J3"  Part="1" 
+AR Path="/5C2BC95D/5C2BCA10" Ref="J3"  Part="1" 
 F 0 "J3" H 3755 4317 50  0000 C CNN
 F 1 "USB_B_Micro" H 3755 4226 50  0000 C CNN
 F 2 "Connector_USB:USB_Micro-B_Wuerth_629105150521" H 3850 3800 50  0001 C CNN
@@ -176,9 +178,11 @@ Wire Wire Line
 Text Label 7150 4775 2    50   ~ 0
 USB3.3
 $Comp
-L Interface_USB:FT231XS U13
+L MainBoard-rescue:FT231XS-Interface_USB U13
 U 1 1 5C7F8FA0
 P 5450 4150
+AR Path="/5C7F8FA0" Ref="U13"  Part="1" 
+AR Path="/5C2BC95D/5C7F8FA0" Ref="U13"  Part="1" 
 F 0 "U13" H 5450 5228 50  0000 C CNN
 F 1 "FT231XS" H 5450 5137 50  0000 C CNN
 F 2 "Package_SO:SSOP-20_3.9x8.7mm_P0.635mm" H 6050 3200 50  0001 C CNN

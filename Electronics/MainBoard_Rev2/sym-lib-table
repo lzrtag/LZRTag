@@ -1,4 +1,5 @@
 (sym_lib_table
   (lib (name TP301)(type Legacy)(uri /home/xasin/XasWorks/LZRTag/Electronics/MainBoard_Rev2/TP301.lib)(options "")(descr ""))
   (lib (name MainBoard-rescue)(type Legacy)(uri ${KIPRJMOD}/MainBoard-rescue.lib)(options "")(descr ""))
+  (lib (name XasParts)(type Legacy)(uri /home/xasin/lzrtag/LZRTag/XasCode/KiCAD/XasParts.lib)(options "")(descr ""))
 )
