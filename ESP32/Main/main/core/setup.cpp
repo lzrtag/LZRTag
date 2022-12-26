@@ -324,27 +324,27 @@ void setup() {
     LZR::FX::target_mode = LZR::BATTERY_LEVEL;
     vTaskDelay(200);
 
-    if(main_weapon_status == DISCHARGED) {
-    	ESP_LOGE("LZR::Core", "Battery low, sleeping!");
+    // if(main_weapon_status == DISCHARGED) {
+    // 	ESP_LOGE("LZR::Core", "Battery low, sleeping!");
 
-    	vTaskDelay(3*600);
-    	shutdown_system();
-    }
-    else if(main_weapon_status == CHARGING && !read_nav_switch()) {
-    	ESP_LOGI("LZR::Core", "Charging detected, entering CHG mode");
+    // 	vTaskDelay(3*600);
+    // 	shutdown_system();
+    // }
+    // else if(main_weapon_status == CHARGING && !read_nav_switch()) {
+    // 	ESP_LOGI("LZR::Core", "Charging detected, entering CHG mode REMOVED");
 
-    	LZR::FX::target_mode = LZR::CHARGE;
-    }
-    else {
-    	player.init();
+    // 	// LZR::FX::target_mode = LZR::CHARGE;
+    // }
+    // else {
+	player.init();
 
-      	vTaskDelay(3*600);
-      	LZR::FX::target_mode = LZR::PLAYER_DECIDED;
+	vTaskDelay(3*600);
+	LZR::FX::target_mode = LZR::PLAYER_DECIDED;
 
-    	setup_ping_req();
+	setup_ping_req();
 
-    	main_weapon_status = NOMINAL;
-    }
+	main_weapon_status = NOMINAL;
+    // }
 
 	drv.autocalibrate_erm();
 	drv.rtp_mode();

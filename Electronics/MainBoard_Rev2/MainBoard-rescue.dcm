@@ -1,3 +1,15 @@
 EESchema-DOCLIB  Version 2.0
 #
+$CMP AP2114H-3_3TRG1-dk_PMIC-Voltage-Regulators-Linear
+F https://www.diodes.com/assets/Datasheets/AP2114.pdf
+$ENDCMP
+#
+$CMP COM-12999-dk_Addressable-Specialty
+F https://cdn.sparkfun.com/datasheets/Components/LED/COM-12877.pdf
+$ENDCMP
+#
+$CMP MAX1555EZK_T-dk_PMIC-Battery-Chargers
+F https://datasheets.maximintegrated.com/en/ds/MAX1551-MAX1555.pdf
+$ENDCMP
+#
 #End Doc Library

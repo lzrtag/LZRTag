@@ -100,6 +100,9 @@ void send_signal(int8_t cCode) {
 	uint8_t shotID = player.get_id();
 
 	ir_tx.send(shotID, 130 + cCode);
+
+	ESP_LOGI(lTag, "SHOTCODE ATTEMPTED");
+	
 }
 
 }

@@ -27,7 +27,7 @@ DebugHook.on [:playerRegenerated, :playerHurt] do |player|
 	player.heartbeat = (player.life < 30);
 end
 
-$mqtt = MQTT::SubHandler.new("mqtt://192.168.178.230");
+$mqtt = MQTT::SubHandler.new("mqtt://localhost");
 $handler = LZRTag.Handler.new($mqtt);
 
 $handler.add_hook(DebugHook);
