@@ -26,6 +26,10 @@
 #include <xnm/net_helpers.h>
 
 #include "test.h"
+// #include "SSD1306.h"
+// #include "DrawBox.h"
+
+
 
 using namespace Xasin::NeoController;
 
@@ -36,6 +40,26 @@ esp_err_t event_handler(void *context, system_event_t *event) {
 
 	return ESP_OK;
 }
+
+// using namespace Peripheral;
+// font = Peripheral::OLED::console_font_6x8;
+// using namespace XaI2C;
+
+// Peripheral::OLED::SSD1306 screen = Peripheral::OLED::SSD1306();
+// Peripheral::OLED::DrawBox *drawBox = nullptr;
+// Peripheral::OLED::FontType fontface = nullptr;
+
+// Peripheral::OLED::DrawBox drawBox = Peripheral::OLED::DrawBox(128, 32 &screen);
+// extern FontType console_font_6x8;
+
+
+// #include "SSD1306.h"
+// #include "DrawBox.h"
+// using namespace Peripheral;
+// using namespace XaI2C;
+
+// Peripheral::OLED::SSD1306 screen = Peripheral::OLED::SSD1306();
+// OLED::DrawBox drawBox = OLED::DrawBox(128, 64, &screen);
 
 extern "C"
 void app_main()
@@ -54,9 +78,21 @@ void app_main()
     XNM::NetHelpers::set_mqtt(LZR::mqtt);
 
     XNM::NetHelpers::init();
+    // screen.initialize();
+    // drawBox.visible = true;
+
+
+
+
+    // drawBox = new OLED::DrawBox(100, 32, &screen);
+    // drawBox.visible = true;
+    // drawBox.write_string(32, 23, std::string("HELLO"), 1 , 1, nullptr);
+
 
     while(true) {
 		 vTaskDelay(10*600);
+        //  drawBox.write_string(0, 0, std::string("HP:100"),21 , 1, nullptr);
+        //  drawBox.write_string(0, 36, std::string("GUN:3"),21 , 1, nullptr);
     }
 
     fflush(stdout);

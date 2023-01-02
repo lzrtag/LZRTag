@@ -24,6 +24,11 @@
 
 #include "../fx/vibrationHandler.h"
 
+// #include "SSD1306.h"
+// #include "DrawBox.h"
+
+
+
 namespace LZR {
 
 CORE_WEAPON_STATUS main_weapon_status = INITIALIZING;
@@ -34,7 +39,7 @@ Xasin::Audio::TX  audioManager;
 Xasin::NeoController::NeoController 	RGBController = Xasin::NeoController::NeoController(PIN_WS2812_OUT, RMT_CHANNEL_0, WS2812_NUMBER);
 
 
-Xasin::I2C::LSM6DS3			gyro = Xasin::I2C::LSM6DS3();
+// Xasin::I2C::LSM6DS3			gyro = Xasin::I2C::LSM6DS3();
 Xasin::I2C::DRV2605			drv = Xasin::I2C::DRV2605();
 
 Xasin::MQTT::Handler mqtt = Xasin::MQTT::Handler();
@@ -43,6 +48,8 @@ LZR::Player player = LZR::Player("", mqtt);
 
 std::vector<LZRTag::Weapon::BaseWeapon *> weapons;
 LZRTag::Weapon::Handler gunHandler(audioManager);
+
+
 
 void core_processing_task(void *args) {
 	while(true) {
@@ -82,6 +89,7 @@ void setup_io_pins() {
 	gpio_config(&inCFG);
 
 	XaI2C::MasterAction::init(PIN_I2C_SDA, PIN_I2C_SCL, I2C_NUM_0, 50000);
+
 }
 
 void setup_adc() {

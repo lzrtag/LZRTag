@@ -5,4 +5,4 @@
 
 CFLAGS += -std=c++14
 
-COMPONENT_SRCDIRS += core fx fx/patterns weapons
+COMPONENT_SRCDIRS += core fx fx/patterns weapons ../../../XasCode/ESP32/LittleOLED/include

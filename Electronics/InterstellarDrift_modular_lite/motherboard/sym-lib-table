@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name "ESEP32_Wroom_32D")(type "Legacy")(uri "${KIPRJMOD}/2023-01-01_22-12-58.lib")(options "")(descr ""))
+  (lib (name "TSOP_38238")(type "Legacy")(uri "${KIPRJMOD}/2023-01-01_22-20-39.lib")(options "")(descr ""))
+)
